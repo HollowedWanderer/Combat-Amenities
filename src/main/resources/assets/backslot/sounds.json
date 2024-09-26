@@ -1,0 +1,8 @@
+{
+  "sword_unsheath": {
+    "subtitle": "subtitles.backslot.sword_unsheath",
+    "sounds": [
+      "backslot:sword_unsheath"
+    ]
+  }
+}
