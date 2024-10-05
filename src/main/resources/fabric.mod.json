@@ -1,18 +1,18 @@
 {
 	"schemaVersion": 1,
-	"id": "backslot",
-	"version": "${version}",
-	"name": "Backslot",
+	"id": "ca",
+	"version": "1.0.0",
+	"name": "Combat Amenities",
 	"description": "This is an example description! Tell everyone what your mod is about!",
 	"authors": [
-		"Me!"
+		"Hollowed"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
-	"license": "CC0-1.0",
-	"icon": "assets/backslot/icon.png",
+	"license": "MIT",
+	"icon": "assets/ca/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [

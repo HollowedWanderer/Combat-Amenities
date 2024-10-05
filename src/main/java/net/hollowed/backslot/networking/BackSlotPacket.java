@@ -40,15 +40,17 @@ public class BackSlotPacket {
                 ItemStack handStack = player.getMainHandStack();
                 ItemStack backStack = backSlot.getStack();
 
-                if (handStack != ItemStack.EMPTY) {
+                if (!handStack.isEmpty()) {
                     player.setStackInHand(Hand.MAIN_HAND, backStack.copy());
                     backSlot.setStack(handStack.copy());
-                } else if (offhandStack != ItemStack.EMPTY) {
-                    player.setStackInHand(Hand.OFF_HAND, backStack.copy());
-                    backSlot.setStack(offhandStack.copy());
                 } else {
-                    player.setStackInHand(Hand.MAIN_HAND, backStack.copy());
-                    backSlot.setStack(ItemStack.EMPTY);
+                    if (backStack.isEmpty()) {
+                        player.setStackInHand(Hand.OFF_HAND, backStack.copy());
+                        backSlot.setStack(offhandStack.copy());
+                    } else {
+                        player.setStackInHand(Hand.MAIN_HAND, backStack.copy());
+                        backSlot.setStack(handStack.copy());
+                    }
                 }
 
 

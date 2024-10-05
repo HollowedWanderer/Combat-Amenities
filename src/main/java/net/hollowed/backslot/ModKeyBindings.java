@@ -12,10 +12,10 @@ public class ModKeyBindings {
 
     public static void registerKeyBindings() {
         backSlotBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.backslot.category",
+                "key.ca.backslot",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_R,
-                "category.backslot.keybinds"
+                "category.ca.keybinds"
         ));
     }
 

@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Backslot implements ModInitializer {
-	public static final String MOD_ID = "backslot";
+	public static final String MOD_ID = "ca";
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -22,6 +22,6 @@ public class Backslot implements ModInitializer {
 
 		BackSlotPacket.register();
 
-		LOGGER.info("Hello Fabric world!");
+		LOGGER.info("It is time for backing and slotting");
 	}
 }
