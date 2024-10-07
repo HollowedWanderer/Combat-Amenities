@@ -20,7 +20,7 @@ public abstract class PlayerFeaturesMixin extends LivingEntityRenderer<AbstractC
         super(ctx, model, shadowRadius);
     }
 
-    @Inject(method = "<init>", at = @At("TAIL"))
+    @Inject(method = "<init>", at = @At("CTOR_HEAD"))
     private void addCustomFeature(EntityRendererFactory.Context ctx, boolean slim, CallbackInfo ci) {
         HeldItemRenderer heldItemRenderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getHeldItemRenderer();
 

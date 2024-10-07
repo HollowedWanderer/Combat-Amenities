@@ -60,7 +60,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<AbstractCli
 					// Armor transforms
 					matrixStack.translate(0.0F, 0.0F, -0.05F);
 				}
-				heldItemRenderer.renderItem(playerEntity, backSlotStack, ModelTransformationMode.FIXED, false, matrixStack, vertexConsumerProvider, light);
+				heldItemRenderer.renderItem(playerEntity, backSlotStack, ModelTransformationMode.NONE, false, matrixStack, vertexConsumerProvider, light);
 			}
 			matrixStack.pop();
 		}

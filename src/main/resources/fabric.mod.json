@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
-	"id": "ca",
-	"version": "1.0.0",
+	"id": "combatamenities",
+	"version": "1.1.0",
 	"name": "Combat Amenities",
 	"description": "This is an example description! Tell everyone what your mod is about!",
 	"authors": [
@@ -12,7 +12,7 @@
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
 	"license": "MIT",
-	"icon": "assets/ca/icon.png",
+	"icon": "assets/combatamenities/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
@@ -30,8 +30,8 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.16.5",
-		"minecraft": "~1.20.1",
-		"java": ">=17",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
 		"fabric-api": "*"
 	},
 	"suggests": {

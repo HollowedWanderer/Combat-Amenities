@@ -20,8 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TridentEntity.class)
 public abstract class TridentEntityMixin extends PersistentProjectileEntity {
-    @Shadow
-    private ItemStack tridentStack;  // Use existing tridentStack
     @Unique
     private int originalSlot = -1; // Store the original slot index
 
@@ -71,12 +69,8 @@ public abstract class TridentEntityMixin extends PersistentProjectileEntity {
             }
 
             // If the inventory is full, drop the trident item on the ground
-            if (!hasSpace) {
-                ItemEntity itemEntity = new ItemEntity(player.getWorld(), this.getX(), this.getY() - 1, this.getZ(), this.asItemStack());
-                itemEntity.setVelocity(player.getVelocity().add(0, 0.1, 0)); // Add upward velocity
-                player.getWorld().spawnEntity(itemEntity); // Spawn the item entity in the world
-                this.remove(RemovalReason.DISCARDED); // Remove the trident entity
-                return true;
+            if (!hasSpace && !player.isCreative()) {
+                return false;
             }
 
             // Otherwise, insert it into the player's inventory

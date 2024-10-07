@@ -24,10 +24,7 @@ public abstract class PlayerInventoryMixin implements Inventory {
     @Mutable
     private List<DefaultedList<ItemStack>> combinedInventory;
 
-    @Shadow
-    @Final
-    public PlayerEntity player;
-
+    @Shadow @Final public PlayerEntity player;
     // Unique custom slot, size is 1 for this case
     @Unique
     private DefaultedList<ItemStack> extraSlot;
@@ -51,7 +48,7 @@ public abstract class PlayerInventoryMixin implements Inventory {
         if (!this.extraSlot.get(0).isEmpty()) {
             NbtCompound compoundTag = new NbtCompound();
             compoundTag.putByte("Slot", (byte) (110));  // Custom slot index
-            tag.add(this.extraSlot.get(0).writeNbt(compoundTag));
+            tag.add(this.extraSlot.get(0).encode(this.player.getRegistryManager(), compoundTag));
         }
     }
 
@@ -62,7 +59,7 @@ public abstract class PlayerInventoryMixin implements Inventory {
         for (int i = 0; i < tag.size(); ++i) {
             NbtCompound compoundTag = tag.getCompound(i);
             int slot = compoundTag.getByte("Slot") & 255;  // Get slot index
-            ItemStack itemStack = ItemStack.fromNbt(compoundTag);  // Read item data
+            ItemStack itemStack = ItemStack.fromNbt(this.player.getRegistryManager(), compoundTag).orElse(ItemStack.EMPTY);  // Read item data
             // Load item into the custom slot if it's the correct index
             if (!itemStack.isEmpty()) {
                 if (slot == 110) {  // Slot 110 is our custom slot

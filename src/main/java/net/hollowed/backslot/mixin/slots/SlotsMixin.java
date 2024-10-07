@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerScreenHandler.class)
-public abstract class SlotsMixin extends AbstractRecipeScreenHandler<RecipeInputInventory> {
+public abstract class SlotsMixin extends AbstractRecipeScreenHandler {
 
     protected SlotsMixin(ScreenHandlerType<?> screenHandlerType, int i) {
         super(screenHandlerType, i);
@@ -28,7 +28,7 @@ public abstract class SlotsMixin extends AbstractRecipeScreenHandler<RecipeInput
             this.addSlot(new Slot(inventory, 41, 77, 8) {
                 @Override
                 public Pair<Identifier, Identifier> getBackgroundSprite() {
-                    return new Pair<>(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier("item/back_slot_overlay"));
+                    return new Pair<>(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, Identifier.of("item/back_slot_overlay"));
                 }
 
                 @Override
