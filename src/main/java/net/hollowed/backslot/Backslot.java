@@ -39,12 +39,9 @@ public class Backslot implements ModInitializer {
                 return;
             }
 
-            PlayerScreenHandler screenHandler = (PlayerScreenHandler) player.currentScreenHandler;
-            Slot backSlot = screenHandler.getSlot(46);
-
             ItemStack offhandStack = player.getOffHandStack();
             ItemStack handStack = player.getMainHandStack();
-            ItemStack backStack = backSlot.getStack();
+            ItemStack backStack = player.getInventory().getStack(41);
 
             if (backStack.getItem() instanceof AxeItem) {
                 player.getWorld().playSoundFromEntity(null, player, ModSounds.SWORD_UNSHEATH, SoundCategory.PLAYERS, 1F, 0.9F);
@@ -61,14 +58,14 @@ public class Backslot implements ModInitializer {
 
             if (!handStack.isEmpty()) {
                 player.setStackInHand(Hand.MAIN_HAND, backStack.copy());
-                backSlot.setStack(handStack.copy());
+                player.getInventory().setStack(41, handStack.copy());
             } else {
                 if (backStack.isEmpty()) {
                     player.setStackInHand(Hand.OFF_HAND, backStack.copy());
-                    backSlot.setStack(offhandStack.copy());
+                    player.getInventory().setStack(41, offhandStack.copy());
                 } else {
                     player.setStackInHand(Hand.MAIN_HAND, backStack.copy());
-                    backSlot.setStack(handStack.copy());
+                    player.getInventory().setStack(41, handStack.copy());
                 }
             }
 
