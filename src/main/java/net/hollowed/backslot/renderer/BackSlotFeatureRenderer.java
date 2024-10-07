@@ -60,7 +60,12 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<AbstractCli
 					// Armor transforms
 					matrixStack.translate(0.0F, 0.0F, -0.05F);
 				}
-				heldItemRenderer.renderItem(playerEntity, backSlotStack, ModelTransformationMode.NONE, false, matrixStack, vertexConsumerProvider, light);
+
+				if ("item.amarite.amarite_longsword".equals(item.getTranslationKey())) {
+					matrixStack.scale(2F, 2F, 1F);
+				}
+
+				heldItemRenderer.renderItem(playerEntity, backSlotStack, ModelTransformationMode.FIXED, false, matrixStack, vertexConsumerProvider, light);
 			}
 			matrixStack.pop();
 		}

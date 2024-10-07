@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerScreenHandler.class)
-public abstract class SlotsMixin extends AbstractRecipeScreenHandler {
+public abstract class SlotsMixin extends AbstractRecipeScreenHandler<RecipeInputInventory> {
 
     protected SlotsMixin(ScreenHandlerType<?> screenHandlerType, int i) {
         super(screenHandlerType, i);
@@ -24,22 +24,22 @@ public abstract class SlotsMixin extends AbstractRecipeScreenHandler {
 
     @Inject(method = "<init>(Lnet/minecraft/entity/player/PlayerInventory;ZLnet/minecraft/entity/player/PlayerEntity;)V", at = @At("RETURN"))
     private void addBackSlot(PlayerInventory inventory, boolean onServer, PlayerEntity owner, CallbackInfo ci) {
-            // Add BackSlot at (77, 8)
-            this.addSlot(new Slot(inventory, 41, 77, 8) {
-                @Override
-                public Pair<Identifier, Identifier> getBackgroundSprite() {
-                    return new Pair<>(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, Identifier.of("item/back_slot_overlay"));
-                }
+        // Add BackSlot at (77, 8)
+        this.addSlot(new Slot(inventory, 41, 77, 8) {
+            @Override
+            public Pair<Identifier, Identifier> getBackgroundSprite() {
+                return new Pair<>(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier("item/back_slot_overlay"));
+            }
 
-                @Override
-                public ItemStack takeStack(int amount) {
-                    ItemStack stack = super.takeStack(amount);
-                    if (stack.isEmpty()) {
-                        this.setStack(ItemStack.EMPTY);
-                    }
-                    return stack;
+            @Override
+            public ItemStack takeStack(int amount) {
+                ItemStack stack = super.takeStack(amount);
+                if (stack.isEmpty()) {
+                    this.setStack(ItemStack.EMPTY);
                 }
-            });
+                return stack;
+            }
+        });
     }
 
 }

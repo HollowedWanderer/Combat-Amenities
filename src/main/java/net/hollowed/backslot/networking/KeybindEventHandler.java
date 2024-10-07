@@ -1,10 +1,11 @@
 package net.hollowed.backslot.networking;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.hollowed.backslot.ModKeyBindings;
+import net.minecraft.client.MinecraftClient;
 
 public class KeybindEventHandler {
+    private static final MinecraftClient client = MinecraftClient.getInstance();
     private static boolean wasBackSlotKeyPressed = false;
 
     public static void register() {
@@ -13,7 +14,7 @@ public class KeybindEventHandler {
 
             if (isKeyPressed && !wasBackSlotKeyPressed && client.player != null) {
                 // Send a packet to the server to handle the back slot key press
-                ClientPlayNetworking.send(new BackslotPacketPayload(client.player.getBlockPos()));
+                BackSlotPacket.send();
             }
 
             // Update the key press state

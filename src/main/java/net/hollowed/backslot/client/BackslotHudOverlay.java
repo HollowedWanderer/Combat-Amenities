@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 public class BackslotHudOverlay {
 
     // Texture identifiers for your GUI elements
-    public static final Identifier WIDGETS_TEXTURE = Identifier.of("textures/gui/sprites/hud/hotbar_offhand_left.png");
+    public static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
 
     public static void init() {
         HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
@@ -37,7 +37,7 @@ public class BackslotHudOverlay {
 
                 // Draw the backslot item
                 RenderSystem.enableBlend();
-                drawContext.drawTexture(WIDGETS_TEXTURE, x + 1, y - 19, 0, 0, 22, 22, 29, 24); // Texture for the base slot
+                drawContext.drawTexture(WIDGETS_TEXTURE, x + 1, y - 19, 24, 22, 29, 24); // Texture for the base slot
                 renderHotbarItem(drawContext, MinecraftClient.getInstance(), x + 4, y - 15, playerEntity, backSlotStack);
             }
         }
