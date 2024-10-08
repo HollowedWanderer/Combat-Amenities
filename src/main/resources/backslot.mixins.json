@@ -3,7 +3,9 @@
   "package": "net.hollowed.backslot.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "EntityTrackerEntryMixin",
     "MinecraftServerMixin",
+    "ServerPlayerEntityMixin",
     "TridentEntityMixin",
     "slots.PlayerInventoryMixin",
     "slots.SlotsMixin"

@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
 	"id": "combatamenities",
-	"version": "1.1.1-1.20.1",
+	"version": "1.1.2-1.20.1",
 	"name": "Combat Amenities",
 	"description": "Adds some simple tweaks related to combat",
 	"authors": [
