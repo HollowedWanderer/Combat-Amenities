@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
 	"id": "combatamenities",
-	"version": "1.1.0",
+	"version": "1.1.2-1.21.1",
 	"name": "Combat Amenities",
 	"description": "This is an example description! Tell everyone what your mod is about!",
 	"authors": [
