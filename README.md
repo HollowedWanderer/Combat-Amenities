@@ -1,34 +1,21 @@
-![Mod Title](https://cdn.modrinth.com/data/5t69SBIK/images/794e58f9fe3be907ece87d56d72261ef722ac6b6.png)
+![Title of the mod](https://cdn.modrinth.com/data/cached_images/88f3cc110ae64228ba85e452180c0e8f9d5deca1.png)
+
+### Bug Reports/Suggestions
+Don't hesitate to report issues or suggestions [here](https://github.com/HollowedWanderer/Combat-Amenities/issues)! It really helps me out a lot! 
+
+# Features
+Combat Amenities aims to improve combat with some small tweaks.
+
+### Feature List:
+- **Back Slot** - A back slot to display weapons to your friends while also having them on standby with a quick keybind! The item in your back slot is visible in third person on your back, and in first person via an offhand-like slot on the right side of your hotbar
+
+- **Trident Tweaks** - Tridents now return to the correct slot, the slot they were thrown from! When using riptide, offhand items are hidden in first person to prevent them from blocking visibility
+
+### Forge Port
+I will not be porting this mod to forge, however, it is compatible with Sinytra Connector, so it is still usable in Forge/Neoforge modpacks!
 
 ---
 
-**Addressing 1.21**
+Probably not going to update the 1.20.1 version to 2.0.0 - too much to manage and newer updates are dropping
 
-Since development of the mod has been switched to fabric, development will take a long time. I am trying to get a basic magic system out before November of this year. The mod will now use Lodestone API for special effects so 1.21 will be delayed until Lodestone has finished porting.
-
----
-
-You can use this mod for modpacks and videos as long as credit/the mod page link is provided
-
----
-
-**This mod aims to add more content surrounding magic and weaponry.**
-
----
-
-**[Discord](https://discord.gg/5HtEsNGD8r)**
-
-
-**[Github](https://github.com/HollowedWanderer/HSS_Fabric)**
-
-# Planned Features
-
-- **Charm System:** An entire magic system based around binding charms to the player and weilding their elemental powers. There will be many types of charms as well as certain combined types such as: Fire + Ice -> Water
-- **Cryonic Steel:** A frozen metal to make some new weapons and possibly a unique side-grade armor set to netherite
-
-Mod Compatibility Issues:
-- Immediately Fast - breaks Lodestone
-
-Dependencies:
-- Lodestone API
-- Cardinal Components API
+### Make sure to check out the gallery!
