@@ -17,5 +17,3 @@ I will not be porting this mod to forge, however, it is compatible with Sinytra 
 ---
 
 Probably not going to update the 1.20.1 version to 2.0.0 - too much to manage and newer updates are dropping
-
-### Make sure to check out the gallery!
