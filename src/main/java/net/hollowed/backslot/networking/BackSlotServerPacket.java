@@ -24,17 +24,11 @@ public class BackSlotServerPacket {
             ItemStack backStack = player.getInventory().getStack(41);
 
             if (backStack.getItem() instanceof AxeItem) {
-                player.getWorld().playSoundFromEntity(null, player, ModSounds.SWORD_UNSHEATH, SoundCategory.PLAYERS, 1F, 0.9F);
-                context.player().getWorld().playSound(null, context.player().getX(), context.player().getY(), context.player().getZ(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN,
-                        SoundCategory.PLAYERS, 1F, 1F, context.player().getWorld().getRandom().nextLong());
+                player.getWorld().playSound(null, player.getBlockPos(), ModSounds.SWORD_UNSHEATH, SoundCategory.PLAYERS, 1F, 0.9F);
             } else if (backStack.getItem() instanceof SwordItem) {
-                player.getWorld().playSoundFromEntity(null, player, ModSounds.SWORD_UNSHEATH, SoundCategory.PLAYERS, 1F, 1.0F);
-                context.player().getWorld().playSound(null, context.player().getX(), context.player().getY(), context.player().getZ(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN,
-                        SoundCategory.PLAYERS, 1F, 1F, context.player().getWorld().getRandom().nextLong());
-            } else if (backStack != ItemStack.EMPTY) {
-                context.player().getWorld().playSound(null, context.player().getX(), context.player().getY(), context.player().getZ(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN,
-                        SoundCategory.PLAYERS, 1F, 1F, context.player().getWorld().getRandom().nextLong());
+                player.getWorld().playSound(null, player.getBlockPos(), ModSounds.SWORD_UNSHEATH, SoundCategory.PLAYERS, 1F, 1.0F);
             }
+            player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 1F, 1F);
 
             if (!handStack.isEmpty()) {
                 player.setStackInHand(Hand.MAIN_HAND, backStack.copy());
@@ -50,11 +44,8 @@ public class BackSlotServerPacket {
             }
 
             if (offhandStack != ItemStack.EMPTY || handStack != ItemStack.EMPTY) {
-                context.player().getWorld().playSound(null, context.player().getX(), context.player().getY(), context.player().getZ(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN,
-                        SoundCategory.PLAYERS, 1F, 1F, context.player().getWorld().getRandom().nextLong());
+                player.getWorld().playSoundFromEntity(player, player, SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 1F, 1F);
             }
-
-            System.out.println("PACKET RECEIVED");
 
             // Sync the player's inventory back to the client
             player.currentScreenHandler.sendContentUpdates();

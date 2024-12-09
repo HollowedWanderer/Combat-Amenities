@@ -4,10 +4,12 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "EntityTrackerEntryMixin",
-    "MinecraftServerMixin",
+    "ItemStackMixin",
+    "MinecraftClientMixin",
     "ServerPlayerEntityMixin",
     "TridentEntityMixin",
     "slots.PlayerInventoryMixin",
+    "slots.ServerPlayerEntityMixin",
     "slots.SlotsMixin"
   ],
   "injectors": {

@@ -1,9 +1,9 @@
 package net.hollowed.backslot.mixin.slots;
 
-import com.mojang.datafixers.util.Pair;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -24,22 +24,26 @@ public abstract class SlotsMixin extends AbstractRecipeScreenHandler {
 
     @Inject(method = "<init>(Lnet/minecraft/entity/player/PlayerInventory;ZLnet/minecraft/entity/player/PlayerEntity;)V", at = @At("RETURN"))
     private void addBackSlot(PlayerInventory inventory, boolean onServer, PlayerEntity owner, CallbackInfo ci) {
-            // Add BackSlot at (77, 8)
-            this.addSlot(new Slot(inventory, 41, 77, 8) {
-                @Override
-                public Pair<Identifier, Identifier> getBackgroundSprite() {
-                    return new Pair<>(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, Identifier.of("item/back_slot_overlay"));
-                }
+        // Determine slot position based on context
+        int xPos = 77;
+        int yPos = 8;
 
-                @Override
-                public ItemStack takeStack(int amount) {
-                    ItemStack stack = super.takeStack(amount);
-                    if (stack.isEmpty()) {
-                        this.setStack(ItemStack.EMPTY);
-                    }
-                    return stack;
+        // Add BackSlot at determined position
+        this.addSlot(new Slot(inventory, 41, xPos, yPos) {
+            @Override
+            public Identifier getBackgroundSprite() {
+                return Identifier.ofVanilla("backslot_overlay");
+            }
+
+            @Override
+            public ItemStack takeStack(int amount) {
+                ItemStack stack = super.takeStack(amount);
+                if (stack.isEmpty()) {
+                    this.setStack(ItemStack.EMPTY);
                 }
-            });
+                return stack;
+            }
+        });
     }
-
 }
+

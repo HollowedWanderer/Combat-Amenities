@@ -48,7 +48,7 @@ public abstract class PlayerInventoryMixin implements Inventory {
         if (!this.extraSlot.get(0).isEmpty()) {
             NbtCompound compoundTag = new NbtCompound();
             compoundTag.putByte("Slot", (byte) (110));  // Custom slot index
-            tag.add(this.extraSlot.get(0).encode(this.player.getRegistryManager(), compoundTag));
+            tag.add(this.extraSlot.get(0).toNbt(this.player.getRegistryManager(), compoundTag));
         }
     }
 

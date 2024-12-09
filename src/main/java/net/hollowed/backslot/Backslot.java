@@ -1,18 +1,14 @@
 package net.hollowed.backslot;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.hollowed.backslot.networking.BackSlotClientPacketPayload;
-import net.hollowed.backslot.networking.BackSlotServerPacket;
-import net.hollowed.backslot.networking.BackslotPacketPayload;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.AxeItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.SwordItem;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Hand;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.hollowed.backslot.networking.*;
+import net.hollowed.backslot.util.TransformResourceReloadListener;
+import net.minecraft.resource.ResourceType;
+import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,11 +26,18 @@ public class Backslot implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-        PayloadTypeRegistry.playC2S().register(BackslotPacketPayload.ID, BackslotPacketPayload.CODEC);
+		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new TransformResourceReloadListener());
+
+		PayloadTypeRegistry.playC2S().register(BackslotPacketPayload.ID, BackslotPacketPayload.CODEC);
+		PayloadTypeRegistry.playC2S().register(BackSlotCreativeClientPacketPayload.BACKSLOT_CREATIVE_CLIENT_PACKET_ID, BackSlotCreativeClientPacketPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(BackSlotClientPacketPayload.BACKSLOT_CLIENT_PACKET_ID, BackSlotClientPacketPayload.CODEC);
 
         BackSlotServerPacket.registerServerPacket();
+		BackSlotCreativeClientPacket.registerClientPacket();
 
 		LOGGER.info("It is time for backing and slotting");
 	}
+
+	public static final GameRules.Key<GameRules.BooleanRule> KEEP_BACK_SLOT_ITEM =
+			GameRuleRegistry.register("keepBackSlotItem", GameRules.Category.DROPS, GameRuleFactory.createBooleanRule(false));
 }

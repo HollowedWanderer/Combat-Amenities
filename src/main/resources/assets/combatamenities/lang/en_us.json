@@ -1,5 +1,6 @@
 {
   "category.combatamenities.keybinds": "Combat Amenities",
   "key.combatamenities.backslot": "Backslot Switch",
-  "subtitles.combatamenities.sword_unsheath": "Weapon Unsheathes"
+  "subtitles.combatamenities.sword_unsheath": "Weapon Unsheathes",
+  "gamerule.keepBackSlotItem": "Keep Back Slot Item on Death"
 }

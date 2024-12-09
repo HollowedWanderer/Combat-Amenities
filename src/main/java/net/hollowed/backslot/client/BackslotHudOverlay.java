@@ -6,12 +6,18 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
+import java.util.function.Function;
+
 @Environment(EnvType.CLIENT)
 public class BackslotHudOverlay {
+
+
 
     // Texture identifiers for your GUI elements
     public static final Identifier WIDGETS_TEXTURE = Identifier.of("textures/gui/sprites/hud/hotbar_offhand_left.png");
@@ -37,7 +43,14 @@ public class BackslotHudOverlay {
 
                 // Draw the backslot item
                 RenderSystem.enableBlend();
-                drawContext.drawTexture(WIDGETS_TEXTURE, x + 1, y - 19, 0, 0, 22, 22, 29, 24); // Texture for the base slot
+
+                // Render the texture
+                drawContext.drawTexture(
+                        RenderLayer::getGuiTextured,
+                        WIDGETS_TEXTURE,
+                        x + 1, y - 19,
+                        0, 0, 22, 23, 29, 24 // Texture coordinates and dimensions
+                );
                 renderHotbarItem(drawContext, MinecraftClient.getInstance(), x + 4, y - 15, playerEntity, backSlotStack);
             }
         }
@@ -47,6 +60,6 @@ public class BackslotHudOverlay {
         if (stack.isEmpty()) return;
 
         context.drawItem(player, stack, x, y, 0);
-        context.drawItemInSlot(client.textRenderer, stack, x, y);
+        context.drawStackOverlay(client.textRenderer, stack, x, y);
     }
 }
