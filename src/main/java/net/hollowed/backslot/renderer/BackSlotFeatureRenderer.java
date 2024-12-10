@@ -148,6 +148,9 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 		double velocityZ = playerEntity.getVelocity().z;
 		double velocityY = playerEntity.getVelocity().y;
 
+		// Get transform data for item
+		TransformData data = TransformResourceReloadListener.getTransform(Registries.ITEM.getId(item));
+
 		// Fix translation
 		matrixStack.translate(0F, 0.3F, 0.2);
 
@@ -208,7 +211,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 		}
 
 		// Combine rotations
-		float totalRotation = (speedEffectVelocity * 3.0F + swayVelocity) * bannerMultiplier;
+		float totalRotation = (speedEffectVelocity * 3.0F + swayVelocity) * bannerMultiplier * data.sway();
 
 		// Multiply the matrices
 		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(totalRotation));

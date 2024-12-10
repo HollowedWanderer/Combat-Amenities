@@ -12,7 +12,8 @@ public record TransformData(
         List<Float> scale,        // List for scale
         List<Float> rotation,     // List for rotation
         List<Float> translation,  // List for translation
-        ModelTransformationMode mode    // Add the TransformationMode field
+        ModelTransformationMode mode,    // Add the TransformationMode field
+        Float sway
 ) {
     public static final Codec<TransformData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Identifier.CODEC.fieldOf("item").forGetter(TransformData::item),
@@ -21,6 +22,7 @@ public record TransformData(
             Codec.FLOAT.listOf().fieldOf("translation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(TransformData::translation),
             Codec.STRING.fieldOf("mode").orElse("FIXED") // Default to SCALE if no mode is provided
                     .xmap(ModelTransformationMode::valueOf, ModelTransformationMode::name)
-                    .forGetter(TransformData::mode)
+                    .forGetter(TransformData::mode),
+            Codec.FLOAT.fieldOf("sway").orElse(1.0F).forGetter(TransformData::sway)
     ).apply(instance, TransformData::new));
 }
