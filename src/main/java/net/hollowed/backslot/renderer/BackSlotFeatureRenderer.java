@@ -187,9 +187,9 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 		// Vertical motion influences rotation
 		float verticalRotationFactor = 0.0F;
 		if (cappedVerticalVelocity < 0.0F) {
-			verticalRotationFactor = MathHelper.clamp(-cappedVerticalVelocity * 5.0F, 0.0F, 50.0F);
+			verticalRotationFactor = MathHelper.clamp(-cappedVerticalVelocity * 2.5F, 0.0F, 50.0F);
 		} else if (cappedVerticalVelocity > 0.0F) {
-			verticalRotationFactor = MathHelper.clamp(cappedVerticalVelocity * 5.0F, 0.0F, 50.0F);
+			verticalRotationFactor = MathHelper.clamp(cappedVerticalVelocity * 2.5F, 0.0F, 50.0F);
 		}
 
 		// Smooth vertical rotation
