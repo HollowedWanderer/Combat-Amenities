@@ -56,7 +56,7 @@ public abstract class CreativeInventoryScreenMixin extends HandledScreen<Creativ
                     yField.setInt(slot, 20);
 
                 } catch (NoSuchFieldException | IllegalAccessException e) {
-                    e.printStackTrace();  // Handle exceptions
+                    e.printStackTrace(); // Handle exceptions
                 }
             }
         }

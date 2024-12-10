@@ -1,5 +1,6 @@
 package net.hollowed.backslot.networking;
 
+import net.hollowed.backslot.Backslot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -8,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 public record BackSlotCreativeClientPacketPayload(int entityId, int slotId, ItemStack itemStack) implements CustomPayload {
 
-    public static final Id<BackSlotCreativeClientPacketPayload> BACKSLOT_CREATIVE_CLIENT_PACKET_ID = new Id<>(Identifier.of("combatamenities", "backslot_creative_client_packet"));
+    public static final Id<BackSlotCreativeClientPacketPayload> BACKSLOT_CREATIVE_CLIENT_PACKET_ID = new Id<>(Identifier.of(Backslot.MOD_ID, "backslot_creative_client_packet"));
 
     public static final PacketCodec<RegistryByteBuf, BackSlotCreativeClientPacketPayload> CODEC = PacketCodec.of(BackSlotCreativeClientPacketPayload::write, BackSlotCreativeClientPacketPayload::new);
 

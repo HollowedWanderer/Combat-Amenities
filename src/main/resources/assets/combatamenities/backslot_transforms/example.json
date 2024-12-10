@@ -2,5 +2,8 @@
   "item": "amarite:amarite_longsword",
   "scale": [2.0, 2.0, 1.0],
   "rotation": [0.0, 0.0, 0.0],
-  "translation": [0.0, 0.0, 0.0]
+  "translation": [0.0, 0.0, 0.0],
+  "transformationMode": "FIXED"
+
+  // example file on how to make texture packs for the backslot
 }

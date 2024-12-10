@@ -7,27 +7,63 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderLayers;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
-import java.util.function.Function;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Properties;
 
 @Environment(EnvType.CLIENT)
 public class BackslotHudOverlay {
 
-
-
-    // Texture identifiers for your GUI elements
-    public static final Identifier WIDGETS_TEXTURE = Identifier.of("textures/gui/sprites/hud/hotbar_offhand_left.png");
+    private static final Identifier WIDGETS_TEXTURE = Identifier.of("textures/gui/sprites/hud/hotbar_offhand_left.png");
+    private static int xOffset = 0;  // Default position
+    private static int yOffset = 0;
 
     public static void init() {
+        loadConfig();
         HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
             if (!MinecraftClient.getInstance().options.hudHidden) {
                 renderBackSlot(drawContext);
             }
         });
+    }
+
+    private static void loadConfig() {
+        try {
+            File configFile = new File(MinecraftClient.getInstance().runDirectory, "config/backslot_position.properties");
+            if (!configFile.exists()) {
+                // Create the file if it does not exist
+                Files.createDirectories(configFile.getParentFile().toPath());
+                configFile.createNewFile();
+                // Set default values
+                saveConfig();
+            }
+
+            Properties properties = new Properties();
+            properties.load(Files.newInputStream(configFile.toPath()));
+
+            // Read the configuration values
+            xOffset = Integer.parseInt(properties.getProperty("xOffset", "0"));
+            yOffset = Integer.parseInt(properties.getProperty("yOffset", "0"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveConfig() {
+        try {
+            Properties properties = new Properties();
+            properties.setProperty("xOffset", String.valueOf(xOffset));
+            properties.setProperty("yOffset", String.valueOf(yOffset));
+            properties.store(Files.newOutputStream(Paths.get(MinecraftClient.getInstance().runDirectory + "/config/backslot_position.properties")), "Backslot Position Config");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void renderBackSlot(DrawContext drawContext) {
@@ -38,8 +74,8 @@ public class BackslotHudOverlay {
             ItemStack backSlotStack = playerEntity.getInventory().getStack(41);
 
             if (!backSlotStack.isEmpty()) {
-                int x = drawContext.getScaledWindowWidth() / 2 + 97; // X position
-                int y = drawContext.getScaledWindowHeight() - 4; // Y position
+                int x = drawContext.getScaledWindowWidth() / 2 + xOffset + 97;  // Use configurable X position
+                int y = drawContext.getScaledWindowHeight() - yOffset - 4;    // Use configurable Y position
 
                 // Draw the backslot item
                 RenderSystem.enableBlend();

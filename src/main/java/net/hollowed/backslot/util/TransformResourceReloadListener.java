@@ -4,6 +4,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.hollowed.backslot.Backslot;
+import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -46,12 +47,13 @@ public class TransformResourceReloadListener implements SimpleSynchronousResourc
     }
 
     public static TransformData getTransform(Identifier itemId) {
-        // Provide a default TransformData with Lists for scale, rotation, and translation
+        // Provide a default TransformData with default scale, rotation, translation, and mode
         return transforms.getOrDefault(itemId, new TransformData(
                 itemId,
-                List.of(1.0f, 1.0f, 1.0f), // Default scale
-                List.of(0.0f, 0.0f, 0.0f), // Default rotation
-                List.of(0.0f, 0.0f, 0.0f)  // Default translation
+                List.of(1.0f, 1.0f, 1.0f),   // Default scale
+                List.of(0.0f, 0.0f, 0.0f),   // Default rotation
+                List.of(0.0f, 0.0f, 0.0f),   // Default translation
+                ModelTransformationMode.FIXED     // Default mode
         ));
     }
 }
