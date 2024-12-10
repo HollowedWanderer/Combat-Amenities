@@ -15,9 +15,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class TransformResourceReloadListener implements SimpleSynchronousResourceReloadListener {
     private static final Map<Identifier, TransformData> transforms = new HashMap<>();
+    private static TransformData defaultTransforms;
 
     @Override
     public Identifier getFabricId() {
@@ -34,26 +36,31 @@ public class TransformResourceReloadListener implements SimpleSynchronousResourc
                 var json = JsonHelper.deserialize(new InputStreamReader(stream, StandardCharsets.UTF_8));
                 DataResult<TransformData> result = TransformData.CODEC.parse(JsonOps.INSTANCE, json);
 
-                result.resultOrPartial(System.err::println).ifPresent(data -> {
-                    System.out.println("Loaded transform for: " + data.item());
-                    transforms.put(data.item(), data);
+                result.resultOrPartial(Backslot.LOGGER::error).ifPresent(data -> {
+                    Backslot.LOGGER.info("Loaded transform for: {}", data.item());
+                    if(Objects.equals(data.item(), Identifier.of("backslot", "default"))) {
+                        defaultTransforms = data;
+                    } else {
+                        transforms.put(data.item(), data);
+                    }
                 });
             } catch (Exception e) {
-                System.err.println("Failed to load transform for " + id + ": " + e.getMessage());
+                Backslot.LOGGER.error("Failed to load transform for {}: {}", id, e.getMessage());
             }
         });
 
-        System.out.println("Loaded transforms: " + transforms);
+        Backslot.LOGGER.info("Loaded transforms: {}", transforms);
     }
 
     public static TransformData getTransform(Identifier itemId) {
         // Provide a default TransformData with default scale, rotation, translation, and mode
-        return transforms.getOrDefault(itemId, new TransformData(
+        return transforms.getOrDefault(itemId, defaultTransforms == null ? new TransformData(
                 itemId,
-                List.of(1.0f, 1.0f, 1.0f),   // Default scale
-                List.of(0.0f, 0.0f, 0.0f),   // Default rotation
-                List.of(0.0f, 0.0f, 0.0f),   // Default translation
-                ModelTransformationMode.FIXED     // Default mode
-        ));
+                List.of(1.0f, 1.0f, 1.0f),      // Default scale
+                List.of(0.0f, 0.0f, 0.0f),      // Default rotation
+                List.of(0.0f, 0.0f, 0.0f),      // Default translation
+                ModelTransformationMode.FIXED,  // Default mode
+                1.0F                            // Default sway
+        ) : defaultTransforms);
     }
 }
