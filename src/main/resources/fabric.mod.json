@@ -20,9 +20,6 @@
 		],
 		"client": [
 			"net.hollowed.backslot.BackslotClient"
-		],
-		"fabric-datagen": [
-			"net.hollowed.backslot.BackslotDataGenerator"
 		]
 	},
 	"mixins": [

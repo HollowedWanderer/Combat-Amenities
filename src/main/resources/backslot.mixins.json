@@ -3,8 +3,11 @@
   "package": "net.hollowed.backslot.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "EnderPearlEntityMixin",
+    "EnderPearlItemMixin",
     "EntityTrackerEntryMixin",
     "ItemStackMixin",
+    "LivingEntityMixin",
     "MinecraftClientMixin",
     "ServerPlayerEntityMixin",
     "TridentEntityMixin",
@@ -17,6 +20,9 @@
   },
   "client": [
     "FirstPersonItemMixin",
+    "GameRendererMixin",
+    "PlayerCapeModelMixin",
+    "PlayerEntityRendererMixin",
     "PlayerFeaturesMixin",
     "slots.CreativeInventoryScreenMixin"
   ]

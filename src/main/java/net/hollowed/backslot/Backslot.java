@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.hollowed.backslot.networking.*;
 import net.hollowed.backslot.util.TransformResourceReloadListener;
+import net.minecraft.item.EnderPearlItem;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.world.GameRules;
 import org.slf4j.Logger;

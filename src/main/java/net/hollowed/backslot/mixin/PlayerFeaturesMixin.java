@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PlayerEntityRenderer.class)
 public abstract class PlayerFeaturesMixin extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityRenderState, PlayerEntityModel> {
 
-
     public PlayerFeaturesMixin(EntityRendererFactory.Context ctx, PlayerEntityModel model, float shadowRadius) {
         super(ctx, model, shadowRadius);
     }
@@ -25,7 +24,6 @@ public abstract class PlayerFeaturesMixin extends LivingEntityRenderer<AbstractC
     @Inject(method = "<init>", at = @At("CTOR_HEAD"))
     private void addCustomFeature(EntityRendererFactory.Context ctx, boolean slim, CallbackInfo ci) {
         HeldItemRenderer heldItemRenderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getHeldItemRenderer();
-
         this.addFeature(new BackSlotFeatureRenderer(this, heldItemRenderer));
     }
 }

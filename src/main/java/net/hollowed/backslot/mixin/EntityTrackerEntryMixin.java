@@ -1,16 +1,20 @@
 package net.hollowed.backslot.mixin;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.hollowed.backslot.Backslot;
 import net.hollowed.backslot.networking.BackSlotClientPacketPayload;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,6 +32,7 @@ public class EntityTrackerEntryMixin {
     @Shadow
     private final Entity entity;
 
+    @Shadow @Final private ServerWorld world;
     @Unique
     private static final HashMap<UUID, Vec3d> previousPositions = new HashMap<>();
     @Unique
@@ -123,7 +128,6 @@ public class EntityTrackerEntryMixin {
 
         // Play the sound with the calculated volume
         playerEntity.getWorld().playSound(null, playerEntity.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND.value(), SoundCategory.PLAYERS, volume, 1.0F);
-        System.out.println("played landing sound with volume: " + volume);
     }
 
     // Play walking sound
@@ -140,7 +144,6 @@ public class EntityTrackerEntryMixin {
             // Play sound if the calculated interval has elapsed
             if ((currentTick - lastWalkingSoundTick) >= dynamicInterval) {
                 playerEntity.getWorld().playSound(null, playerEntity.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 0.15F, 1.2F);
-                System.out.println("played walking sound");
                 lastWalkingSoundTick = currentTick;
             }
         }
