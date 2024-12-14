@@ -29,8 +29,6 @@ import java.util.List;
 @Mixin(CreativeInventoryScreen.class)
 public abstract class CreativeInventoryScreenMixin extends HandledScreen<CreativeInventoryScreen.CreativeScreenHandler> {
 
-    @Shadow @Nullable private List<Slot> slots;
-
     @Shadow private static ItemGroup selectedTab;
 
     public CreativeInventoryScreenMixin(CreativeInventoryScreen.CreativeScreenHandler handler, PlayerInventory inventory, Text title) {

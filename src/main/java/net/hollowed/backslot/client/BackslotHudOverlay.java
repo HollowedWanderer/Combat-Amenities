@@ -6,9 +6,11 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 
 import java.io.File;
@@ -74,8 +76,9 @@ public class BackslotHudOverlay {
             ItemStack backSlotStack = playerEntity.getInventory().getStack(41);
 
             if (!backSlotStack.isEmpty()) {
-                int x = drawContext.getScaledWindowWidth() / 2 + xOffset + 97;  // Use configurable X position
-                int y = drawContext.getScaledWindowHeight() - yOffset - 4;    // Use configurable Y position
+                final int x = getX(drawContext);
+
+                int y = drawContext.getScaledWindowHeight() - yOffset - 4; // Y position remains the same
 
                 // Draw the backslot item
                 RenderSystem.enableBlend();
@@ -90,6 +93,19 @@ public class BackslotHudOverlay {
                 renderHotbarItem(drawContext, MinecraftClient.getInstance(), x + 4, y - 15, playerEntity, backSlotStack);
             }
         }
+    }
+
+    private static int getX(DrawContext drawContext) {
+        boolean isLeftHanded = MinecraftClient.getInstance().options.getMainArm().getValue().equals(Arm.LEFT);
+
+        // Calculate positions based on hand preference
+        int x;
+        if (isLeftHanded) {
+            x = drawContext.getScaledWindowWidth() / 2 - xOffset - 120; // Position on the left of the hotbar
+        } else {
+            x = drawContext.getScaledWindowWidth() / 2 + xOffset + 97;  // Position on the right of the hotbar
+        }
+        return x;
     }
 
     private static void renderHotbarItem(DrawContext context, MinecraftClient client, int x, int y, PlayerEntity player, ItemStack stack) {

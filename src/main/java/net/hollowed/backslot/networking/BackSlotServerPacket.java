@@ -28,7 +28,7 @@ public class BackSlotServerPacket {
             } else if (backStack.getItem() instanceof SwordItem) {
                 player.getWorld().playSound(null, player.getBlockPos(), ModSounds.SWORD_UNSHEATH, SoundCategory.PLAYERS, 1F, 1.0F);
             }
-            player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 1F, 1F);
+
 
             if (!handStack.isEmpty()) {
                 player.setStackInHand(Hand.MAIN_HAND, backStack.copy());
@@ -44,7 +44,7 @@ public class BackSlotServerPacket {
             }
 
             if (offhandStack != ItemStack.EMPTY || handStack != ItemStack.EMPTY) {
-                player.getWorld().playSoundFromEntity(player, player, SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 1F, 1F);
+                player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 1F, 1F);
             }
 
             // Sync the player's inventory back to the client
