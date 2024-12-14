@@ -30,7 +30,7 @@ public class GameRendererMixin {
 			at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/util/hit/HitResult;getPos()Lnet/minecraft/util/math/Vec3d;"),
 			ordinal = 0
 	)
-	private HitResult cacheReach(HitResult hitResult, Entity camera, double blockInteractionRange, double entityInteractionRange, float tickDelta) {
+	private HitResult getReach(HitResult hitResult, Entity camera, double blockInteractionRange, double entityInteractionRange, float tickDelta) {
 		if (hitResult.getType() == HitResult.Type.BLOCK && hitResult instanceof BlockHitResult blockHit) {
 			BlockPos blockPos = blockHit.getBlockPos();
             assert MinecraftClient.getInstance().world != null;
@@ -47,7 +47,7 @@ public class GameRendererMixin {
 			method = "findCrosshairTarget",
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/util/hit/HitResult;getType()Lnet/minecraft/util/hit/HitResult$Type;")
 	)
-	private HitResult treatTransparentAsMissed(HitResult instance) {
+	private HitResult transparentAsMissed(HitResult instance) {
 		return validBlock
 				? BlockHitResult.createMissed(instance.getPos(), Direction.EAST, BlockPos.ofFloored(instance.getPos()))
 				: instance;
@@ -58,7 +58,7 @@ public class GameRendererMixin {
 			at = @At("RETURN"),
 			ordinal = 0
 	)
-	private EntityHitResult checkEntityValid(EntityHitResult hitResult, Entity camera, double blockInteractionRange, double entityInteractionRange, float tickDelta) {
+	private EntityHitResult iWonderIfThisEntityIsValid(EntityHitResult hitResult, Entity camera, double blockInteractionRange, double entityInteractionRange, float tickDelta) {
 		if (hitResult != null) {
 			Entity hitEntity = hitResult.getEntity();
 			Vec3d cameraPos = camera.getPos();
