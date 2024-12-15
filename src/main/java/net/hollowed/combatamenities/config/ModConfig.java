@@ -22,6 +22,7 @@ public class ModConfig implements ConfigData {
     public boolean riptideFix = true;
     public boolean throwableFirecharge = true;
     public boolean shieldTweaks = true;
+    public int shieldParryTime = 6;
     public boolean enderPearlTweaks = true;
     public boolean bowTweaks = true;
 }

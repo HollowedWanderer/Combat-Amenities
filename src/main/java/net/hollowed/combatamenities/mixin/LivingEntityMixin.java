@@ -31,7 +31,7 @@ public abstract class LivingEntityMixin {
 
         if (CombatAmenities.CONFIG.shieldTweaks) {
             // If the shield was raised for 10 ticks or fewer (0.5 seconds at 20 ticks per second)
-            if (self.getItemUseTime() <= 6 && self.getItemUseTime() > 0 && self.getActiveItem().getItem() instanceof ShieldItem) {
+            if (self.getItemUseTime() <= CombatAmenities.CONFIG.shieldParryTime && self.getItemUseTime() > 0 && self.getActiveItem().getItem() instanceof ShieldItem) {
                 // Check if the attack is from the front
                 Vec3d attackDirection = source.getPosition() != null ? source.getPosition().subtract(self.getPos()).normalize() : Vec3d.ZERO;
                 Vec3d lookDirection = self.getRotationVec(1.0F).normalize();
