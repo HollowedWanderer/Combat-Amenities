@@ -3,30 +3,31 @@
 	"id": "combatamenities",
 	"version": "2.0.0-1.21.4",
 	"name": "Combat Amenities",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "A mod all about tweaking little features related to combat and some visual changes",
 	"authors": [
-		"Hollowed"
+		"Hollowed",
+		"Mercury"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/HollowedWanderer/Combat-Amenities",
+		"issues": "https://github.com/HollowedWanderer/Combat-Amenities/issues"
 	},
-	"license": "ARR",
+	"license": "ARR - See GitHub",
 	"icon": "assets/combatamenities/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"net.hollowed.backslot.CombatAmenities"
+			"net.hollowed.combatamenities.CombatAmenities"
 		],
 		"client": [
-			"net.hollowed.backslot.CombatAmenitiesClient"
+			"net.hollowed.combatamenities.CombatAmenitiesClient"
 		],
 		"modmenu": [
-			"net.hollowed.backslot.config.ModMenu"
+			"net.hollowed.combatamenities.config.ModMenu"
 		]
 	},
 	"mixins": [
-		"backslot.mixins.json"
+		"combatamenities.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.16.9",
