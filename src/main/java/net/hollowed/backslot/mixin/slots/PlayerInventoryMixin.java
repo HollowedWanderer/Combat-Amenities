@@ -45,10 +45,10 @@ public abstract class PlayerInventoryMixin implements Inventory {
     @Inject(method = "writeNbt", at = @At("TAIL"))
     public void writeNbtMixin(NbtList tag, CallbackInfoReturnable<NbtList> info) {
         // Check if the custom slot is not empty before saving
-        if (!this.extraSlot.get(0).isEmpty()) {
+        if (!this.extraSlot.getFirst().isEmpty()) {
             NbtCompound compoundTag = new NbtCompound();
             compoundTag.putByte("Slot", (byte) (110));  // Custom slot index
-            tag.add(this.extraSlot.get(0).toNbt(this.player.getRegistryManager(), compoundTag));
+            tag.add(this.extraSlot.getFirst().toNbt(this.player.getRegistryManager(), compoundTag));
         }
     }
 
@@ -78,7 +78,7 @@ public abstract class PlayerInventoryMixin implements Inventory {
     // Update the empty state to include the custom slot
     @Inject(method = "isEmpty", at = @At("TAIL"), cancellable = true)
     public void isEmptyMixin(CallbackInfoReturnable<Boolean> info) {
-        if (!this.extraSlot.get(0).isEmpty()) {
+        if (!this.extraSlot.getFirst().isEmpty()) {
             info.setReturnValue(false);  // If the custom slot has items, it's not empty
         }
     }

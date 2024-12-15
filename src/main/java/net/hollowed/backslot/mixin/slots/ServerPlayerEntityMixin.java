@@ -1,7 +1,7 @@
 package net.hollowed.backslot.mixin.slots;
 
 import com.mojang.authlib.GameProfile;
-import net.hollowed.backslot.Backslot;
+import net.hollowed.backslot.CombatAmenities;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
@@ -40,7 +40,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
     @Inject(method = "copyFrom", at = @At("TAIL"))
     private void copyReservedSlot(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo ci) {
-        if (this.getServerWorld().getGameRules().getBoolean(Backslot.KEEP_BACK_SLOT_ITEM)) {
+        if (this.getServerWorld().getGameRules().getBoolean(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
             ServerPlayerEntityMixin oldMixin = (ServerPlayerEntityMixin) (Object) oldPlayer;
             assert oldMixin != null;
             this.reservedSlotInventory.setStack(0, oldMixin.reservedSlotInventory.getStack(0));
@@ -50,7 +50,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     @Inject(method = "onDeath", at = @At("HEAD"))
     private void storeReservedSlot(DamageSource source, CallbackInfo ci) {
         ItemStack slot41Item = this.getInventory().getStack(RESERVED_SLOT_INDEX);
-        if (!slot41Item.isEmpty() && this.getServerWorld().getGameRules().getBoolean(Backslot.KEEP_BACK_SLOT_ITEM)) {
+        if (!slot41Item.isEmpty() && this.getServerWorld().getGameRules().getBoolean(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
             this.getInventory().setStack(RESERVED_SLOT_INDEX, ItemStack.EMPTY);
             reservedSlotInventory.setStack(0, slot41Item.copy());
         }
@@ -58,7 +58,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
     @Inject(method = "onSpawn", at = @At("TAIL"))
     private void restoreReservedSlot(CallbackInfo ci) {
-        if (!reservedSlotInventory.getStack(0).isEmpty() && this.getServerWorld().getGameRules().getBoolean(Backslot.KEEP_BACK_SLOT_ITEM)) {
+        if (!reservedSlotInventory.getStack(0).isEmpty() && this.getServerWorld().getGameRules().getBoolean(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
             this.getInventory().setStack(RESERVED_SLOT_INDEX, reservedSlotInventory.getStack(0).copy());
             reservedSlotInventory.clear();
         }

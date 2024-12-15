@@ -19,7 +19,7 @@ public class PlayerEntityRendererMixin {
     }
 
     @Inject(method = "createRenderState()Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;", at = @At("RETURN"), cancellable = true)
-    private void setPlayerEntityInRenderState(CallbackInfoReturnable<PlayerEntityRenderState> cir) {
+    private void setRenderState(CallbackInfoReturnable<PlayerEntityRenderState> cir) {
         cir.setReturnValue(new ExtendedPlayerEntityRenderState());
     }
 }

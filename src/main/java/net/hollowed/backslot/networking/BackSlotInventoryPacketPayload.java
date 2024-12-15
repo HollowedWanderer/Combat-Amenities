@@ -1,16 +1,15 @@
 package net.hollowed.backslot.networking;
 
-import net.hollowed.backslot.Backslot;
+import net.hollowed.backslot.CombatAmenities;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 
 public record BackSlotInventoryPacketPayload(ItemStack itemStack, int i) implements CustomPayload {
 
-    public static final Id<BackSlotInventoryPacketPayload> BACKSLOT_INVENTORY_PACKET_ID = new Id<>(Identifier.of(Backslot.MOD_ID, "backslot_inventory_packet"));
+    public static final Id<BackSlotInventoryPacketPayload> BACKSLOT_INVENTORY_PACKET_ID = new Id<>(Identifier.of(CombatAmenities.MOD_ID, "backslot_inventory_packet"));
 
     public static final PacketCodec<RegistryByteBuf, BackSlotInventoryPacketPayload> CODEC = PacketCodec.of(BackSlotInventoryPacketPayload::write, BackSlotInventoryPacketPayload::new);
 

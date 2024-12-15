@@ -1,5 +1,6 @@
 package net.hollowed.backslot.mixin;
 
+import net.hollowed.backslot.CombatAmenities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
@@ -17,21 +18,25 @@ public abstract class EnderPearlEntityMixin {
 
     @Inject(method = "onCollision", at = @At("HEAD"))
     private void getHealthStart(CallbackInfo ci) {
-        EnderPearlEntity self = (EnderPearlEntity) (Object) this;
-        Entity owner = self.getOwner();
-        if (owner instanceof LivingEntity livingEntity) {
-            this.health = livingEntity.getHealth();
+        if (CombatAmenities.CONFIG.enderPearlTweaks) {
+            EnderPearlEntity self = (EnderPearlEntity) (Object) this;
+            Entity owner = self.getOwner();
+            if (owner instanceof LivingEntity livingEntity) {
+                this.health = livingEntity.getHealth();
+            }
         }
     }
 
     @Inject(method = "onCollision", at = @At("TAIL"))
     private void getHealthEnd(CallbackInfo ci) {
-        EnderPearlEntity self = (EnderPearlEntity) (Object) this;
-        Entity owner = self.getOwner();
-        if (owner instanceof LivingEntity livingEntity) {
-            this.health = this.health - livingEntity.getHealth();
-            if (this.health > 0) {
-                ((LivingEntity) owner).heal(this.health);
+        if (CombatAmenities.CONFIG.enderPearlTweaks) {
+            EnderPearlEntity self = (EnderPearlEntity) (Object) this;
+            Entity owner = self.getOwner();
+            if (owner instanceof LivingEntity livingEntity) {
+                this.health = this.health - livingEntity.getHealth();
+                if (this.health > 0) {
+                    ((LivingEntity) owner).heal(this.health);
+                }
             }
         }
     }

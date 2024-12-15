@@ -16,10 +16,13 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"net.hollowed.backslot.Backslot"
+			"net.hollowed.backslot.CombatAmenities"
 		],
 		"client": [
-			"net.hollowed.backslot.BackslotClient"
+			"net.hollowed.backslot.CombatAmenitiesClient"
+		],
+		"modmenu": [
+			"net.hollowed.backslot.config.ModMenu"
 		]
 	},
 	"mixins": [

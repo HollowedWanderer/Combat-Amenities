@@ -6,7 +6,7 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
-import static net.hollowed.backslot.Backslot.MOD_ID;
+import static net.hollowed.backslot.CombatAmenities.MOD_ID;
 
 public record BackslotPacketPayload(BlockPos blockPos) implements CustomPayload {
     public static final Identifier BACKSLOT_PACKET_ID = Identifier.of(MOD_ID, "backslot_packet");

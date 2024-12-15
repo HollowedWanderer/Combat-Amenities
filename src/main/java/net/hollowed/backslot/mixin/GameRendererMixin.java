@@ -1,5 +1,6 @@
 package net.hollowed.backslot.mixin;
 
+import net.hollowed.backslot.CombatAmenities;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.hit.EntityHitResult;
@@ -31,7 +32,7 @@ public class GameRendererMixin {
 			ordinal = 0
 	)
 	private HitResult getReach(HitResult hitResult, Entity camera, double blockInteractionRange, double entityInteractionRange, float tickDelta) {
-		if (hitResult.getType() == HitResult.Type.BLOCK && hitResult instanceof BlockHitResult blockHit) {
+		if (hitResult.getType() == HitResult.Type.BLOCK && hitResult instanceof BlockHitResult blockHit && CombatAmenities.CONFIG.swingThrough) {
 			BlockPos blockPos = blockHit.getBlockPos();
             assert MinecraftClient.getInstance().world != null;
             validBlock = MinecraftClient.getInstance().world.getBlockState(blockPos)
@@ -59,7 +60,7 @@ public class GameRendererMixin {
 			ordinal = 0
 	)
 	private EntityHitResult iWonderIfThisEntityIsValid(EntityHitResult hitResult, Entity camera, double blockInteractionRange, double entityInteractionRange, float tickDelta) {
-		if (hitResult != null) {
+		if (hitResult != null && CombatAmenities.CONFIG.swingThrough) {
 			Entity hitEntity = hitResult.getEntity();
 			Vec3d cameraPos = camera.getPos();
 			validEntity = hitEntity instanceof LivingEntity &&

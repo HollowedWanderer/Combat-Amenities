@@ -43,7 +43,7 @@ public class BackSlotServerPacket {
                 }
             }
 
-            if (offhandStack != ItemStack.EMPTY || handStack != ItemStack.EMPTY) {
+            if (!offhandStack.isEmpty() || !handStack.isEmpty() || !backStack.isEmpty()) {
                 player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 1F, 1F);
             }
 

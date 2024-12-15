@@ -2,7 +2,7 @@ package net.hollowed.backslot.renderer;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.hollowed.backslot.Backslot;
+import net.hollowed.backslot.CombatAmenities;
 import net.hollowed.backslot.client.ExtendedPlayerEntityRenderState;
 import net.hollowed.backslot.util.TransformData;
 import net.hollowed.backslot.util.TransformResourceReloadListener;
@@ -51,7 +51,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			// Retrieve the back slot stack from the correct player's inventory
 			ItemStack backSlotStack = playerEntity.getInventory().getStack(41);
 
-			if (backSlotStack.hasEnchantments() && Math.random() > 0.95) {
+			if (backSlotStack.hasEnchantments() && Math.random() > 0.95 && CombatAmenities.CONFIG.backslotParticles) {
 				for (int i = 0; i < 5; i++) { // Increase the number for more particles
 					double offsetX = (Math.random() - 0.5); // Random value between -1 and 1
 					double offsetY = Math.random(); // Random value between 0 and 1.5 for height variation
@@ -95,9 +95,9 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
 				// Apply dynamic movement and item-specific adjustments
 				if (playerEntity instanceof OtherClientPlayerEntity) {
-					applyDynamicMovement(matrixStack, (OtherClientPlayerEntity) playerEntity, item);
+					applyDynamicMovement(matrixStack, playerEntity, item);
 				} else if (playerEntity instanceof ClientPlayerEntity) {
-					applyDynamicMovement(matrixStack, (ClientPlayerEntity) playerEntity, item);
+					applyDynamicMovement(matrixStack, playerEntity, item);
 				}
 				setAngles(matrixStack, armedEntityRenderState, backSlotStack.getItem());
 				applyItemSpecificAdjustments(matrixStack, armedEntityRenderState, item);
@@ -110,19 +110,18 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 		}
 	}
 
-
 	// Helper method for item-specific transformations
 	private void applyItemSpecificAdjustments(MatrixStack matrixStack, PlayerEntityRenderState armedEntityRenderState, Item item) {
 		if (item instanceof TridentItem) {
-			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(52.0F));
-			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(55.0F));
-			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-25.0F));
-			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
-			matrixStack.translate(-0.3D, 0.2D, 0.0D);
+			matrixStack.translate(0.0F, 0.0F, -0.15F);
 			if (!armedEntityRenderState.equippedChestStack.isEmpty()) {
-				matrixStack.translate(0.05F, 0.0F, 0.0D);
+				matrixStack.translate(0.0F, 0.0F, 0.05F);
 			}
+			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
+			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(45.0F));
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0F));
 			transformationMode = ModelTransformationMode.FIRST_PERSON_RIGHT_HAND;
+			matrixStack.scale(1.25F, 1.25F, 1.25F);
 		} else if (item instanceof FishingRodItem || item instanceof OnAStickItem) {
 			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
 			transformationMode = ModelTransformationMode.FIXED;

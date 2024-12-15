@@ -1,6 +1,5 @@
 package net.hollowed.backslot.mixin;
 
-import net.hollowed.backslot.Backslot;
 import net.hollowed.backslot.util.TransformData;
 import net.hollowed.backslot.util.TransformResourceReloadListener;
 import net.minecraft.block.BannerBlock;

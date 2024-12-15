@@ -1,12 +1,11 @@
 package net.hollowed.backslot.mixin;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.hollowed.backslot.Backslot;
+import net.hollowed.backslot.CombatAmenities;
 import net.hollowed.backslot.networking.BackSlotClientPacketPayload;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -14,7 +13,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -123,28 +121,32 @@ public class EntityTrackerEntryMixin {
     // Play landing sound with volume based on vertical velocity
     @Unique
     private void playLandingSound(PlayerEntity playerEntity, double verticalVelocity) {
-        // Calculate volume based on velocity
-        float volume = MathHelper.clamp((float) (-verticalVelocity / 2.0), 0.1F, 1.0F);
+        if (CombatAmenities.CONFIG.backslotSounds) {
+            // Calculate volume based on velocity
+            float volume = MathHelper.clamp((float) (-verticalVelocity / 2.0), 0.1F, 1.0F);
 
-        // Play the sound with the calculated volume
-        playerEntity.getWorld().playSound(null, playerEntity.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND.value(), SoundCategory.PLAYERS, volume, 1.0F);
+            // Play the sound with the calculated volume
+            playerEntity.getWorld().playSound(null, playerEntity.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND.value(), SoundCategory.PLAYERS, volume, 1.0F);
+        }
     }
 
     // Play walking sound
     @Unique
     private void playWalkingSound(PlayerEntity playerEntity, float horizontalVelocity) {
-        long currentTick = playerEntity.age;
+        if (CombatAmenities.CONFIG.backslotSounds) {
+            long currentTick = playerEntity.age;
 
-        if (playerEntity.isOnGround() && horizontalVelocity > 0.1F) {
-            // Calculate interval dynamically based on velocity
-            int baseInterval = 20; // Base interval in ticks for walking
-            int minInterval = 5; // Minimum interval for faster movement
-            int dynamicInterval = MathHelper.clamp((int) (baseInterval / (horizontalVelocity * 15.0F)), minInterval, baseInterval);
+            if (playerEntity.isOnGround() && horizontalVelocity > 0.1F) {
+                // Calculate interval dynamically based on velocity
+                int baseInterval = 20; // Base interval in ticks for walking
+                int minInterval = 5; // Minimum interval for faster movement
+                int dynamicInterval = MathHelper.clamp((int) (baseInterval / (horizontalVelocity * 15.0F)), minInterval, baseInterval);
 
-            // Play sound if the calculated interval has elapsed
-            if ((currentTick - lastWalkingSoundTick) >= dynamicInterval) {
-                playerEntity.getWorld().playSound(null, playerEntity.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 0.15F, 1.2F);
-                lastWalkingSoundTick = currentTick;
+                // Play sound if the calculated interval has elapsed
+                if ((currentTick - lastWalkingSoundTick) >= dynamicInterval) {
+                    playerEntity.getWorld().playSound(null, playerEntity.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 0.15F, 1.2F);
+                    lastWalkingSoundTick = currentTick;
+                }
             }
         }
     }

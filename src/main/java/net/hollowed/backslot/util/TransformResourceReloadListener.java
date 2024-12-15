@@ -3,7 +3,7 @@ package net.hollowed.backslot.util;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.hollowed.backslot.Backslot;
+import net.hollowed.backslot.CombatAmenities;
 import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -23,7 +23,7 @@ public class TransformResourceReloadListener implements SimpleSynchronousResourc
 
     @Override
     public Identifier getFabricId() {
-        return Identifier.of(Backslot.MOD_ID, "backslot_transforms");
+        return Identifier.of(CombatAmenities.MOD_ID, "backslot_transforms");
     }
 
     @Override
@@ -36,8 +36,8 @@ public class TransformResourceReloadListener implements SimpleSynchronousResourc
                 var json = JsonHelper.deserialize(new InputStreamReader(stream, StandardCharsets.UTF_8));
                 DataResult<TransformData> result = TransformData.CODEC.parse(JsonOps.INSTANCE, json);
 
-                result.resultOrPartial(Backslot.LOGGER::error).ifPresent(data -> {
-                    Backslot.LOGGER.info("Loaded transform for: {}", data.item());
+                result.resultOrPartial(CombatAmenities.LOGGER::error).ifPresent(data -> {
+                    CombatAmenities.LOGGER.info("Loaded transform for: {}", data.item());
                     if(Objects.equals(data.item(), Identifier.of("backslot", "default"))) {
                         defaultTransforms = data;
                     } else {
@@ -45,11 +45,11 @@ public class TransformResourceReloadListener implements SimpleSynchronousResourc
                     }
                 });
             } catch (Exception e) {
-                Backslot.LOGGER.error("Failed to load transform for {}: {}", id, e.getMessage());
+                CombatAmenities.LOGGER.error("Failed to load transform for {}: {}", id, e.getMessage());
             }
         });
 
-        Backslot.LOGGER.info("Loaded transforms: {}", transforms);
+        CombatAmenities.LOGGER.info("Loaded transforms: {}", transforms);
     }
 
     public static TransformData getTransform(Identifier itemId) {

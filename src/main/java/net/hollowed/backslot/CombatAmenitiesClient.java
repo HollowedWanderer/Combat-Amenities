@@ -4,7 +4,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.hollowed.backslot.client.BackslotHudOverlay;
 import net.hollowed.backslot.networking.BackSlotClientPacket;
 
-public class BackslotClient implements ClientModInitializer {
+public class CombatAmenitiesClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ModKeyBindings.initialize();

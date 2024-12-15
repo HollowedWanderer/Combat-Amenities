@@ -1,20 +1,24 @@
 package net.hollowed.backslot;
 
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.hollowed.backslot.config.ModConfig;
 import net.hollowed.backslot.networking.*;
 import net.hollowed.backslot.util.TransformResourceReloadListener;
-import net.minecraft.item.EnderPearlItem;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Backslot implements ModInitializer {
+public class CombatAmenities implements ModInitializer {
 	public static final String MOD_ID = "combatamenities";
+
+	public static ModConfig CONFIG = new ModConfig();
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -38,6 +42,10 @@ public class Backslot implements ModInitializer {
 		BackSlotInventoryPacketReceiver.registerServerPacket();
         BackSlotServerPacket.registerServerPacket();
 		BackSlotCreativeClientPacket.registerClientPacket();
+
+		// Config
+		AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);
+		CONFIG = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
 
 		LOGGER.info("It is time for backing and slotting");
 	}
