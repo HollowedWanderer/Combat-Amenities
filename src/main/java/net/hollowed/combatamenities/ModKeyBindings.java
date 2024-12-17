@@ -3,6 +3,7 @@ package net.hollowed.combatamenities;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.hollowed.combatamenities.mixin.slots.HandledScreenAccessor;
 import net.hollowed.combatamenities.networking.BackSlotInventoryPacketPayload;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
@@ -70,88 +71,75 @@ public class ModKeyBindings {
         // Check if the current screen is an instance of CreativeInventoryScreen
         if (client.currentScreen instanceof CreativeInventoryScreen creativeScreen) {
 
-
             if (!creativeScreen.isInventoryTabSelected()) {
                 return; // If not in the "Inventory" tab, do nothing
             }
 
             // Ensure that the cooldown has passed before proceeding
-            long currentTime = System.currentTimeMillis();  // Get current time in milliseconds
+            long currentTime = System.currentTimeMillis(); // Get current time in milliseconds
 
             if (currentTime - lastSwapTime < COOLDOWN_TIME) {
-                return;  // Do nothing if the cooldown has not passed
+                return; // Do nothing if the cooldown has not passed
             }
 
+            double scaleFactor = client.getWindow().getScaleFactor(); // Get scale factor of the window
+            double mouseX = client.mouse.getX() / scaleFactor; // Apply scaling
+            double mouseY = client.mouse.getY() / scaleFactor; // Apply scaling
+
             try {
-                // Use reflection to access the private getSlotAt method from HandledScreen
-                Method getSlotAtMethod = HandledScreen.class.getDeclaredMethod("getSlotAt", double.class, double.class);
-                getSlotAtMethod.setAccessible(true);  // Make it accessible
+                HandledScreenAccessor accessor = (HandledScreenAccessor) creativeScreen;
 
-                double scaleFactor = client.getWindow().getScaleFactor();  // Get scale factor of the window
-                double mouseX = client.mouse.getX() / scaleFactor;  // Apply scaling
-                double mouseY = client.mouse.getY() / scaleFactor;  // Apply scaling
-
-                // Call the method and cast the result
-                Slot hoveredSlot = (Slot) getSlotAtMethod.invoke(creativeScreen, mouseX, mouseY);
-
-                System.out.println(hoveredSlot);
-
+                Slot hoveredSlot = accessor.invokeGetSlotAt(mouseX, mouseY);
                 if (hoveredSlot == null) {
-                    return; // No slot is hovered, do nothing
+                    System.out.println("No slot hovered.");
+                    return;
                 }
 
-                ItemStack hoveredSlotStack = hoveredSlot.getStack();  // Get the stack in the hovered slot
+                ItemStack hoveredSlotStack = hoveredSlot.getStack();
+                System.out.println("Hovered slot: " + hoveredSlot.getIndex() + ", Stack: " + hoveredSlotStack);
 
-                // Send the hovered stack and backslot stack to the server for processing
+                // Send packet
                 BackSlotInventoryPacketPayload payload = new BackSlotInventoryPacketPayload(hoveredSlotStack, hoveredSlot.getIndex());
                 ClientPlayNetworking.send(payload);
 
-                // Update the last swap time to the current time
-                lastSwapTime = currentTime;
-
+                lastSwapTime = System.currentTimeMillis();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return;
-        }
+        } else if (client.currentScreen instanceof InventoryScreen inventoryScreen) {
 
-        if (client.currentScreen instanceof InventoryScreen inventoryScreen) {
-
-            long currentTime = System.currentTimeMillis();  // Get current time in milliseconds
+            long currentTime = System.currentTimeMillis(); // Get current time in milliseconds
 
             // Check if the cooldown period has passed
             if (currentTime - lastSwapTime < COOLDOWN_TIME) {
-                return;  // Do nothing if the cooldown has not passed
+                return; // Do nothing if the cooldown has not passed
             }
 
+            double scaleFactor = client.getWindow().getScaleFactor(); // Get scale factor of the window
+            double mouseX = client.mouse.getX() / scaleFactor; // Apply scaling
+            double mouseY = client.mouse.getY() / scaleFactor; // Apply scaling
+
             try {
-                // Use reflection to access the private getSlotAt method
-                Method getSlotAtMethod = HandledScreen.class.getDeclaredMethod("getSlotAt", double.class, double.class);
-                getSlotAtMethod.setAccessible(true);  // Make it accessible
+                HandledScreenAccessor accessor = (HandledScreenAccessor) inventoryScreen;
 
-                double scaleFactor = client.getWindow().getScaleFactor();  // Get scale factor of the window
-                double mouseX = client.mouse.getX() / scaleFactor;  // Apply scaling
-                double mouseY = client.mouse.getY() / scaleFactor;  // Apply scaling
-
-                // Call the method and cast the result
-                Slot hoveredSlot = (Slot) getSlotAtMethod.invoke(inventoryScreen, mouseX, mouseY);
-
+                Slot hoveredSlot = accessor.invokeGetSlotAt(mouseX, mouseY);
                 if (hoveredSlot == null) {
-                    return; // No slot is hovered, do nothing
+                    System.out.println("No slot hovered.");
+                    return;
                 }
 
-                ItemStack hoveredSlotStack = hoveredSlot.getStack();  // Get the stack in the hovered slot
+                ItemStack hoveredSlotStack = hoveredSlot.getStack();
+                System.out.println("Hovered slot: " + hoveredSlot.getIndex() + ", Stack: " + hoveredSlotStack);
 
-                // Send the hovered stack and backslot stack to the server for processing
+                // Send packet
                 BackSlotInventoryPacketPayload payload = new BackSlotInventoryPacketPayload(hoveredSlotStack, hoveredSlot.getIndex());
                 ClientPlayNetworking.send(payload);
 
-                // Update the last swap time to the current time
-                lastSwapTime = currentTime;
-
+                lastSwapTime = System.currentTimeMillis();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+
 }

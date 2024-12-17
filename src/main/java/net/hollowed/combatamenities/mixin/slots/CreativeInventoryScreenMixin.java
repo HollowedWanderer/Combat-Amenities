@@ -38,24 +38,15 @@ public abstract class CreativeInventoryScreenMixin extends HandledScreen<Creativ
             if (i == 46) {  // Modify slot 46
                 Slot slot = this.handler.slots.get(i);
 
-                try {
-                    // Use reflection to modify the final fields 'x' and 'y'
-                    Field xField = Slot.class.getDeclaredField("x");
-                    Field yField = Slot.class.getDeclaredField("y");
-
-                    xField.setAccessible(true);
-                    yField.setAccessible(true);
-
-                    // Modify the x and y coordinates
-                    xField.setInt(slot, 127);
-                    yField.setInt(slot, 20);
-
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    e.printStackTrace(); // Handle exceptions
+                // Use the accessor to modify the final x and y fields
+                if (slot instanceof SlotAccessor accessor) {
+                    accessor.setX(127);  // Update X position
+                    accessor.setY(20);   // Update Y position
                 }
             }
         }
     }
+
 
     @Inject(method = "onMouseClick", at = @At("TAIL"))
     private void onSlotClickMixin(Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo ci) {

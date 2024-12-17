@@ -15,6 +15,7 @@
     "TridentEntityMixin",
     "slots.PlayerInventoryMixin",
     "slots.ServerPlayerEntityMixin",
+    "slots.SlotAccessor",
     "slots.SlotsMixin"
   ],
   "injectors": {
@@ -31,6 +32,7 @@
     "SpectralArrowEntityRendererMixin",
     "StuckObjectsFeatureRendererMixin",
     "TridentEntityRendererMixin",
-    "slots.CreativeInventoryScreenMixin"
+    "slots.CreativeInventoryScreenMixin",
+    "slots.HandledScreenAccessor"
   ]
 }

@@ -30,7 +30,7 @@ public abstract class PlayerInventoryMixin implements Inventory {
     private DefaultedList<ItemStack> extraSlot;
 
     // Constructor for mixin
-    public PlayerInventoryMixin(PlayerEntity player) {}
+    public PlayerInventoryMixin() {}
 
     // Initialize the custom slot and update combined inventory
     @Inject(method = "<init>*", at = @At("RETURN"))
