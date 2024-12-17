@@ -11,6 +11,7 @@
     "ItemStackMixin",
     "LivingEntityMixin",
     "MinecraftClientMixin",
+    "ProjectileEntityMixin",
     "ServerPlayerEntityMixin",
     "TridentEntityMixin",
     "slots.PlayerInventoryMixin",

@@ -8,6 +8,7 @@ import net.hollowed.combatamenities.util.TransformData;
 import net.hollowed.combatamenities.util.TransformResourceReloadListener;
 import net.minecraft.block.BannerBlock;
 import net.minecraft.block.SkullBlock;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.OtherClientPlayerEntity;
@@ -51,7 +52,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			// Retrieve the back slot stack from the correct player's inventory
 			ItemStack backSlotStack = playerEntity.getInventory().getStack(41);
 
-			if (backSlotStack.hasEnchantments() && Math.random() > 0.95 && CombatAmenities.CONFIG.backslotParticles) {
+			if (backSlotStack.hasEnchantments() && Math.random() > (CombatAmenities.CONFIG.enchantmentParticleChance / 100.0F) && CombatAmenities.CONFIG.backslotParticles && !MinecraftClient.getInstance().isPaused()) {
 				for (int i = 0; i < 5; i++) { // Increase the number for more particles
 					double offsetX = (Math.random() - 0.5); // Random value between -1 and 1
 					double offsetY = Math.random(); // Random value between 0 and 1.5 for height variation

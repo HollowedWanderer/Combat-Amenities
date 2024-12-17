@@ -13,6 +13,7 @@ public class ModConfig implements ConfigData {
     public int backslotY = 0;
 
     public boolean backslotParticles = true;
+    public int enchantmentParticleChance = 90;
     public boolean backslotSounds = true;
 
     public boolean removeDurability = true;

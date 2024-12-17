@@ -69,6 +69,8 @@ public abstract class LivingEntityMixin {
                             }
                         } else if (source.getSource() instanceof ProjectileEntity entity) {
                             entity.setVelocity(entity.getVelocity().multiply(10F));
+                            entity.velocityModified = true;
+                            entity.velocityDirty = true;
                         }
                     }
 
@@ -117,6 +119,8 @@ public abstract class LivingEntityMixin {
                     if (source.getSource() instanceof LivingEntity attacker) {
                         Vec3d knockbackDirection = attacker.getPos().subtract(player.getPos()).normalize();
                         attacker.takeKnockback(0.25, -knockbackDirection.x, -knockbackDirection.z);
+                        attacker.velocityModified = true;
+                        attacker.velocityDirty = true;
                     }
                 }
 

@@ -8,6 +8,7 @@
   "text.autoconfig.combat_amenities.option.backslotX": "Back Slot HUD X Offset",
   "text.autoconfig.combat_amenities.option.backslotY": "Back Slot HUD Y Offset",
   "text.autoconfig.combat_amenities.option.backslotParticles": "Back Slot Item Particles",
+  "text.autoconfig.combat_amenities.option.enchantmentParticleChance": "Back Slot Enchantment Particle Chance",
   "text.autoconfig.combat_amenities.option.backslotSounds": "Back Slot Item Sounds",
   "text.autoconfig.combat_amenities.option.removeDurability": "Remove Durability",
   "text.autoconfig.combat_amenities.option.itemArrows": "Arrows Render as Items",

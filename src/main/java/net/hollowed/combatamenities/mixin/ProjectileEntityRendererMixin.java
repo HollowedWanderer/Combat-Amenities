@@ -14,9 +14,11 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
+import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.*;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,23 +36,26 @@ public abstract class ProjectileEntityRendererMixin<T extends PersistentProjecti
     @Inject(method = "updateRenderState(Lnet/minecraft/entity/projectile/PersistentProjectileEntity;Lnet/minecraft/client/render/entity/state/ProjectileEntityRenderState;F)V",
             at = @At("HEAD"))
     public void updateRenderState(T persistentProjectileEntity, ProjectileEntityRenderState projectileEntityRenderState, float f, CallbackInfo ci) {
-        ExtendedArrowEntityRenderState extendedArrowEntityRenderState = (ExtendedArrowEntityRenderState) projectileEntityRenderState;
 
-        ItemStack stack = persistentProjectileEntity.getItemStack();
-        Vec3d look = new Vec3d(0, 0, 0);
+        if (CombatAmenities.CONFIG.itemArrows) {
+            ExtendedArrowEntityRenderState extendedArrowEntityRenderState = (ExtendedArrowEntityRenderState) projectileEntityRenderState;
 
-        // Default item stack to what the entity provides
-        if (persistentProjectileEntity instanceof ArrowEntity arrowEntity) {
-            if (arrowEntity.getColor() != -1) {
-                stack = new ItemStack(Items.TIPPED_ARROW);
-                stack.set(DataComponentTypes.POTION_CONTENTS, new PotionContentsComponent(Optional.empty(), Optional.of(arrowEntity.getColor()), List.of(), Optional.empty()));
+            ItemStack stack = persistentProjectileEntity.getItemStack();
+            Vec3d look = new Vec3d(0, 0, 0);
+
+            // Default item stack to what the entity provides
+            if (persistentProjectileEntity instanceof ArrowEntity arrowEntity) {
+                if (arrowEntity.getColor() != -1) {
+                    stack = new ItemStack(Items.TIPPED_ARROW);
+                    stack.set(DataComponentTypes.POTION_CONTENTS, new PotionContentsComponent(Optional.empty(), Optional.of(arrowEntity.getColor()), List.of(), Optional.empty()));
+                }
+                look = arrowEntity.getRotationVec(0);
             }
-            look = arrowEntity.getRotationVec(0);
-        }
 
-        // Pass the dynamically constructed item stack
-        extendedArrowEntityRenderState.setItemStack(stack);
-        extendedArrowEntityRenderState.setLook(look);
+            // Pass the dynamically constructed item stack
+            extendedArrowEntityRenderState.setItemStack(stack);
+            extendedArrowEntityRenderState.setLook(look);
+        }
     }
 
     @Inject(
