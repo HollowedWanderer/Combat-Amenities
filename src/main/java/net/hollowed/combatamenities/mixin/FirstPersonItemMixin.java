@@ -39,7 +39,7 @@ public class FirstPersonItemMixin {
 
             // Only apply wobble if bow is drawn for more than 60 ticks
             if (useTime > 60) {
-                float wobbleStrength = Math.min((useTime - 60) / 100.0F, 0.5F); // Gradual increase, capped at 0.75F
+                float wobbleStrength = Math.min((useTime - 60) / 100.0F, 0.5F); // Gradual increase, capped at 0.5F
                 float time = player.getWorld().getTime() + tickDelta; // Smooth time using tickDelta
                 float wobbleAmount = (float) Math.sin(time) * 0.1F * wobbleStrength; // Oscillating wobble
                 matrices.translate(0.0F, wobbleAmount, 0.0F); // Apply up and down movement

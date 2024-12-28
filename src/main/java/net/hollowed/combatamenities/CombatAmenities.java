@@ -10,15 +10,39 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.hollowed.combatamenities.config.ModConfig;
 import net.hollowed.combatamenities.networking.*;
 import net.hollowed.combatamenities.util.TransformResourceReloadListener;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.item.ModelTransformationMode;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.entry.RegistryEntryOwner;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Set;
 
 public class CombatAmenities implements ModInitializer {
 	public static final String MOD_ID = "combatamenities";
 
 	public static ModConfig CONFIG = new ModConfig();
+
+	public static RegistryEntryOwner<?> enchantment_owner = null;
+
+	private static RegistryKey<Enchantment> createKey(String id) {
+		return RegistryKey.of(RegistryKeys.ENCHANTMENT, Identifier.of(MOD_ID, id));
+	}
+
+	public static final Set<String> DURABILITY_ENCHANTMENTS = Set.of(
+			"Enchantment Unbreaking",
+			"Enchantment Mending"
+	);
+
+	public static final Set<String> TRIDENT_ENCHANTMENTS = Set.of(
+			"Enchantment Loyalty"
+	);
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.

@@ -53,7 +53,7 @@ public abstract class TridentEntityMixin extends PersistentProjectileEntity {
         ItemStack tridentStack = trident.getItemStack();
 
         // Check if the trident has any enchantments
-        if (EnchantmentHelper.hasEnchantments(tridentStack)) {
+        if (EnchantmentHelper.hasEnchantments(tridentStack) && CombatAmenities.CONFIG.builtInLoyalty) {
             // Access the data tracker and set loyalty to 3
             DataTracker dataTracker = trident.getDataTracker();
             TrackedData<Byte> LOYALTY = TridentEntityMixin.LOYALTY; // Access the LOYALTY data tracker field

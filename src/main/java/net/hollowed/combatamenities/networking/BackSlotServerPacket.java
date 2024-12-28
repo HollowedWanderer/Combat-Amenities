@@ -1,6 +1,7 @@
 package net.hollowed.combatamenities.networking;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.hollowed.combatamenities.CombatAmenities;
 import net.hollowed.combatamenities.ModSounds;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AxeItem;
@@ -24,9 +25,9 @@ public class BackSlotServerPacket {
             ItemStack backStack = player.getInventory().getStack(41);
 
             if (backStack.getItem() instanceof AxeItem) {
-                player.getWorld().playSound(null, player.getBlockPos(), ModSounds.SWORD_UNSHEATH, SoundCategory.PLAYERS, 1F, 0.9F);
+                player.getWorld().playSound(null, player.getBlockPos(), ModSounds.SWORD_UNSHEATH, SoundCategory.PLAYERS, (CombatAmenities.CONFIG.backslotSwapSoundVolume / 100), 0.9F);
             } else if (backStack.getItem() instanceof SwordItem) {
-                player.getWorld().playSound(null, player.getBlockPos(), ModSounds.SWORD_UNSHEATH, SoundCategory.PLAYERS, 1F, 1.0F);
+                player.getWorld().playSound(null, player.getBlockPos(), ModSounds.SWORD_UNSHEATH, SoundCategory.PLAYERS, (CombatAmenities.CONFIG.backslotSwapSoundVolume / 100), 1.0F);
             }
 
 
@@ -44,7 +45,7 @@ public class BackSlotServerPacket {
             }
 
             if (!offhandStack.isEmpty() || !handStack.isEmpty() || !backStack.isEmpty()) {
-                player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 1F, 1F);
+                player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, (CombatAmenities.CONFIG.backslotSwapSoundVolume / 100), 1F);
             }
 
             // Sync the player's inventory back to the client

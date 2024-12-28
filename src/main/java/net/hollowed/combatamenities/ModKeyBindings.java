@@ -91,12 +91,10 @@ public class ModKeyBindings {
 
                 Slot hoveredSlot = accessor.invokeGetSlotAt(mouseX, mouseY);
                 if (hoveredSlot == null) {
-                    System.out.println("No slot hovered.");
                     return;
                 }
 
                 ItemStack hoveredSlotStack = hoveredSlot.getStack();
-                System.out.println("Hovered slot: " + hoveredSlot.getIndex() + ", Stack: " + hoveredSlotStack);
 
                 // Send packet
                 BackSlotInventoryPacketPayload payload = new BackSlotInventoryPacketPayload(hoveredSlotStack, hoveredSlot.getIndex());
@@ -124,12 +122,10 @@ public class ModKeyBindings {
 
                 Slot hoveredSlot = accessor.invokeGetSlotAt(mouseX, mouseY);
                 if (hoveredSlot == null) {
-                    System.out.println("No slot hovered.");
                     return;
                 }
 
                 ItemStack hoveredSlotStack = hoveredSlot.getStack();
-                System.out.println("Hovered slot: " + hoveredSlot.getIndex() + ", Stack: " + hoveredSlotStack);
 
                 // Send packet
                 BackSlotInventoryPacketPayload payload = new BackSlotInventoryPacketPayload(hoveredSlotStack, hoveredSlot.getIndex());

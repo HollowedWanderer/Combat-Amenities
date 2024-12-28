@@ -19,10 +19,12 @@ import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
@@ -52,7 +54,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			// Retrieve the back slot stack from the correct player's inventory
 			ItemStack backSlotStack = playerEntity.getInventory().getStack(41);
 
-			if (backSlotStack.hasEnchantments() && Math.random() > (CombatAmenities.CONFIG.enchantmentParticleChance / 100.0F) && CombatAmenities.CONFIG.backslotParticles && !MinecraftClient.getInstance().isPaused()) {
+			if (backSlotStack.hasEnchantments() && Math.random() > ((100 - CombatAmenities.CONFIG.enchantmentParticleChance) / 100.0F) && CombatAmenities.CONFIG.backslotParticles && !MinecraftClient.getInstance().isPaused()) {
 				for (int i = 0; i < 5; i++) { // Increase the number for more particles
 					double offsetX = (Math.random() - 0.5); // Random value between -1 and 1
 					double offsetY = Math.random(); // Random value between 0 and 1.5 for height variation
@@ -100,8 +102,14 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 				} else if (playerEntity instanceof ClientPlayerEntity) {
 					applyDynamicMovement(matrixStack, playerEntity, item);
 				}
+
+				matrixStack.translate(0.0F, 0.0F, -0.05F);
+				if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
+					matrixStack.translate(0.0F, 0.0F, 0.05F);
+				}
+
 				setAngles(matrixStack, armedEntityRenderState, backSlotStack.getItem());
-				applyItemSpecificAdjustments(matrixStack, armedEntityRenderState, item);
+				applyItemSpecificAdjustments(matrixStack, armedEntityRenderState, item, armedEntityRenderState.mainArm);
 
 				// Render the item
 				heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, false, matrixStack, vertexConsumerProvider, light);
@@ -112,7 +120,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 	}
 
 	// Helper method for item-specific transformations
-	private void applyItemSpecificAdjustments(MatrixStack matrixStack, PlayerEntityRenderState armedEntityRenderState, Item item) {
+	private void applyItemSpecificAdjustments(MatrixStack matrixStack, PlayerEntityRenderState armedEntityRenderState, Item item, Arm arm) {
 		if (item instanceof TridentItem) {
 			matrixStack.translate(0.0F, 0.0F, -0.15F);
 			if (!armedEntityRenderState.equippedChestStack.isEmpty()) {
@@ -144,10 +152,10 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 		} else if (item instanceof ShieldItem) {
 			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
 			matrixStack.scale(1.5F, 1.5F, 1.5F);
-			matrixStack.translate(0F, 0.1F, 0.05f);
+			matrixStack.translate(0F, 0.1F, 0f);
 		} else {
-			if (armedEntityRenderState.equippedChestStack != null) {
-				matrixStack.translate(0.0F, 0.0F, -0.05F);
+			if (arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBackslotDisplay) {
+				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
 			}
 			transformationMode = ModelTransformationMode.FIXED;
 		}

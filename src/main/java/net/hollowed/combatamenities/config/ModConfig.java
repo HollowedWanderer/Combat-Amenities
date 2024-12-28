@@ -13,17 +13,20 @@ public class ModConfig implements ConfigData {
     public int backslotY = 0;
 
     public boolean backslotParticles = true;
-    public int enchantmentParticleChance = 90;
-    public boolean backslotSounds = true;
+    public int enchantmentParticleChance = 3;
+    public int backslotAmbientSoundVolume = 100;
+    public int backslotSwapSoundVolume = 100;
+    public boolean flipBackslotDisplay = false;
 
     public boolean removeDurability = true;
     public boolean itemArrows = false;
     public boolean swingThrough = true;
     public boolean correctTridentReturn = true;
     public boolean riptideFix = true;
+    public boolean builtInLoyalty = true;
     public boolean throwableFirecharge = true;
     public boolean shieldTweaks = true;
-    public int shieldParryTime = 6;
+    public int shieldParryTime = 5;
     public boolean enderPearlTweaks = true;
     public boolean bowTweaks = true;
 }
