@@ -9,8 +9,11 @@
     "EnchantmentMixin",
     "EnderPearlEntityMixin",
     "EnderPearlItemMixin",
+    "EntityMixin",
     "EntityTrackerEntryMixin",
     "FireChargeItemMixin",
+    "ItemGroupMixin",
+    "ItemMixin",
     "ItemStackMixin",
     "LivingEntityMixin",
     "MinecraftClientMixin",
@@ -26,17 +29,19 @@
     "defaultRequire": 1
   },
   "client": [
-    "ArrowEntityRendererMixin",
+    "ArrowEntityRenderStateMixin",
     "FirstPersonItemMixin",
     "GameRendererMixin",
     "PlayerCapeModelMixin",
     "PlayerEntityRendererMixin",
     "PlayerFeaturesMixin",
+    "PlayerRenderStateMixin",
     "ProjectileEntityRendererMixin",
-    "SpectralArrowEntityRendererMixin",
     "StuckObjectsFeatureRendererMixin",
     "TridentEntityRendererMixin",
+    "TridentEntityRenderStateMixin",
     "slots.CreativeInventoryScreenMixin",
-    "slots.HandledScreenAccessor"
+    "slots.HandledScreenAccessor",
+    "slots.InventoryScreenMixin"
   ]
 }

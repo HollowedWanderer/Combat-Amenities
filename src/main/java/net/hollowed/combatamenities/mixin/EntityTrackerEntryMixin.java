@@ -63,17 +63,9 @@ public class EntityTrackerEntryMixin {
             Vec3d previousPosition = previousPositions.getOrDefault(playerId, currentPosition);
             Vec3d velocity = currentPosition.subtract(previousPosition);
 
-            double horizontalSpeed = Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z);
-
-            float MAX_HORIZONTAL_VELOCITY = 0.3F;
-            float cappedHorizontalVelocity = (float) MathHelper.clamp(horizontalSpeed, 0.0F, MAX_HORIZONTAL_VELOCITY);
-
             Item backStack = player.getInventory().getStack(41).getItem();
 
             if (!(backStack instanceof BlockItem) && player.getInventory().getStack(41) != ItemStack.EMPTY) {
-
-                // Walking sound
-                playWalkingSound(player, cappedHorizontalVelocity);
 
                 // Landing detection
                 boolean isLanding = detectLanding(player);
@@ -102,6 +94,8 @@ public class EntityTrackerEntryMixin {
         // Send the back slot item (or an empty item stack if it's empty)
         ServerPlayNetworking.send(recipient,
                 new BackSlotClientPacketPayload(sourcePlayer.getId(), 41, backSlotItem.isEmpty() ? ItemStack.EMPTY : backSlotItem));
+        ServerPlayNetworking.send(recipient,
+                new BackSlotClientPacketPayload(sourcePlayer.getId(), 42, sourcePlayer.getInventory().getStack(42).isEmpty() ? ItemStack.EMPTY : sourcePlayer.getInventory().getStack(42)));
     }
 
     // Detect landing based on velocity history
@@ -126,24 +120,5 @@ public class EntityTrackerEntryMixin {
 
         // Play the sound with the calculated volume
         playerEntity.getWorld().playSound(null, playerEntity.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND.value(), SoundCategory.PLAYERS, volume * (CombatAmenities.CONFIG.backslotAmbientSoundVolume / 100), 1.0F);
-    }
-
-    // Play walking sound
-    @Unique
-    private void playWalkingSound(PlayerEntity playerEntity, float horizontalVelocity) {
-        long currentTick = playerEntity.age;
-
-        if (playerEntity.isOnGround() && horizontalVelocity > 0.1F) {
-            // Calculate interval dynamically based on velocity
-            int baseInterval = 20; // Base interval in ticks for walking
-            int minInterval = 5; // Minimum interval for faster movement
-            int dynamicInterval = MathHelper.clamp((int) (baseInterval / (horizontalVelocity * 15.0F)), minInterval, baseInterval);
-
-            // Play sound if the calculated interval has elapsed
-            if ((currentTick - lastWalkingSoundTick) >= dynamicInterval) {
-                playerEntity.getWorld().playSound(null, playerEntity.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 0.15F * (CombatAmenities.CONFIG.backslotAmbientSoundVolume / 100), 1.2F);
-                lastWalkingSoundTick = currentTick;
-            }
-        }
     }
 }

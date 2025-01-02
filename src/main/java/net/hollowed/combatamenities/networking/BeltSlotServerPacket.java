@@ -9,10 +9,10 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 
-public class BackSlotServerPacket {
+public class BeltSlotServerPacket {
 
     public static void registerServerPacket() {
-        ServerPlayNetworking.registerGlobalReceiver(BackslotPacketPayload.ID, ((payload, context) -> context.server().execute(() -> {
+        ServerPlayNetworking.registerGlobalReceiver(BeltslotPacketPayload.ID, ((payload, context) -> context.server().execute(() -> {
             PlayerEntity player = context.player();
             if (player == null || player.currentScreenHandler == null) {
                 return;
@@ -20,24 +20,24 @@ public class BackSlotServerPacket {
 
             ItemStack offhandStack = player.getOffHandStack();
             ItemStack handStack = player.getMainHandStack();
-            ItemStack backStack = player.getInventory().getStack(41);
+            ItemStack backStack = player.getInventory().getStack(42);
 
-            if (backStack.getItem() instanceof ItemSlotSoundHandler) {
-                player.getWorld().playSound(null, player.getBlockPos(), ((ItemSlotSoundHandler) backStack.getItem()).combat_Amenities$getUnsheatheSound(), SoundCategory.PLAYERS, (CombatAmenities.CONFIG.backslotSwapSoundVolume / 100F), 0.9F);
-            } else if (handStack.getItem() instanceof ItemSlotSoundHandler) {
-                player.getWorld().playSound(null, player.getBlockPos(), ((ItemSlotSoundHandler) backStack.getItem()).combat_Amenities$getSheatheSound(), SoundCategory.PLAYERS, (CombatAmenities.CONFIG.backslotSwapSoundVolume / 100F), 0.9F);
+            if (backStack.getItem() instanceof ItemSlotSoundHandler item) {
+                player.getWorld().playSound(null, player.getBlockPos(), item.combat_Amenities$getUnsheatheSound(), SoundCategory.PLAYERS, (CombatAmenities.CONFIG.backslotSwapSoundVolume / 100F), 0.9F);
+            } else if (handStack.getItem() instanceof ItemSlotSoundHandler item) {
+                player.getWorld().playSound(null, player.getBlockPos(), item.combat_Amenities$getSheatheSound(), SoundCategory.PLAYERS, (CombatAmenities.CONFIG.backslotSwapSoundVolume / 100F), 0.9F);
             }
 
             if (!handStack.isEmpty()) {
                 player.setStackInHand(Hand.MAIN_HAND, backStack.copy());
-                player.getInventory().setStack(41, handStack.copy());
+                player.getInventory().setStack(42, handStack.copy());
             } else {
                 if (backStack.isEmpty()) {
                     player.setStackInHand(Hand.OFF_HAND, backStack.copy());
-                    player.getInventory().setStack(41, offhandStack.copy());
+                    player.getInventory().setStack(42, offhandStack.copy());
                 } else {
                     player.setStackInHand(Hand.MAIN_HAND, backStack.copy());
-                    player.getInventory().setStack(41, handStack.copy());
+                    player.getInventory().setStack(42, handStack.copy());
                 }
             }
 

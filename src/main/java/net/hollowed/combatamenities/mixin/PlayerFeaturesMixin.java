@@ -1,6 +1,7 @@
 package net.hollowed.combatamenities.mixin;
 
 import net.hollowed.combatamenities.renderer.BackSlotFeatureRenderer;
+import net.hollowed.combatamenities.renderer.BeltSlotFeatureRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.entity.EntityRendererFactory;
@@ -25,5 +26,6 @@ public abstract class PlayerFeaturesMixin extends LivingEntityRenderer<AbstractC
     private void addCustomFeature(EntityRendererFactory.Context ctx, boolean slim, CallbackInfo ci) {
         HeldItemRenderer heldItemRenderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getHeldItemRenderer();
         this.addFeature(new BackSlotFeatureRenderer(this, heldItemRenderer));
+        this.addFeature(new BeltSlotFeatureRenderer(this, heldItemRenderer));
     }
 }

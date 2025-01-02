@@ -25,9 +25,12 @@ public abstract class PlayerInventoryMixin implements Inventory {
     private List<DefaultedList<ItemStack>> combinedInventory;
 
     @Shadow @Final public PlayerEntity player;
-    // Unique custom slot, size is 1 for this case
+
     @Unique
     private DefaultedList<ItemStack> extraSlot;
+
+    @Unique
+    private DefaultedList<ItemStack> extraSlot1;
 
     // Constructor for mixin
     public PlayerInventoryMixin() {}
@@ -36,12 +39,14 @@ public abstract class PlayerInventoryMixin implements Inventory {
     @Inject(method = "<init>*", at = @At("RETURN"))
     private void initMixin(PlayerEntity playerEntity, CallbackInfo info) {
         this.extraSlot = DefaultedList.ofSize(1, ItemStack.EMPTY);
+        this.extraSlot1 = DefaultedList.ofSize(1, ItemStack.EMPTY);
         this.combinedInventory = new ArrayList<>(combinedInventory);
         this.combinedInventory.add(extraSlot);  // Add the custom slot to combined inventory
+        this.combinedInventory.add(extraSlot1);  // Add the other custom slot to combined inventory
         this.combinedInventory = ImmutableList.copyOf(this.combinedInventory);  // Make the list immutable
     }
 
-    // Write custom slot to player's NBT data
+    // Write custom slots to player's NBT data
     @Inject(method = "writeNbt", at = @At("TAIL"))
     public void writeNbtMixin(NbtList tag, CallbackInfoReturnable<NbtList> info) {
         // Check if the custom slot is not empty before saving
@@ -50,36 +55,48 @@ public abstract class PlayerInventoryMixin implements Inventory {
             compoundTag.putByte("Slot", (byte) (110));  // Custom slot index
             tag.add(this.extraSlot.getFirst().toNbt(this.player.getRegistryManager(), compoundTag));
         }
+
+        // Check if the OTHER custom slot is not empty before saving
+        if (!this.extraSlot1.getFirst().isEmpty()) {
+            NbtCompound compoundTag = new NbtCompound();
+            compoundTag.putByte("Slot", (byte) (111));  // Custom slot index
+            tag.add(this.extraSlot1.getFirst().toNbt(this.player.getRegistryManager(), compoundTag));
+        }
     }
 
-    // Read the custom slot from player's NBT data
+    // Read the custom slots from player's NBT data
     @Inject(method = "readNbt", at = @At("TAIL"))
     public void readNbtMixin(NbtList tag, CallbackInfo info) {
         this.extraSlot.clear();  // Clear the custom slot
+        this.extraSlot1.clear();  // Clear the OTHER custom slot
+
         for (int i = 0; i < tag.size(); ++i) {
             NbtCompound compoundTag = tag.getCompound(i);
             int slot = compoundTag.getByte("Slot") & 255;  // Get slot index
             ItemStack itemStack = ItemStack.fromNbt(this.player.getRegistryManager(), compoundTag).orElse(ItemStack.EMPTY);  // Read item data
             // Load item into the custom slot if it's the correct index
             if (!itemStack.isEmpty()) {
-                if (slot == 110) {  // Slot 110 is our custom slot
+                if (slot == 110) {
                     this.extraSlot.set(0, itemStack);
+                }
+                if (slot == 111) {
+                    this.extraSlot1.set(0, itemStack);
                 }
             }
         }
     }
 
-    // Add the size of the custom slot to the total inventory size
+    // Add the size of the custom slots to the total inventory size
     @Inject(method = "size", at = @At("RETURN"), cancellable = true)
     public void sizeMixin(CallbackInfoReturnable<Integer> info) {
-        info.setReturnValue(info.getReturnValue() + 1);  // Add 1 for the custom slot
+        info.setReturnValue(info.getReturnValue() + 2);  // Add 2 for the custom slot
     }
 
-    // Update the empty state to include the custom slot
+    // Update the empty state to include the custom slots
     @Inject(method = "isEmpty", at = @At("TAIL"), cancellable = true)
     public void isEmptyMixin(CallbackInfoReturnable<Boolean> info) {
-        if (!this.extraSlot.getFirst().isEmpty()) {
-            info.setReturnValue(false);  // If the custom slot has items, it's not empty
+        if (!this.extraSlot.getFirst().isEmpty() && !this.extraSlot1.getFirst().isEmpty()) {
+            info.setReturnValue(false);  // If the custom slots have items, it's not empty
         }
     }
 }

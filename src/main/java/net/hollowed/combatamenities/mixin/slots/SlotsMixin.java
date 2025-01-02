@@ -26,11 +26,31 @@ public abstract class SlotsMixin extends AbstractRecipeScreenHandler {
         int xPos = 77;
         int yPos = 8;
 
+        int xPos1 = 77;
+        int yPos1 = 26;
+
         // Add BackSlot at determined position
         this.addSlot(new Slot(inventory, 41, xPos, yPos) {
             @Override
             public Identifier getBackgroundSprite() {
                 return Identifier.ofVanilla("backslot_overlay");
+            }
+
+            @Override
+            public ItemStack takeStack(int amount) {
+                ItemStack stack = super.takeStack(amount);
+                if (stack.isEmpty()) {
+                    this.setStack(ItemStack.EMPTY);
+                }
+                return stack;
+            }
+        });
+
+        // Add Belt Slot at determined position
+        this.addSlot(new Slot(inventory, 42, xPos1, yPos1) {
+            @Override
+            public Identifier getBackgroundSprite() {
+                return Identifier.ofVanilla("beltslot_overlay");
             }
 
             @Override

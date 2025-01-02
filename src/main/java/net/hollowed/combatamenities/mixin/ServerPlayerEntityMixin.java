@@ -24,6 +24,9 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     @Unique
     ItemStack backSlotStack = ItemStack.EMPTY;
 
+    @Unique
+    ItemStack beltSlotStack = ItemStack.EMPTY;
+
     public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
         super(world, pos, yaw, gameProfile);
     }
@@ -32,6 +35,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     private void tickMixin(CallbackInfo info) {
         if (!this.getWorld().isClient()) {
             ItemStack currentBackSlotStack = this.getInventory().getStack(41);
+            ItemStack currentBeltSlotStack = this.getInventory().getStack(42);
 
             // Check if the current back slot stack is different from the saved one
             if (!ItemStack.areItemsEqual(backSlotStack, currentBackSlotStack)) {
@@ -40,6 +44,17 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
                 // Create a new payload with the current back slot stack
                 BackSlotClientPacketPayload payload = new BackSlotClientPacketPayload(this.getId(), 41, backSlotStack);
+                Collection<ServerPlayerEntity> players = PlayerLookup.tracking((ServerWorld) this.getWorld(), this.getBlockPos());
+                players.forEach(player -> ServerPlayNetworking.send(player, payload));
+            }
+
+            // Check if the current back slot stack is different from the saved one
+            if (!ItemStack.areItemsEqual(beltSlotStack, currentBeltSlotStack)) {
+                // Update the back slot stack to the current one
+                beltSlotStack = currentBeltSlotStack.copy();
+
+                // Create a new payload with the current back slot stack
+                BackSlotClientPacketPayload payload = new BackSlotClientPacketPayload(this.getId(), 42, beltSlotStack);
                 Collection<ServerPlayerEntity> players = PlayerLookup.tracking((ServerWorld) this.getWorld(), this.getBlockPos());
                 players.forEach(player -> ServerPlayNetworking.send(player, payload));
             }

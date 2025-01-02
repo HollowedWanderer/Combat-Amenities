@@ -18,12 +18,19 @@ public class ModConfig implements ConfigData {
     public int backslotSwapSoundVolume = 100;
     public boolean flipBackslotDisplay = false;
 
+    public boolean flipBeltslotDisplay = false;
+
+    @ConfigEntry.Gui.RequiresRestart
     public boolean removeDurability = true;
+
     public boolean itemArrows = false;
     public boolean swingThrough = true;
     public boolean correctTridentReturn = true;
     public boolean riptideFix = true;
+
+    @ConfigEntry.Gui.RequiresRestart
     public boolean builtInLoyalty = true;
+
     public boolean throwableFirecharge = true;
     public boolean shieldTweaks = true;
     public int shieldParryTime = 5;

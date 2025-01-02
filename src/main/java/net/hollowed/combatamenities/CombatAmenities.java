@@ -9,15 +9,13 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.hollowed.combatamenities.config.ModConfig;
 import net.hollowed.combatamenities.networking.*;
+import net.hollowed.combatamenities.util.BeltTransformResourceReloadListener;
+import net.hollowed.combatamenities.util.ItemSlotSoundHandler;
 import net.hollowed.combatamenities.util.TransformResourceReloadListener;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.ModelTransformationMode;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.registry.entry.RegistryEntryOwner;
+import net.minecraft.item.AxeItem;
+import net.minecraft.item.SwordItem;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,12 +26,6 @@ public class CombatAmenities implements ModInitializer {
 	public static final String MOD_ID = "combatamenities";
 
 	public static ModConfig CONFIG = new ModConfig();
-
-	public static RegistryEntryOwner<?> enchantment_owner = null;
-
-	private static RegistryKey<Enchantment> createKey(String id) {
-		return RegistryKey.of(RegistryKeys.ENCHANTMENT, Identifier.of(MOD_ID, id));
-	}
 
 	public static final Set<String> DURABILITY_ENCHANTMENTS = Set.of(
 			"Enchantment Unbreaking",
@@ -55,16 +47,29 @@ public class CombatAmenities implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
+		Registries.ITEM.forEach(item -> {
+			if (item instanceof ItemSlotSoundHandler soundItem) {
+				if (soundItem instanceof SwordItem || soundItem instanceof AxeItem) {
+					soundItem.combat_Amenities$setUnsheatheSound(ModSounds.SWORD_UNSHEATH);
+				}
+			}
+		});
+
 		// Json stuff
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new TransformResourceReloadListener());
+		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new BeltTransformResourceReloadListener());
 
 		PayloadTypeRegistry.playC2S().register(BackslotPacketPayload.ID, BackslotPacketPayload.CODEC);
+		PayloadTypeRegistry.playC2S().register(BeltslotPacketPayload.ID, BeltslotPacketPayload.CODEC);
 		PayloadTypeRegistry.playC2S().register(BackSlotInventoryPacketPayload.BACKSLOT_INVENTORY_PACKET_ID, BackSlotInventoryPacketPayload.CODEC);
+		PayloadTypeRegistry.playC2S().register(BeltSlotInventoryPacketPayload.BELTSLOT_INVENTORY_PACKET_ID, BeltSlotInventoryPacketPayload.CODEC);
 		PayloadTypeRegistry.playC2S().register(BackSlotCreativeClientPacketPayload.BACKSLOT_CREATIVE_CLIENT_PACKET_ID, BackSlotCreativeClientPacketPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(BackSlotClientPacketPayload.BACKSLOT_CLIENT_PACKET_ID, BackSlotClientPacketPayload.CODEC);
 
 		BackSlotInventoryPacketReceiver.registerServerPacket();
+		BeltSlotInventoryPacketReceiver.registerServerPacket();
         BackSlotServerPacket.registerServerPacket();
+		BeltSlotServerPacket.registerServerPacket();
 		BackSlotCreativeClientPacket.registerClientPacket();
 
 		// Config

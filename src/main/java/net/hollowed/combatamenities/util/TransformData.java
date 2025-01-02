@@ -20,7 +20,7 @@ public record TransformData(
             Codec.FLOAT.listOf().fieldOf("scale").orElseGet(() -> List.of(1.0f, 1.0f, 1.0f)).forGetter(TransformData::scale),
             Codec.FLOAT.listOf().fieldOf("rotation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(TransformData::rotation),
             Codec.FLOAT.listOf().fieldOf("translation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(TransformData::translation),
-            Codec.STRING.fieldOf("mode").orElse("FIXED") // Default to SCALE if no mode is provided
+            Codec.STRING.fieldOf("mode").orElse("FIXED") // Default to FIXED if no mode is provided
                     .xmap(ModelTransformationMode::valueOf, ModelTransformationMode::name)
                     .forGetter(TransformData::mode),
             Codec.FLOAT.fieldOf("sway").orElse(1.0F).forGetter(TransformData::sway)
