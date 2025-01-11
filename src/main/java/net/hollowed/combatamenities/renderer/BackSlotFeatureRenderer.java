@@ -148,8 +148,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			if (blockItem.getBlock() instanceof BannerBlock) {
 				matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
 				matrixStack.translate(0, -0.5, 0);
-				matrixStack.scale(1.25F, 1.25F, 1.25F);
-
+				matrixStack.scale(1.5F, 1.5F, 1.5F);
 			}
 		} else if (item instanceof ShieldItem) {
 			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));

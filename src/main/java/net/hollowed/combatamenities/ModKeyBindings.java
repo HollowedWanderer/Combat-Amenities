@@ -57,10 +57,19 @@ public class ModKeyBindings {
 
         // Check if the keybinding's key is pressed
         long windowHandle = MinecraftClient.getInstance().getWindow().getHandle();
-        InputUtil.Key boundKey = KeyBindingHelper.getBoundKeyOf(ModKeyBindings.backSlotBinding);
-        InputUtil.Key boundKey1 = KeyBindingHelper.getBoundKeyOf(ModKeyBindings.beltSlotBinding);
+        InputUtil.Key boundKey;
+        InputUtil.Key boundKey1;
+        if (KeyBindingHelper.getBoundKeyOf(ModKeyBindings.backSlotBinding).toInt().isEmpty()) {
+            boundKey = ModKeyBindings.backSlotBinding.getDefaultKey();
+        } else {
+            boundKey = KeyBindingHelper.getBoundKeyOf(ModKeyBindings.backSlotBinding);
+        }
+        if (KeyBindingHelper.getBoundKeyOf(ModKeyBindings.beltSlotBinding).toInt().isEmpty()) {
+            boundKey1 = ModKeyBindings.beltSlotBinding.getDefaultKey();
+        } else {
+            boundKey1 = KeyBindingHelper.getBoundKeyOf(ModKeyBindings.beltSlotBinding);
+        }
         if (InputUtil.isKeyPressed(windowHandle, boundKey.getCode())) {
-            // Handle the key press logic
             handleBackSlotSwap(client);
         } else if (InputUtil.isKeyPressed(windowHandle, boundKey1.getCode())) {
             handleBeltSlotSwap(client);
