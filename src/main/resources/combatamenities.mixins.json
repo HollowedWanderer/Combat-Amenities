@@ -29,17 +29,13 @@
     "defaultRequire": 1
   },
   "client": [
-    "ArrowEntityRenderStateMixin",
     "FirstPersonItemMixin",
     "GameRendererMixin",
     "PlayerCapeModelMixin",
-    "PlayerEntityRendererMixin",
     "PlayerFeaturesMixin",
-    "PlayerRenderStateMixin",
     "ProjectileEntityRendererMixin",
     "StuckObjectsFeatureRendererMixin",
     "TridentEntityRendererMixin",
-    "TridentEntityRenderStateMixin",
     "slots.CreativeInventoryScreenMixin",
     "slots.HandledScreenAccessor",
     "slots.InventoryScreenMixin"

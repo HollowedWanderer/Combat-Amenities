@@ -3,22 +3,20 @@ package net.hollowed.combatamenities.renderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.hollowed.combatamenities.CombatAmenities;
-import net.hollowed.combatamenities.client.PlayerEntityRenderStateAccess;
 import net.hollowed.combatamenities.util.TransformData;
 import net.hollowed.combatamenities.util.TransformResourceReloadListener;
 import net.minecraft.block.BannerBlock;
-import net.minecraft.block.SkullBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
-import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.render.item.HeldItemRenderer;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,113 +27,111 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
-import org.joml.Quaternionf;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
 @Environment(EnvType.CLIENT)
-public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> {
+public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
 
 	private final HeldItemRenderer heldItemRenderer;
 	private ModelTransformationMode transformationMode = ModelTransformationMode.FIXED;
 
-    public BackSlotFeatureRenderer(FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel> context, HeldItemRenderer heldItemRenderer) {
-		super(context);
-		this.heldItemRenderer = heldItemRenderer;
-	}
+	public BackSlotFeatureRenderer(FeatureRendererContext<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> context, HeldItemRenderer heldItemRenderer) {
+		super(context, heldItemRenderer);
+        this.heldItemRenderer = heldItemRenderer;
+    }
+
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, PlayerEntityRenderState armedEntityRenderState, float limbSwing, float limbSwingAmount) {
-		if (armedEntityRenderState instanceof PlayerEntityRenderStateAccess access) {
-			// Use the correct player entity from the context
-			PlayerEntity playerEntity = access.combat_Amenities$getPlayerEntity();
+	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, AbstractClientPlayerEntity playerEntity, float f, float g, float h, float j, float k, float l) {
 
-			if (playerEntity != null) {
-				// Retrieve the back slot stack from the correct player's inventory
-				ItemStack backSlotStack = playerEntity.getInventory().getStack(41);
+		if (playerEntity != null) {
+			// Retrieve the back slot stack from the correct player's inventory
+			ItemStack backSlotStack = playerEntity.getInventory().getStack(41);
 
-				if (backSlotStack.hasEnchantments() && Math.random() > ((100 - CombatAmenities.CONFIG.enchantmentParticleChance) / 100.0F) && CombatAmenities.CONFIG.backslotParticles && !MinecraftClient.getInstance().isPaused()) {
-					for (int i = 0; i < 5; i++) { // Increase the number for more particles
-						double offsetX = (Math.random() - 0.5); // Random value between -1 and 1
-						double offsetY = Math.random(); // Random value between 0 and 1.5 for height variation
-						double offsetZ = (Math.random() - 0.5); // Random value between -1 and 1
-						playerEntity.getWorld().addParticle(
-								ParticleTypes.ENCHANT,
-								playerEntity.getX() + offsetX,
-								playerEntity.getY() + offsetY + 0.75, // Add 1.2 to keep particles near the head
-								playerEntity.getZ() + offsetZ,
-								0, 0, 0
-						);
-					}
+			if (backSlotStack.hasEnchantments() && Math.random() > ((100 - CombatAmenities.CONFIG.enchantmentParticleChance) / 100.0F) && CombatAmenities.CONFIG.backslotParticles && !MinecraftClient.getInstance().isPaused()) {
+				for (int i = 0; i < 5; i++) { // Increase the number for more particles
+					double offsetX = (Math.random() - 0.5); // Random value between -1 and 1
+					double offsetY = Math.random(); // Random value between 0 and 1.5 for height variation
+					double offsetZ = (Math.random() - 0.5); // Random value between -1 and 1
+					playerEntity.getWorld().addParticle(
+							ParticleTypes.ENCHANT,
+							playerEntity.getX() + offsetX,
+							playerEntity.getY() + offsetY + 0.75, // Add 1.2 to keep particles near the head
+							playerEntity.getZ() + offsetZ,
+							0, 0, 0
+					);
+				}
+			}
+
+			if (!backSlotStack.isEmpty()) {
+				matrixStack.push();
+
+				// Rotate based on body
+				ModelPart bodyPart = this.getContextModel().body;
+				bodyPart.rotate(matrixStack);
+
+				setAngles(matrixStack, playerEntity, backSlotStack.getItem(), vertexConsumerProvider, h);
+
+				// Get the item's transformation data
+				Item item = backSlotStack.getItem();
+				Identifier itemId = Registries.ITEM.getId(item); // Retrieve the Identifier of the item
+				TransformData transformData = TransformResourceReloadListener.getTransform(itemId);
+
+				// Apply the transformations from TransformData using List<Float> format
+				List<Float> scale = transformData.scale();
+				matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
+
+				List<Float> rotation = transformData.rotation();
+				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotation.get(0))); // Rotation X
+				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.get(1))); // Rotation Y
+				matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2))); // Rotation Z
+
+				List<Float> translation = transformData.translation();
+				matrixStack.translate(translation.get(0), translation.get(1), translation.get(2)); // Translation
+
+				// Use transformation mode from the transform data (JSON)
+				transformationMode = transformData.mode();
+
+				// Apply dynamic movement and item-specific adjustments
+				if (playerEntity instanceof OtherClientPlayerEntity) {
+					applyDynamicMovement(matrixStack, playerEntity, item);
+				} else if (playerEntity instanceof ClientPlayerEntity) {
+					applyDynamicMovement(matrixStack, playerEntity, item);
 				}
 
-				if (!backSlotStack.isEmpty()) {
-					matrixStack.push();
-
-					// Rotate based on body
-					ModelPart bodyPart = this.getContextModel().body;
-					bodyPart.rotate(matrixStack);
-
-					setAngles(matrixStack, armedEntityRenderState, backSlotStack.getItem(), vertexConsumerProvider);
-
-					// Get the item's transformation data
-					Item item = backSlotStack.getItem();
-					Identifier itemId = Registries.ITEM.getId(item); // Retrieve the Identifier of the item
-					TransformData transformData = TransformResourceReloadListener.getTransform(itemId);
-
-					// Apply the transformations from TransformData using List<Float> format
-					List<Float> scale = transformData.scale();
-					matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
-
-					List<Float> rotation = transformData.rotation();
-					matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotation.get(0))); // Rotation X
-					matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.get(1))); // Rotation Y
-					matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2))); // Rotation Z
-
-					List<Float> translation = transformData.translation();
-					matrixStack.translate(translation.get(0), translation.get(1), translation.get(2)); // Translation
-
-					// Use transformation mode from the transform data (JSON)
-					transformationMode = transformData.mode();
-
-					// Apply dynamic movement and item-specific adjustments
-					if (playerEntity instanceof OtherClientPlayerEntity) {
-						applyDynamicMovement(matrixStack, playerEntity, item);
-					} else if (playerEntity instanceof ClientPlayerEntity) {
-						applyDynamicMovement(matrixStack, playerEntity, item);
-					}
-
-					matrixStack.translate(0.0F, 0.0F, -0.05F);
-					if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
-						matrixStack.translate(0.0F, 0.0F, 0.05F);
-					}
-
-					applyItemSpecificAdjustments(matrixStack, armedEntityRenderState, item, armedEntityRenderState.mainArm);
-
-					// Render the item
-					heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, false, matrixStack, vertexConsumerProvider, light);
-
-					matrixStack.pop();
+				matrixStack.translate(0.0F, 0.0F, -0.05F);
+				if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
+					matrixStack.translate(0.0F, 0.0F, 0.05F);
 				}
+
+				applyItemSpecificAdjustments(matrixStack, playerEntity, item, playerEntity.getMainArm());
+
+				// Render the item
+				heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, false, matrixStack, vertexConsumerProvider, light);
+
+				matrixStack.pop();
 			}
 		}
 	}
 
 	// Helper method for item-specific transformations
-	private void applyItemSpecificAdjustments(MatrixStack matrixStack, PlayerEntityRenderState armedEntityRenderState, Item item, Arm arm) {
+	private void applyItemSpecificAdjustments(MatrixStack matrixStack, AbstractClientPlayerEntity playerEntity, Item item, Arm arm) {
 		if (item instanceof TridentItem) {
-			matrixStack.translate(0, 0.2, 0);
-			matrixStack.translate(0.0F, 0.0F, -0.1F);
-			if (!armedEntityRenderState.equippedChestStack.isEmpty()) {
-				matrixStack.translate(0.0F, 0.0F, 0.01F);
+			// Trident transforms separate because severely different
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(52.0F));
+			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(40.0F));
+			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-25.0F));
+			matrixStack.translate(-0.26D, 0.0D, 0.0D);
+			if (!playerEntity.hasStackEquipped(EquipmentSlot.CHEST)) {
+				// Trident armor transforms
+				matrixStack.translate(0.05F, 0.0F, 0.0F);
 			}
-			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
-			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(45.0F));
-			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0F));
-			transformationMode = ModelTransformationMode.FIRST_PERSON_RIGHT_HAND;
-			matrixStack.scale(1.25F, 1.25F, 1.25F);
+			matrixStack.scale(1.0F, -1.0F, -1.0F);
+			matrixStack.translate(0.35, 0, 0);
+			transformationMode = ModelTransformationMode.THIRD_PERSON_RIGHT_HAND;
 		} else if (item instanceof FishingRodItem || item instanceof OnAStickItem) {
 			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
 			transformationMode = ModelTransformationMode.FIXED;
@@ -151,14 +147,14 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 				matrixStack.scale(1.5F, 1.5F, 1.5F);
 			}
 		} else if (item instanceof ShieldItem) {
-			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
 			matrixStack.scale(1.5F, 1.5F, 1.5F);
 			matrixStack.translate(0F, 0.1F, 0f);
 		} else {
-			matrixStack.translate(0, 0.1, 0);
+			matrixStack.translate(0, 0.1, -0.125);
 			if (arm == Arm.RIGHT && CombatAmenities.CONFIG.flipBackslotDisplay || arm == Arm.LEFT && !CombatAmenities.CONFIG.flipBackslotDisplay) {
 				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
 			}
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
 		}
 	}
 
@@ -170,7 +166,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 	private float jiggleDecay = 0.9F; // Decay rate of jiggle intensity
 	private float jiggleTimer = 0.0F; // Timer to drive oscillation
 
-	private void setAngles(MatrixStack matrixStack, PlayerEntityRenderState playerEntityRenderState, Item item, VertexConsumerProvider vertexConsumerProvider) {
+	private void setAngles(MatrixStack matrixStack, AbstractClientPlayerEntity playerEntity, Item item, VertexConsumerProvider vertexConsumerProvider, float h) {
 		TransformData data = TransformResourceReloadListener.getTransform(Registries.ITEM.getId(item));
 
 		// Calculate banner-specific multiplier
@@ -184,12 +180,31 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
 		renderDebugPoint(matrixStack, vertexConsumerProvider);
 
-		matrixStack.multiply((new Quaternionf())
-				.rotateY(-3.1415927F)
-				.rotateX(data.sway() * bannerMultiplier * -(6.0F + playerEntityRenderState.field_53537 / 2.0F + playerEntityRenderState.field_53536) * 0.017453292F)
-				.rotateZ(-(playerEntityRenderState.field_53538 / 2.0F * 0.017453292F))
-				.rotateY((180.0F - playerEntityRenderState.field_53538 / 2.0F) * 0.017453292F)
-		);
+		double d = MathHelper.lerp(h, playerEntity.prevCapeX, playerEntity.capeX) - MathHelper.lerp(h, playerEntity.prevX, playerEntity.getX());
+		double e = MathHelper.lerp(h, playerEntity.prevCapeY, playerEntity.capeY) - MathHelper.lerp(h, playerEntity.prevY, playerEntity.getY());
+		double m = MathHelper.lerp(h, playerEntity.prevCapeZ, playerEntity.capeZ) - MathHelper.lerp(h, playerEntity.prevZ, playerEntity.getZ());
+		float n = MathHelper.lerpAngleDegrees(h, playerEntity.prevBodyYaw, playerEntity.bodyYaw);
+		double o = MathHelper.sin(n * 0.017453292F);
+		double p = -MathHelper.cos(n * 0.017453292F);
+		float q = (float)e * 10.0F;
+		q = MathHelper.clamp(q, -6.0F, 32.0F);
+		float r = (float)(d * o + m * p) * 100.0F;
+		r = MathHelper.clamp(r, 0.0F, 150.0F);
+		float s = (float)(d * p - m * o) * 100.0F;
+		s = MathHelper.clamp(s, -20.0F, 20.0F);
+		if (r < 0.0F) {
+			r = 0.0F;
+		}
+
+		float t = MathHelper.lerp(h, playerEntity.prevStrideDistance, playerEntity.strideDistance);
+		q += MathHelper.sin(MathHelper.lerp(h, playerEntity.prevHorizontalSpeed, playerEntity.horizontalSpeed) * 6.0F) * 32.0F * t;
+		if (playerEntity.isInSneakingPose()) {
+			q += 25.0F;
+		}
+
+		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees((6.0F + r / 2.0F + q) * bannerMultiplier * data.sway()));
+		matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(s / 2.0F));
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F - s / 2.0F));
 		matrixStack.translate(0.0F, 0.0F, -0.1F); // Pivot Point ! ! !
 		matrixStack.translate(0F, 0.3F, 0.2);
 	}

@@ -1,5 +1,6 @@
 package net.hollowed.combatamenities.mixin.slots;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -32,8 +33,8 @@ public abstract class SlotsMixin extends AbstractRecipeScreenHandler {
         // Add BackSlot at determined position
         this.addSlot(new Slot(inventory, 41, xPos, yPos) {
             @Override
-            public Identifier getBackgroundSprite() {
-                return Identifier.ofVanilla("backslot_overlay");
+            public Pair<Identifier, Identifier> getBackgroundSprite() {
+                return new Pair<>(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, Identifier.of("item/backslot_overlay"));
             }
 
             @Override
@@ -49,8 +50,8 @@ public abstract class SlotsMixin extends AbstractRecipeScreenHandler {
         // Add Belt Slot at determined position
         this.addSlot(new Slot(inventory, 42, xPos1, yPos1) {
             @Override
-            public Identifier getBackgroundSprite() {
-                return Identifier.ofVanilla("beltslot_overlay");
+            public Pair<Identifier, Identifier> getBackgroundSprite() {
+                return new Pair<>(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, Identifier.of("item/beltslot_overlay"));
             }
 
             @Override

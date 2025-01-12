@@ -2,7 +2,7 @@ package net.hollowed.combatamenities.util;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.item.ModelTransformationMode;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.util.Identifier;
 
 import java.util.List;

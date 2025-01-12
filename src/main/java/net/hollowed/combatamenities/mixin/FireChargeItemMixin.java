@@ -3,6 +3,7 @@ package net.hollowed.combatamenities.mixin;
 import net.hollowed.combatamenities.CombatAmenities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
+import net.minecraft.item.BowItem;
 import net.minecraft.item.FireChargeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -10,6 +11,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -22,7 +24,7 @@ public abstract class FireChargeItemMixin extends Item {
     }
 
     @Unique
-    public ActionResult use(World world, PlayerEntity player, Hand hand) {
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         if (!world.isClient) {
 
             if (CombatAmenities.CONFIG.throwableFirecharge) {
@@ -37,12 +39,12 @@ public abstract class FireChargeItemMixin extends Item {
                 // Consume one fire charge
                 stack.decrementUnlessCreative(1, player);
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.NEUTRAL, 0.5F, 1F);
-                player.getItemCooldownManager().set(stack, 10);
+                player.getItemCooldownManager().set(stack.getItem(), 10);
 
                 // Indicate successful use
-                return ActionResult.SUCCESS;
+                return TypedActionResult.success(stack);
             }
         }
-        return ActionResult.PASS;
+        return TypedActionResult.pass(player.getStackInHand(hand));
     }
 }

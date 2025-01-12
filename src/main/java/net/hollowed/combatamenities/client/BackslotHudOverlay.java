@@ -65,7 +65,6 @@ public class BackslotHudOverlay {
                 }
 
                 drawContext.drawTexture(
-                        RenderLayer::getGuiTextured,
                         WIDGETS_TEXTURE,
                         x + 1, y - 19,
                         0, 0, 22, 23, 29, 24 // Texture coordinates and dimensions
@@ -106,7 +105,6 @@ public class BackslotHudOverlay {
                 }
 
                 drawContext.drawTexture(
-                        RenderLayer::getGuiTextured,
                         WIDGETS_TEXTURE,
                         x + 1, y - 19,
                         0, 0, 22, 23, 29, 24 // Texture coordinates and dimensions
@@ -137,7 +135,7 @@ public class BackslotHudOverlay {
         context.drawItem(player, stack, x, y, 0);
 
         // Render the item overlay (e.g., stack count)
-        context.drawStackOverlay(client.textRenderer, stack, x, y);
+        context.drawItemInSlot(client.textRenderer, stack, x, y);
 
         // Pop the transformation matrix to reset transformations
         context.getMatrices().pop();

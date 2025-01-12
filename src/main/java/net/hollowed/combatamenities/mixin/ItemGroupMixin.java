@@ -4,6 +4,7 @@ import net.hollowed.combatamenities.CombatAmenities;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryWrapper;
@@ -21,7 +22,7 @@ public abstract class ItemGroupMixin {
     @Inject(method = "addMaxLevelEnchantedBooks", at = @At("HEAD"), cancellable = true)
     private static void filterMaxLevelBooks(ItemGroup.Entries entries, RegistryWrapper<Enchantment> registryWrapper, ItemGroup.StackVisibility stackVisibility, CallbackInfo ci) {
         registryWrapper.streamEntries()
-                .map((enchantmentEntry) -> EnchantmentHelper.getEnchantedBookWith(
+                .map((enchantmentEntry) -> EnchantedBookItem.forEnchantment(
                         new EnchantmentLevelEntry(enchantmentEntry, enchantmentEntry.value().getMaxLevel())))
                 .filter(ItemGroupMixin::isAllowedBook)
                 .forEach((stack) -> entries.add(stack, stackVisibility));
@@ -35,7 +36,7 @@ public abstract class ItemGroupMixin {
                 .flatMap((enchantmentEntry) -> IntStream.rangeClosed(
                                 enchantmentEntry.value().getMinLevel(),
                                 enchantmentEntry.value().getMaxLevel())
-                        .mapToObj((level) -> EnchantmentHelper.getEnchantedBookWith(
+                        .mapToObj((level) -> EnchantedBookItem.forEnchantment(
                                 new EnchantmentLevelEntry(enchantmentEntry, level))))
                 .filter(ItemGroupMixin::isAllowedBook)
                 .forEach((stack) -> entries.add(stack, stackVisibility));

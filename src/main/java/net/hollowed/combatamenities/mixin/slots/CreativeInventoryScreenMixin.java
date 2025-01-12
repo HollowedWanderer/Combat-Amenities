@@ -63,19 +63,17 @@ public abstract class CreativeInventoryScreenMixin extends HandledScreen<Creativ
         }
     }
 
-    @Inject(method = "drawForeground", at = @At("HEAD"))
-    public void render(DrawContext context, int mouseX, int mouseY, CallbackInfo ci) {
+    @Inject(method = "drawBackground", at = @At("TAIL"))
+    public void render(DrawContext context, float delta, int mouseX, int mouseY, CallbackInfo ci) {
         if (this.isInventoryTabSelected()) {
             context.drawTexture(
-                    RenderLayer::getGuiOpaqueTexturedBackground,
                     SLOT_TEXTURE,
-                    126, 19,
+                    this.x + 126, this.y + 19,
                     0, 0, 18, 18, 18, 18 // Texture coordinates and dimensions
             );
             context.drawTexture(
-                    RenderLayer::getGuiOpaqueTexturedBackground,
                     SLOT_TEXTURE,
-                    144, 19,
+                    this.x + 144, this.y + 19,
                     0, 0, 18, 18, 18, 18 // Texture coordinates and dimensions
             );
         }

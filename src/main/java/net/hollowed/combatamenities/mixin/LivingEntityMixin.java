@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class LivingEntityMixin {
 
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
-    private void modifyShieldBlocking(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    private void modifyShieldBlocking(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
 
         if (CombatAmenities.CONFIG.shieldTweaks) {
@@ -62,10 +62,10 @@ public abstract class LivingEntityMixin {
                             attacker.takeKnockback(knockbackStrength, -knockbackDirection.x, -knockbackDirection.z);
                             // Check if the attacker is using an axe
                             if (attacker.getMainHandStack().getItem() instanceof AxeItem || attacker.getOffHandStack().getItem() instanceof AxeItem) {
-                                cooldownManager.set(self.getActiveItem(), 40); // 2 seconds cooldown for axe hit
+                                cooldownManager.set(self.getActiveItem().getItem(), 40); // 2 seconds cooldown for axe hit
                                 self.stopUsingItem();
                             } else {
-                                cooldownManager.set(self.getActiveItem(), 10); // 0.5 seconds cooldown for regular parry
+                                cooldownManager.set(self.getActiveItem().getItem(), 10); // 0.5 seconds cooldown for regular parry
                                 self.stopUsingItem();
                             }
                         } else if (source.getSource() instanceof ProjectileEntity entity) {
@@ -128,7 +128,7 @@ public abstract class LivingEntityMixin {
                 // Disable the shield temporarily if the damage exceeds 15
                 if (amount > 15.0F) {
                     if (self instanceof ServerPlayerEntity player) {
-                        player.getItemCooldownManager().set(player.getActiveItem(), 60);
+                        player.getItemCooldownManager().set(player.getActiveItem().getItem(), 60);
                         self.stopUsingItem();
                     }
                 }

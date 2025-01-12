@@ -7,13 +7,14 @@ import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.item.EnderPearlItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.consume.UseAction;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -41,18 +42,18 @@ public abstract class EnderPearlItemMixin extends Item {
     private static final float MAX_VELOCITY = 1.5F; // Maximum velocity
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
-    private void onUse(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+    private void onUse(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
         user.setCurrentHand(hand);
         if (CombatAmenities.CONFIG.enderPearlTweaks) {
-            cir.setReturnValue(ActionResult.CONSUME);
+            cir.setReturnValue(TypedActionResult.consume(user.getStackInHand(hand)));
         }
     }
 
     @Override
-    public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         if (CombatAmenities.CONFIG.enderPearlTweaks) {
             if (!(user instanceof PlayerEntity player)) {
-                return false;
+                return;
             }
 
             int chargeTime = this.getMaxUseTime(stack, user) - remainingUseTicks;
@@ -61,18 +62,18 @@ public abstract class EnderPearlItemMixin extends Item {
 
             if (!world.isClient) {
                 ServerWorld serverWorld = (ServerWorld) world;
-                EnderPearlEntity enderPearlEntity = new EnderPearlEntity(world, user, stack);
+                EnderPearlEntity enderPearlEntity = new EnderPearlEntity(world, user);
                 enderPearlEntity.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, velocity, 1.0F);
                 serverWorld.spawnEntity(enderPearlEntity);
             }
 
             world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ENDER_PEARL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
             player.incrementStat(Stats.USED.getOrCreateStat(this));
-            ((PlayerEntity) user).getItemCooldownManager().set(stack, 100);
+            ((PlayerEntity) user).getItemCooldownManager().set(stack.getItem(), 100);
             stack.decrementUnlessCreative(1, player);
-            return false;
+            return;
         }
-        return true;
+        super.onStoppedUsing(stack, world, user, remainingUseTicks);
     }
 
     @Override

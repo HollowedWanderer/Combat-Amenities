@@ -3,34 +3,42 @@ package net.hollowed.combatamenities.mixin;
 import net.hollowed.combatamenities.util.TransformData;
 import net.hollowed.combatamenities.util.TransformResourceReloadListener;
 import net.minecraft.block.BannerBlock;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.PlayerCapeModel;
-import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.feature.CapeFeatureRenderer;
+import net.minecraft.client.render.entity.feature.FeatureRenderer;
+import net.minecraft.client.render.entity.feature.FeatureRendererContext;
+import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.util.SkinTextures;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
-import org.joml.Quaternionf;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
 import org.joml.Vector3f;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(PlayerCapeModel.class)
-public class PlayerCapeModelMixin {
+@Mixin(CapeFeatureRenderer.class)
+public abstract class PlayerCapeModelMixin extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
 
-    @Shadow @Final private ModelPart cape;
+    public PlayerCapeModelMixin(FeatureRendererContext<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> context) {
+        super(context);
+    }
 
-    @Inject(method = "setAngles(Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;)V", at = @At("HEAD"), cancellable = true)
-    private void injectSetAngles(PlayerEntityRenderState playerEntityRenderState, CallbackInfo ci) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.player != null) {
-            this.cape.resetTransform();
-
-            ItemStack stack = client.player.getInventory().getStack(41);
+    @Inject(method = "render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/client/network/AbstractClientPlayerEntity;FFFFFF)V", at = @At("HEAD"), cancellable = true)
+    private void injectSetAngles(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
+        if (!abstractClientPlayerEntity.isInvisible() && abstractClientPlayerEntity.isPartVisible(PlayerModelPart.CAPE)) {
+            ItemStack stack = abstractClientPlayerEntity.getInventory().getStack(41);
             TransformData data = TransformResourceReloadListener.getTransform(Registries.ITEM.getId(stack.getItem()));
 
             float bannerMultiplier = 0.4F;
@@ -41,24 +49,45 @@ public class PlayerCapeModelMixin {
             float backslotMultiplier = 1.0F;
             if (!stack.isEmpty() && data != null) {
                 backslotMultiplier = data.sway() * bannerMultiplier * 0.9F;
-                this.cape.translate(new Vector3f(0.01F, 0F, -0.25F));
             }
 
-            // Calculate the adjusted cape rotation
-            float adjustedXRotation = (6.0F + playerEntityRenderState.field_53537 / 2.0F + playerEntityRenderState.field_53536)
-                    * 0.017453292F * backslotMultiplier;
-            float zRotation = playerEntityRenderState.field_53538 / 2.0F * 0.017453292F;
-            float yRotation = (180.0F - playerEntityRenderState.field_53538 / 2.0F) * 0.017453292F;
+            SkinTextures skinTextures = abstractClientPlayerEntity.getSkinTextures();
+            if (skinTextures.capeTexture() != null) {
+                ItemStack itemStack = abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.CHEST);
+                if (!itemStack.isOf(Items.ELYTRA)) {
+                    matrixStack.push();
+                    matrixStack.translate(0.0F, 0.0F, 0.125F);
+                    double d = MathHelper.lerp(h, abstractClientPlayerEntity.prevCapeX, abstractClientPlayerEntity.capeX) - MathHelper.lerp(h, abstractClientPlayerEntity.prevX, abstractClientPlayerEntity.getX());
+                    double e = MathHelper.lerp(h, abstractClientPlayerEntity.prevCapeY, abstractClientPlayerEntity.capeY) - MathHelper.lerp(h, abstractClientPlayerEntity.prevY, abstractClientPlayerEntity.getY());
+                    double m = MathHelper.lerp(h, abstractClientPlayerEntity.prevCapeZ, abstractClientPlayerEntity.capeZ) - MathHelper.lerp(h, abstractClientPlayerEntity.prevZ, abstractClientPlayerEntity.getZ());
+                    float n = MathHelper.lerpAngleDegrees(h, abstractClientPlayerEntity.prevBodyYaw, abstractClientPlayerEntity.bodyYaw);
+                    double o = MathHelper.sin(n * 0.017453292F);
+                    double p = -MathHelper.cos(n * 0.017453292F);
+                    float q = (float)e * 10.0F;
+                    q = MathHelper.clamp(q, -6.0F, 32.0F);
+                    float r = (float)(d * o + m * p) * 100.0F;
+                    r = MathHelper.clamp(r, 0.0F, 150.0F);
+                    float s = (float)(d * p - m * o) * 100.0F;
+                    s = MathHelper.clamp(s, -20.0F, 20.0F);
+                    if (r < 0.0F) {
+                        r = 0.0F;
+                    }
 
-            Quaternionf capeRotation = new Quaternionf()
-                    .rotateY(-3.1415927F)
-                    .rotateX(adjustedXRotation)
-                    .rotateZ(zRotation)
-                    .rotateY(yRotation);
+                    float t = MathHelper.lerp(h, abstractClientPlayerEntity.prevStrideDistance, abstractClientPlayerEntity.strideDistance);
+                    q += MathHelper.sin(MathHelper.lerp(h, abstractClientPlayerEntity.prevHorizontalSpeed, abstractClientPlayerEntity.horizontalSpeed) * 6.0F) * 32.0F * t;
+                    if (abstractClientPlayerEntity.isInSneakingPose()) {
+                        q += 25.0F;
+                    }
 
-            this.cape.rotate(capeRotation);
-
-            ci.cancel(); // Cancel further modifications to ensure consistent behavior
+                    matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees((6.0F + r / 2.0F + q) * backslotMultiplier));
+                    matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(s / 2.0F));
+                    matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F - s / 2.0F));
+                    VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(skinTextures.capeTexture()));
+                    this.getContextModel().renderCape(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
+                    matrixStack.pop();
+                    ci.cancel();
+                }
+            }
         }
     }
 }
