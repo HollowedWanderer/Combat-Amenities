@@ -104,7 +104,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<AbstractCli
 
 				matrixStack.translate(0.0F, 0.0F, -0.05F);
 				if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
-					matrixStack.translate(0.0F, 0.0F, 0.05F);
+					matrixStack.translate(0.0F, 0.0F, -0.05F);
 				}
 
 				applyItemSpecificAdjustments(matrixStack, playerEntity, item, playerEntity.getMainArm());
