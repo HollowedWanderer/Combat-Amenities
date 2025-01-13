@@ -125,23 +125,26 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<AbstractCli
 				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-2.5F));
 			}
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
-			matrixStack.translate(0.2, arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? -0.35 : -0.25, arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? 1.6 : 0.05);
+			matrixStack.translate(0.2, arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? -0.35 : -0.25, arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? 1.4 : 0.15);
 			if (arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay) {
 				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
 			}
+			matrixStack.translate(arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? -0.5 : -0.1, 0, 0);
 		}
 		if (stack instanceof MiningToolItem) {
-			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-30));
-			matrixStack.translate(0.2, 0, 0);
+			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(30));
+			matrixStack.translate(0, -0.1, 0);
+			matrixStack.translate(arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? -0.1 : -0.3, 0, 0);
 		}
 		if (stack instanceof BlockItem item && item.getBlock() instanceof BannerBlock) {
 			if (arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay) {
-				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(5));
+				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(10));
 			}
 			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
 			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? -30 : 30));
-			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(12F));
-			matrixStack.translate(arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? 0.135 : -0.07, -0.2, arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? -1.7 : -0.55);
+			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(6F));
+			matrixStack.translate(arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? 0.135 : -0.07, -0.2, arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? -1.625 : -0.6);
+			matrixStack.translate(arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? -0.3 : -0.1, 0, 0);
 		}
 		if (stack instanceof ShieldItem) {
 			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
@@ -150,12 +153,13 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<AbstractCli
 			transformationMode = ModelTransformationMode.FIXED;
 			matrixStack.scale(0.75F, 0.75F, 0.75F);
 			matrixStack.translate(arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? -0.25F : 0.25, 0.0F, arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? -0.11f : 0.1);
+			matrixStack.translate(arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? -0.35 : -0.3, 0, 0);
 		}
 		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
 		if (arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay) {
-			matrixStack.translate(-0.25, -0.05, -0.5);
+			matrixStack.translate(-0.35, -0.05, -0.5);
 		} else {
-			matrixStack.translate(-0.25, -0.05, -0.05);
+			matrixStack.translate(-0.35, -0.05, -0.05);
 		}
 	}
 
