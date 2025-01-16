@@ -1,5 +1,8 @@
 ![Title of the mod](https://cdn.modrinth.com/data/cached_images/88f3cc110ae64228ba85e452180c0e8f9d5deca1.png)
 
+### License
+Check the CODE-LICENSE and ASSET-LICENSE files. They apply to their respective names.
+
 ### Bug Reports/Suggestions
 Don't hesitate to report issues or suggestions [here](https://github.com/HollowedWanderer/Combat-Amenities/issues)! It really helps me out a lot! 
 
