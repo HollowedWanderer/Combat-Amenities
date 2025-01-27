@@ -102,7 +102,8 @@ public abstract class LivingEntityMixin {
                     if (newHealth > 0) {
                         self.setHealth(newHealth);
                     } else {
-                        self.setHealth(0.1F);
+                        self.stopUsingItem();
+                        self.damage(source, reducedDamage);
                     }
 
                     // Trigger hurt animations and sound effects

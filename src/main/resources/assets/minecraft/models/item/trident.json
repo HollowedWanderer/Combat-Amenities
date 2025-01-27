@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "gui_light": "front",
-  "textures": {
-    "layer0": "minecraft:item/trident"
-  }
-}

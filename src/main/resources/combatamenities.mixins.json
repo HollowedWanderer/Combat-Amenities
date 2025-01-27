@@ -29,8 +29,11 @@
     "defaultRequire": 1
   },
   "client": [
+    "BuiltinModelItemRendererMixin",
     "FirstPersonItemMixin",
     "GameRendererMixin",
+    "ItemRendererMixin",
+    "ModelLoaderMixin",
     "PlayerCapeModelMixin",
     "PlayerFeaturesMixin",
     "ProjectileEntityRendererMixin",

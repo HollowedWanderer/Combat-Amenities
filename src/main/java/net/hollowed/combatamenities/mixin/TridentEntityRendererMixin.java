@@ -42,16 +42,14 @@ public class TridentEntityRendererMixin {
         matrixStack.translate(look.x, look.y, look.z);
 
         matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(tridentEntity.getYaw() - 180.0F));
-        matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(tridentEntity.getPitch() - 67.5F));
+        matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(tridentEntity.getPitch() - 90F));
 
-        matrixStack.scale(1.25F, 1.25F, 1.25F);
+        matrixStack.scale(1.5F, 1.5F, 1.5F);
 
         ItemStack trident = Items.TRIDENT.getDefaultStack();
         if (tridentEntity.isEnchanted()) {
             trident.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
         }
-
-        matrixStack.translate(-0.35, 0, 0);
 
         // Use the ItemRenderer to render the trident item with a FIRST_PERSON_RIGHT_HAND transformation
         ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
