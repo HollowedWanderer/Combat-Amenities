@@ -2,7 +2,6 @@ package net.hollowed.combatamenities.mixin;
 
 import net.hollowed.combatamenities.CombatAmenities;
 import net.minecraft.advancement.AdvancementEntry;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.ItemCooldownManager;
@@ -19,12 +18,15 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
+
+    @Shadow public abstract boolean disablesShield();
 
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     private void modifyShieldBlocking(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
@@ -61,7 +63,7 @@ public abstract class LivingEntityMixin {
                             Vec3d knockbackDirection = attacker.getPos().subtract(player.getPos()).normalize();
                             attacker.takeKnockback(knockbackStrength, -knockbackDirection.x, -knockbackDirection.z);
                             // Check if the attacker is using an axe
-                            if (attacker.getMainHandStack().getItem() instanceof AxeItem || attacker.getOffHandStack().getItem() instanceof AxeItem) {
+                            if (attacker.disablesShield()) {
                                 cooldownManager.set(self.getActiveItem(), 40); // 2 seconds cooldown for axe hit
                                 self.stopUsingItem();
                             } else {
@@ -102,7 +104,8 @@ public abstract class LivingEntityMixin {
                     if (newHealth > 0) {
                         self.setHealth(newHealth);
                     } else {
-                        self.setHealth(0.1F);
+                        self.stopUsingItem();
+                        self.damage(world, source, reducedDamage);
                     }
 
                     // Trigger hurt animations and sound effects

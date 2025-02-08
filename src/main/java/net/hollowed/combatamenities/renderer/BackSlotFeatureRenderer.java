@@ -94,18 +94,18 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.get(1))); // Rotation Y
 					matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2))); // Rotation Z
 
-					List<Float> translation = transformData.translation();
-					matrixStack.translate(translation.get(0), translation.get(1), translation.get(2)); // Translation
-
-					// Use transformation mode from the transform data (JSON)
-					transformationMode = transformData.mode();
-
 					// Apply dynamic movement and item-specific adjustments
 					if (playerEntity instanceof OtherClientPlayerEntity) {
 						applyDynamicMovement(matrixStack, playerEntity, item);
 					} else if (playerEntity instanceof ClientPlayerEntity) {
 						applyDynamicMovement(matrixStack, playerEntity, item);
 					}
+
+					List<Float> translation = transformData.translation();
+					matrixStack.translate(translation.get(0), translation.get(1), translation.get(2)); // Translation
+
+					// Use transformation mode from the transform data (JSON)
+					transformationMode = transformData.mode();
 
 					matrixStack.translate(0.0F, 0.0F, -0.05F);
 					if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {

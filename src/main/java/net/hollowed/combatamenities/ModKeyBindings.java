@@ -59,16 +59,17 @@ public class ModKeyBindings {
         long windowHandle = MinecraftClient.getInstance().getWindow().getHandle();
         InputUtil.Key boundKey;
         InputUtil.Key boundKey1;
-        if (KeyBindingHelper.getBoundKeyOf(ModKeyBindings.backSlotBinding).toInt().isEmpty()) {
+        if (KeyBindingHelper.getBoundKeyOf(ModKeyBindings.backSlotBinding).getCode() <= 57) {
             boundKey = ModKeyBindings.backSlotBinding.getDefaultKey();
         } else {
             boundKey = KeyBindingHelper.getBoundKeyOf(ModKeyBindings.backSlotBinding);
         }
-        if (KeyBindingHelper.getBoundKeyOf(ModKeyBindings.beltSlotBinding).toInt().isEmpty()) {
+        if (KeyBindingHelper.getBoundKeyOf(ModKeyBindings.beltSlotBinding).getCode() <= 57) {
             boundKey1 = ModKeyBindings.beltSlotBinding.getDefaultKey();
         } else {
             boundKey1 = KeyBindingHelper.getBoundKeyOf(ModKeyBindings.beltSlotBinding);
         }
+
         if (InputUtil.isKeyPressed(windowHandle, boundKey.getCode())) {
             handleBackSlotSwap(client);
         } else if (InputUtil.isKeyPressed(windowHandle, boundKey1.getCode())) {

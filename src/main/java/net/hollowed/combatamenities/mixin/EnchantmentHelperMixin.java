@@ -2,73 +2,86 @@ package net.hollowed.combatamenities.mixin;
 
 import com.google.common.collect.Lists;
 import net.hollowed.combatamenities.CombatAmenities;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.EnchantableComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Weighting;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
-import static net.minecraft.enchantment.EnchantmentHelper.removeConflicts;
-
 @Mixin(EnchantmentHelper.class)
-public class EnchantmentHelperMixin {
-    @Inject(method = "getPossibleEntries", at = @At("RETURN"), cancellable = true)
-    private static void filterDisallowedEnchantments(int level, ItemStack stack, Stream<RegistryEntry<Enchantment>> possibleEnchantments, CallbackInfoReturnable<List<EnchantmentLevelEntry>> cir) {
-        List<EnchantmentLevelEntry> entries = cir.getReturnValue();
-        entries.removeIf(entry -> isDisallowedEnchantment(entry.enchantment.value().toString()));
-        cir.setReturnValue(entries);
+public abstract class EnchantmentHelperMixin {
+
+    @Shadow
+    public static void removeConflicts(List<EnchantmentLevelEntry> possibleEntries, EnchantmentLevelEntry pickedEntry) {
+    }
+
+    @Unique
+    private static List<EnchantmentLevelEntry> getPossibleEntries(int level, ItemStack stack, Stream<RegistryEntry<Enchantment>> possibleEnchantments) {
+        List<EnchantmentLevelEntry> list = Lists.newArrayList();
+        boolean bl = stack.isOf(Items.BOOK);
+        possibleEnchantments.filter(enchantment -> enchantment.value().isPrimaryItem(stack) || bl).forEach(enchantmentx -> {
+            Enchantment enchantment = enchantmentx.value();
+
+            for (int j = enchantment.getMaxLevel(); j >= enchantment.getMinLevel(); j--) {
+                if (level >= enchantment.getMinPower(j) && level <= enchantment.getMaxPower(j)) {
+                    list.add(new EnchantmentLevelEntry(enchantmentx, j));
+                    break;
+                }
+            }
+        });
+
+        list.removeIf(entry -> isDisallowedEnchantment(entry.enchantment.value().toString()));
+        return list;
     }
 
     @Inject(method = "generateEnchantments", at = @At("HEAD"), cancellable = true)
     private static void filterGeneratedEnchantments(Random random, ItemStack stack, int level, Stream<RegistryEntry<Enchantment>> possibleEnchantments, CallbackInfoReturnable<List<EnchantmentLevelEntry>> cir) {
-        List<EnchantmentLevelEntry> possibleEntries = EnchantmentHelper.getPossibleEntries(level, stack, possibleEnchantments);
-        possibleEntries.removeIf(entry -> isDisallowedEnchantment(entry.enchantment.value().toString()));
+        List<EnchantmentLevelEntry> list = Lists.newArrayList();
+        EnchantableComponent enchantableComponent = stack.get(DataComponentTypes.ENCHANTABLE);
+        if (enchantableComponent == null) {
+            cir.setReturnValue(list);
+        } else {
+            level += 1 + random.nextInt(enchantableComponent.value() / 4 + 1) + random.nextInt(enchantableComponent.value() / 4 + 1);
+            float f = (random.nextFloat() + random.nextFloat() - 1.0F) * 0.15F;
+            level = MathHelper.clamp(Math.round((float)level + (float)level * f), 1, Integer.MAX_VALUE);
+            List<EnchantmentLevelEntry> list2 = getPossibleEntries(level, stack, possibleEnchantments);
+            if (!list2.isEmpty()) {
+                Weighting.getRandom(random, list2).ifPresent(list::add);
 
-        if (possibleEntries.isEmpty()) {
-            // If no valid enchantments remain, return an empty list to prevent crashes.
-            cir.setReturnValue(List.of());
-            return;
-        }
+                while (random.nextInt(50) <= level) {
+                    if (!list.isEmpty()) {
+                        removeConflicts(list2, Util.getLast(list));
+                    }
 
-        // Now generate enchantments from the filtered list
-        List<EnchantmentLevelEntry> result = Util.make(Lists.newArrayList(), list -> {
-            int adjustedLevel = level + 1 + random.nextInt(level / 4 + 1) + random.nextInt(level / 4 + 1);
-            float variance = (random.nextFloat() + random.nextFloat() - 1.0F) * 0.15F;
-            adjustedLevel = MathHelper.clamp(Math.round(adjustedLevel + adjustedLevel * variance), 1, Integer.MAX_VALUE);
+                    if (list2.isEmpty()) {
+                        break;
+                    }
 
-            Optional<EnchantmentLevelEntry> randomEntry = Weighting.getRandom(random, possibleEntries);
-            randomEntry.ifPresent(list::add);
-
-            while (random.nextInt(50) <= adjustedLevel) {
-                if (!list.isEmpty()) {
-                    removeConflicts(possibleEntries, list.get(list.size() - 1));
+                    Weighting.getRandom(random, list2).ifPresent(list::add);
+                    level /= 2;
                 }
-
-                if (possibleEntries.isEmpty()) {
-                    break;
-                }
-
-                randomEntry = Weighting.getRandom(random, possibleEntries);
-                randomEntry.ifPresent(list::add);
-                adjustedLevel /= 2;
             }
-        });
 
-        cir.setReturnValue(result);
+            cir.setReturnValue(list);
+        }
     }
+
 
     @Unique
     private static boolean isDisallowedEnchantment(String enchantment) {
