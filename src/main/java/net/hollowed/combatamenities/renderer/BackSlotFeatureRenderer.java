@@ -78,21 +78,37 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					ModelPart bodyPart = this.getContextModel().body;
 					bodyPart.rotate(matrixStack);
 
-					setAngles(matrixStack, armedEntityRenderState, backSlotStack.getItem(), vertexConsumerProvider);
-
 					// Get the item's transformation data
 					Item item = backSlotStack.getItem();
 					Identifier itemId = Registries.ITEM.getId(item); // Retrieve the Identifier of the item
 					TransformData transformData = TransformResourceReloadListener.getTransform(itemId);
 
+					matrixStack.translate(0.0F, 0.0F, -0.15F);
+					if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
+						matrixStack.translate(0.0F, 0.0F, 0.05F);
+					}
+
+					// Use transformation mode from the transform data (JSON)
+					transformationMode = transformData.mode();
+
+					setAngles(matrixStack, armedEntityRenderState, backSlotStack.getItem(), vertexConsumerProvider);
+					applyItemSpecificAdjustments(matrixStack, armedEntityRenderState, item, armedEntityRenderState.mainArm, vertexConsumerProvider);
+
 					// Apply the transformations from TransformData using List<Float> format
-					List<Float> scale = transformData.scale();
-					matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
+					matrixStack.translate(0.0F, 0.0F, 0.25F); // Pivot Point ! !
+
+					List<Float> translation = transformData.translation();
+					matrixStack.translate(translation.get(0), translation.get(1), translation.get(2)); // Translation
 
 					List<Float> rotation = transformData.rotation();
 					matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotation.get(0))); // Rotation X
 					matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.get(1))); // Rotation Y
 					matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2))); // Rotation Z
+
+					List<Float> scale = transformData.scale();
+					matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
+
+					matrixStack.translate(0.0F, 0.0F, -0.25F); // Pivot Point ! !
 
 					// Apply dynamic movement and item-specific adjustments
 					if (playerEntity instanceof OtherClientPlayerEntity) {
@@ -100,19 +116,6 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					} else if (playerEntity instanceof ClientPlayerEntity) {
 						applyDynamicMovement(matrixStack, playerEntity, item);
 					}
-
-					List<Float> translation = transformData.translation();
-					matrixStack.translate(translation.get(0), translation.get(1), translation.get(2)); // Translation
-
-					// Use transformation mode from the transform data (JSON)
-					transformationMode = transformData.mode();
-
-					matrixStack.translate(0.0F, 0.0F, -0.05F);
-					if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
-						matrixStack.translate(0.0F, 0.0F, 0.05F);
-					}
-
-					applyItemSpecificAdjustments(matrixStack, armedEntityRenderState, item, armedEntityRenderState.mainArm);
 
 					// Render the item
 					heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, false, matrixStack, vertexConsumerProvider, light);
@@ -124,7 +127,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 	}
 
 	// Helper method for item-specific transformations
-	private void applyItemSpecificAdjustments(MatrixStack matrixStack, PlayerEntityRenderState armedEntityRenderState, Item item, Arm arm) {
+	private void applyItemSpecificAdjustments(MatrixStack matrixStack, PlayerEntityRenderState armedEntityRenderState, Item item, Arm arm, VertexConsumerProvider vertexConsumerProvider) {
 		if (item instanceof TridentItem) {
 			matrixStack.translate(0, 0.2, 0);
 			matrixStack.translate(0.0F, 0.0F, -0.1F);
@@ -136,6 +139,10 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0F));
 			transformationMode = ModelTransformationMode.FIRST_PERSON_RIGHT_HAND;
 			matrixStack.scale(1.25F, 1.25F, 1.25F);
+			if (arm == Arm.RIGHT && CombatAmenities.CONFIG.flipBackslotDisplay || arm == Arm.LEFT && !CombatAmenities.CONFIG.flipBackslotDisplay) {
+				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
+				matrixStack.translate(0, 0, -0.2);
+			}
 		} else if (item instanceof FishingRodItem || item instanceof OnAStickItem) {
 			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
 			transformationMode = ModelTransformationMode.FIXED;
@@ -155,10 +162,12 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			matrixStack.scale(1.5F, 1.5F, 1.5F);
 			matrixStack.translate(0F, 0.1F, 0f);
 		} else {
-			matrixStack.translate(0, 0.1, 0);
+			matrixStack.translate(0, -0.3, 0); // Pivot Point ! ! !
+			//renderDebugPoint(matrixStack, vertexConsumerProvider);
 			if (arm == Arm.RIGHT && CombatAmenities.CONFIG.flipBackslotDisplay || arm == Arm.LEFT && !CombatAmenities.CONFIG.flipBackslotDisplay) {
 				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
 			}
+			matrixStack.translate(0, 0.3, -0); // Pivot Point ! ! !
 		}
 	}
 
@@ -180,9 +189,10 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			matrixStack.translate(0F, 0.05F, 0); // Move the banner because it's WRONG
 		}
 
-		matrixStack.translate(0.0F, 0.0F, 0.1F); // Pivot Point ! ! !
+		matrixStack.translate(0.0F, 0.0F, 0.2F); // Pivot Point ! ! !
+		matrixStack.translate(0, 0, 0.1);
 
-		renderDebugPoint(matrixStack, vertexConsumerProvider);
+		//renderDebugPoint(matrixStack, vertexConsumerProvider);
 
 		matrixStack.multiply((new Quaternionf())
 				.rotateY(-3.1415927F)
@@ -190,18 +200,20 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 				.rotateZ(-(playerEntityRenderState.field_53538 / 2.0F * 0.017453292F))
 				.rotateY((180.0F - playerEntityRenderState.field_53538 / 2.0F) * 0.017453292F)
 		);
-		matrixStack.translate(0.0F, 0.0F, -0.1F); // Pivot Point ! ! !
 		matrixStack.translate(0F, 0.3F, 0.2);
+
+		matrixStack.translate(0.0F, 0.0F, -0.2F); // Pivot Point ! ! !
+
 	}
 
 	private void renderDebugPoint(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
-//		DebugRenderer.drawBox(
-//				matrixStack,
-//				vertexConsumerProvider,
-//				-0.02F, -0.02F, -0.02F, // Box min (relative to pivot)
-//				0.02F,  0.02F,  0.02F, // Box max (relative to pivot)
-//				1.0F, 0.0F, 0.0F, 1.0F  // Red color
-//		);
+		DebugRenderer.drawBox(
+				matrixStack,
+				vertexConsumerProvider,
+				-0.02F, -0.02F, -0.02F, // Box min (relative to pivot)
+				0.02F,  0.02F,  0.02F, // Box max (relative to pivot)
+				1.0F, 0.0F, 0.0F, 1.0F  // Red color
+		);
 	}
 
 	// Apply dynamic movement-based transformations
