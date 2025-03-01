@@ -52,15 +52,36 @@ public class BeltTransformResourceReloadListener implements SimpleSynchronousRes
         CombatAmenities.LOGGER.info("Loaded transforms: {}", transforms);
     }
 
-    public static BeltTransformData getTransform(Identifier itemId) {
-        // Provide a default BeltTransformData with default scale, rotation, translation, and mode
-        return transforms.getOrDefault(itemId, defaultTransforms == null ? new BeltTransformData(
+    public static BeltTransformData getTransform(Identifier itemId, String component) {
+        BeltTransformData baseTransform = transforms.getOrDefault(itemId, defaultTransforms);
+
+        if (baseTransform != null) {
+            // Check if a specific component transformation exists
+            if (baseTransform.componentTransforms().containsKey(component)) {
+                BeltTransformData.SubTransformData subTransform = baseTransform.componentTransforms().get(component);
+
+                return new BeltTransformData(
+                        itemId, // Preserve itemId
+                        subTransform.scale(),
+                        subTransform.rotation(),
+                        subTransform.translation(),
+                        subTransform.mode(),
+                        subTransform.sway(),
+                        Map.of() // Sub-components don't need to be passed
+                );
+            }
+            return baseTransform;
+        }
+
+        // Fallback to a fully default transform if no data is available
+        return new BeltTransformData(
                 itemId,
-                List.of(1.0f, 1.0f, 1.0f),      // Default scale
-                List.of(0.0f, 0.0f, 0.0f),      // Default rotation
-                List.of(0.0f, 0.0f, 0.0f),      // Default translation
-                ModelTransformationMode.FIXED,  // Default mode
-                1.0F                            // Default sway
-        ) : defaultTransforms);
+                List.of(1.0f, 1.0f, 1.0f), // Default scale
+                List.of(0.0f, 0.0f, 0.0f), // Default rotation
+                List.of(0.0f, 0.0f, 0.0f), // Default translation
+                ModelTransformationMode.FIXED, // Default mode
+                1.0F, // Default sway
+                Map.of() // Empty component transforms
+        );
     }
 }

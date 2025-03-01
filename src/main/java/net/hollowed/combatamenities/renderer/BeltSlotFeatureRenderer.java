@@ -4,10 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.hollowed.combatamenities.CombatAmenities;
 import net.hollowed.combatamenities.client.PlayerEntityRenderStateAccess;
-import net.hollowed.combatamenities.util.BeltTransformData;
-import net.hollowed.combatamenities.util.BeltTransformResourceReloadListener;
-import net.hollowed.combatamenities.util.TransformData;
-import net.hollowed.combatamenities.util.TransformResourceReloadListener;
+import net.hollowed.combatamenities.util.*;
 import net.minecraft.block.BannerBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
@@ -78,12 +75,14 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
                     ModelPart bodyPart = this.getContextModel().body;
                     bodyPart.rotate(matrixStack);
 
-					setAngles(matrixStack, armedEntityRenderState, backSlotStack.getItem(), vertexConsumerProvider);
+					setAngles(matrixStack, armedEntityRenderState, backSlotStack, vertexConsumerProvider);
+					matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
+					Arm arm = armedEntityRenderState.mainArm;
 
                     // Get the item's transformation data
                     Item item = backSlotStack.getItem();
                     Identifier itemId = Registries.ITEM.getId(item); // Retrieve the Identifier of the item
-                    BeltTransformData transformData = BeltTransformResourceReloadListener.getTransform(itemId);
+                    BeltTransformData transformData = BeltTransformResourceReloadListener.getTransform(itemId, backSlotStack.getOrDefault(ModComponents.INTEGER_PROPERTY, -1).toString());
 
                     // Apply the transformations from TransformData using List<Float> format
                     List<Float> scale = transformData.scale();
@@ -96,6 +95,10 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
                     List<Float> translation = transformData.translation();
                     matrixStack.translate(translation.get(0), translation.get(1), translation.get(2)); // Translation
+
+					if (arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay) {
+						matrixStack.translate(0, 0, -1.1);
+					}
 
                     // Use transformation mode from the transform data (JSON)
                     transformationMode = transformData.mode();
@@ -167,12 +170,12 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 	private float jiggleDecay = 0.9F; // Decay rate of jiggle intensity
 	private float jiggleTimer = 0.0F; // Timer to drive oscillation
 
-	private void setAngles(MatrixStack matrixStack, PlayerEntityRenderState playerEntityRenderState, Item item, VertexConsumerProvider vertexConsumerProvider) {
-		TransformData data = TransformResourceReloadListener.getTransform(Registries.ITEM.getId(item));
+	private void setAngles(MatrixStack matrixStack, PlayerEntityRenderState playerEntityRenderState, ItemStack item, VertexConsumerProvider vertexConsumerProvider) {
+		BeltTransformData data = BeltTransformResourceReloadListener.getTransform(Registries.ITEM.getId(item.getItem()), item.getOrDefault(ModComponents.INTEGER_PROPERTY, -1).toString());
 
 		// Calculate banner-specific multiplier
 		float bannerMultiplier = 0.4F;
-		if (item instanceof BlockItem blockItem && blockItem.getBlock() instanceof BannerBlock) {
+		if (item.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof BannerBlock) {
 			bannerMultiplier = 1.0F; // Increase rotation for banners
 		}
 
@@ -200,7 +203,7 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(playerEntityRenderState.mainArm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || playerEntityRenderState.mainArm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? 1F : -1F));
 
 		matrixStack.translate(-0.2, 1, -0.275);
-		if (item instanceof BlockItem blockItem && blockItem.getBlock() instanceof BannerBlock) {
+		if (item.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof BannerBlock) {
 			matrixStack.scale(1.5F, 1.5F, 1.5F);
 			matrixStack.translate(0.0, playerEntityRenderState.mainArm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || playerEntityRenderState.mainArm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? 0.0 : 0.075, playerEntityRenderState.mainArm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || playerEntityRenderState.mainArm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? 0.07 : -0.25);
 			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(playerEntityRenderState.mainArm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || playerEntityRenderState.mainArm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? -5 : 10F));

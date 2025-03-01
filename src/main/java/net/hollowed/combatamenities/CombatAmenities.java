@@ -11,6 +11,7 @@ import net.hollowed.combatamenities.config.ModConfig;
 import net.hollowed.combatamenities.networking.*;
 import net.hollowed.combatamenities.util.BeltTransformResourceReloadListener;
 import net.hollowed.combatamenities.util.ItemSlotSoundHandler;
+import net.hollowed.combatamenities.util.ModComponents;
 import net.hollowed.combatamenities.util.TransformResourceReloadListener;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.SwordItem;
@@ -46,6 +47,8 @@ public class CombatAmenities implements ModInitializer {
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
+
+		ModComponents.initialize();
 
 		Registries.ITEM.forEach(item -> {
 			if (item instanceof ItemSlotSoundHandler soundItem) {

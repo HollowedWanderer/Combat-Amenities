@@ -4,10 +4,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.hollowed.combatamenities.CombatAmenities;
 import net.hollowed.combatamenities.client.PlayerEntityRenderStateAccess;
+import net.hollowed.combatamenities.util.ModComponents;
 import net.hollowed.combatamenities.util.TransformData;
 import net.hollowed.combatamenities.util.TransformResourceReloadListener;
 import net.minecraft.block.BannerBlock;
-import net.minecraft.block.SkullBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -81,7 +81,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					// Get the item's transformation data
 					Item item = backSlotStack.getItem();
 					Identifier itemId = Registries.ITEM.getId(item); // Retrieve the Identifier of the item
-					TransformData transformData = TransformResourceReloadListener.getTransform(itemId);
+					TransformData transformData = TransformResourceReloadListener.getTransform(itemId, backSlotStack.getOrDefault(ModComponents.INTEGER_PROPERTY, -1).toString());
 
 					matrixStack.translate(0.0F, 0.0F, -0.15F);
 					if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
@@ -91,7 +91,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					// Use transformation mode from the transform data (JSON)
 					transformationMode = transformData.mode();
 
-					setAngles(matrixStack, armedEntityRenderState, backSlotStack.getItem(), vertexConsumerProvider);
+					setAngles(matrixStack, armedEntityRenderState, backSlotStack, vertexConsumerProvider);
 					applyItemSpecificAdjustments(matrixStack, armedEntityRenderState, item, armedEntityRenderState.mainArm, vertexConsumerProvider);
 
 					// Apply the transformations from TransformData using List<Float> format
@@ -179,12 +179,12 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 	private float jiggleDecay = 0.9F; // Decay rate of jiggle intensity
 	private float jiggleTimer = 0.0F; // Timer to drive oscillation
 
-	private void setAngles(MatrixStack matrixStack, PlayerEntityRenderState playerEntityRenderState, Item item, VertexConsumerProvider vertexConsumerProvider) {
-		TransformData data = TransformResourceReloadListener.getTransform(Registries.ITEM.getId(item));
+	private void setAngles(MatrixStack matrixStack, PlayerEntityRenderState playerEntityRenderState, ItemStack item, VertexConsumerProvider vertexConsumerProvider) {
+		TransformData data = TransformResourceReloadListener.getTransform(Registries.ITEM.getId(item.getItem()), item.getOrDefault(ModComponents.INTEGER_PROPERTY, -1).toString());
 
 		// Calculate banner-specific multiplier
 		float bannerMultiplier = 0.4F;
-		if (item instanceof BlockItem blockItem && blockItem.getBlock() instanceof BannerBlock) {
+		if (item.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof BannerBlock) {
 			bannerMultiplier = 1.0F; // Increase rotation for banners
 			matrixStack.translate(0F, 0.05F, 0); // Move the banner because it's WRONG
 		}

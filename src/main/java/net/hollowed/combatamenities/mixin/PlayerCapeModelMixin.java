@@ -1,5 +1,6 @@
 package net.hollowed.combatamenities.mixin;
 
+import net.hollowed.combatamenities.util.ModComponents;
 import net.hollowed.combatamenities.util.TransformData;
 import net.hollowed.combatamenities.util.TransformResourceReloadListener;
 import net.minecraft.block.BannerBlock;
@@ -31,7 +32,7 @@ public class PlayerCapeModelMixin {
             this.cape.resetTransform();
 
             ItemStack stack = client.player.getInventory().getStack(41);
-            TransformData data = TransformResourceReloadListener.getTransform(Registries.ITEM.getId(stack.getItem()));
+            TransformData data = TransformResourceReloadListener.getTransform(Registries.ITEM.getId(stack.getItem()), stack.getOrDefault(ModComponents.INTEGER_PROPERTY, -1).toString());
 
             float bannerMultiplier = 0.4F;
             if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof BannerBlock) {
@@ -39,7 +40,7 @@ public class PlayerCapeModelMixin {
             }
 
             float backslotMultiplier = 1.0F;
-            if (!stack.isEmpty() && data != null) {
+            if (!stack.isEmpty()) {
                 backslotMultiplier = data.sway() * bannerMultiplier * 0.9F;
                 this.cape.translate(new Vector3f(0.01F, 0F, -0.25F));
             }

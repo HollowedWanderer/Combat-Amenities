@@ -32,6 +32,8 @@
     "ArrowEntityRenderStateMixin",
     "FirstPersonItemMixin",
     "GameRendererMixin",
+    "ModMenuEntryMixin",
+    "ModMenuMixin",
     "PlayerCapeModelMixin",
     "PlayerEntityRendererMixin",
     "PlayerFeaturesMixin",
@@ -40,6 +42,8 @@
     "StuckObjectsFeatureRendererMixin",
     "TridentEntityRendererMixin",
     "TridentEntityRenderStateMixin",
+    "items.BooleanPropertyMixin",
+    "items.NumericPropertyMixin",
     "slots.CreativeInventoryScreenMixin",
     "slots.HandledScreenAccessor",
     "slots.InventoryScreenMixin"

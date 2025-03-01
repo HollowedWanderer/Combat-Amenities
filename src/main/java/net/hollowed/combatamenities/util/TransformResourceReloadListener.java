@@ -29,7 +29,7 @@ public class TransformResourceReloadListener implements SimpleSynchronousResourc
     @Override
     public void reload(ResourceManager manager) {
         transforms.clear();
-        System.out.println("Reloading transform data...");
+        CombatAmenities.LOGGER.info("Reloading transform data...");
 
         manager.findResources("backslot_transforms", path -> path.getPath().endsWith(".json")).keySet().forEach(id -> {
             try (InputStream stream = manager.getResource(id).get().getInputStream()) {
@@ -52,15 +52,37 @@ public class TransformResourceReloadListener implements SimpleSynchronousResourc
         CombatAmenities.LOGGER.info("Loaded transforms: {}", transforms);
     }
 
-    public static TransformData getTransform(Identifier itemId) {
-        // Provide a default TransformData with default scale, rotation, translation, and mode
-        return transforms.getOrDefault(itemId, defaultTransforms == null ? new TransformData(
+    public static TransformData getTransform(Identifier itemId, String component) {
+        TransformData baseTransform = transforms.getOrDefault(itemId, defaultTransforms);
+
+        if (baseTransform != null) {
+
+            // Check if a specific component transformation exists
+            if (baseTransform.componentTransforms().containsKey(component)) {
+                TransformData.SubTransformData subTransform = baseTransform.componentTransforms().get(component);
+
+                return new TransformData(
+                        itemId, // Preserve itemId
+                        subTransform.scale(),
+                        subTransform.rotation(),
+                        subTransform.translation(),
+                        subTransform.mode(),
+                        subTransform.sway(),
+                        Map.of() // Sub-components don't need to be passed
+                );
+            }
+            return baseTransform;
+        }
+
+        // Fallback to a fully default transform if no data is available
+        return new TransformData(
                 itemId,
-                List.of(1.0f, 1.0f, 1.0f),      // Default scale
-                List.of(0.0f, 0.0f, 0.0f),      // Default rotation
-                List.of(0.0f, 0.0f, 0.0f),      // Default translation
-                ModelTransformationMode.FIXED,  // Default mode
-                1.0F                            // Default sway
-        ) : defaultTransforms);
+                List.of(1.0f, 1.0f, 1.0f), // Default scale
+                List.of(0.0f, 0.0f, 0.0f), // Default rotation
+                List.of(0.0f, 0.0f, 0.0f), // Default translation
+                ModelTransformationMode.FIXED, // Default mode
+                1.0F, // Default sway
+                Map.of() // Empty component transforms
+        );
     }
 }
