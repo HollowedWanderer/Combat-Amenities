@@ -70,9 +70,14 @@ public abstract class ModMenuMixin {
                     true
             );
 
+            // Draw small icon
             drawContext.drawTexture(RenderLayer::getGuiTexturedOverlay, Identifier.of(CombatAmenities.MOD_ID, "ca_small_icon.png"), x + iconSize + 85, y - 3, 0, 0, 16, 16, 16, 16);
+
+            // Draw colored line below 2 rows of text
             drawContext.drawTexture(RenderLayer::getGuiTexturedOverlay, Identifier.of(CombatAmenities.MOD_ID, "ca_line.png"), x + iconSize + 3, y + 31, 0, 0, 76, 1, 76, 1);
-            drawContext.drawTexture(RenderLayer::getGuiTexturedOverlay, Identifier.of(CombatAmenities.MOD_ID, "h.png"), rowWidth - 10, y, 0, 0, 16, 16, 16, 16);
+
+            // Draw H signature
+            drawContext.drawTexture(RenderLayer::getGuiTexturedOverlay, Identifier.of(CombatAmenities.MOD_ID, "h.png"), rowWidth - 2, y, 0, 0, 16, 16, 16, 16);
         }
     }
 }
