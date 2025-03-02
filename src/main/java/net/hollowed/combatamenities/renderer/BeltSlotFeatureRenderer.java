@@ -71,46 +71,49 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
                 if (!backSlotStack.isEmpty()) {
                     matrixStack.push();
 
+					Arm arm = armedEntityRenderState.mainArm;
+					boolean right = arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay;
+
                     // Rotate based on body
                     ModelPart bodyPart = this.getContextModel().body;
                     bodyPart.rotate(matrixStack);
 
-					setAngles(matrixStack, armedEntityRenderState, backSlotStack, vertexConsumerProvider);
+					setAngles(matrixStack, armedEntityRenderState, backSlotStack, right);
 					matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
-					Arm arm = armedEntityRenderState.mainArm;
+					matrixStack.translate(0, -0.05, 0);
 
-                    // Get the item's transformation data
+					// Get the item's transformation data
                     Item item = backSlotStack.getItem();
                     Identifier itemId = Registries.ITEM.getId(item); // Retrieve the Identifier of the item
                     BeltTransformData transformData = BeltTransformResourceReloadListener.getTransform(itemId, backSlotStack.getOrDefault(ModComponents.INTEGER_PROPERTY, -1).toString());
 
+					// Use transformation mode from the transform data (JSON)
+					transformationMode = transformData.mode();
+
+					// Apply dynamic movement and item-specific adjustments
+					if (playerEntity instanceof OtherClientPlayerEntity) {
+						applyDynamicMovement(matrixStack, playerEntity, item);
+					} else if (playerEntity instanceof ClientPlayerEntity) {
+						applyDynamicMovement(matrixStack, playerEntity, item);
+					}
+
+					applyItemSpecificAdjustments(matrixStack, right, item);
+
                     // Apply the transformations from TransformData using List<Float> format
                     List<Float> scale = transformData.scale();
                     matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
+
+					List<Float> translation = transformData.translation();
+					matrixStack.translate(translation.get(0), translation.get(1), translation.get(2)); // Translation
 
                     List<Float> rotation = transformData.rotation();
                     matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotation.get(0))); // Rotation X
                     matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.get(1))); // Rotation Y
                     matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2))); // Rotation Z
 
-                    List<Float> translation = transformData.translation();
-                    matrixStack.translate(translation.get(0), translation.get(1), translation.get(2)); // Translation
-
-					if (arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay) {
-						matrixStack.translate(0, 0, -1.1);
+					if (right) {
+						matrixStack.translate(0, 0, 1.1);
 					}
-
-                    // Use transformation mode from the transform data (JSON)
-                    transformationMode = transformData.mode();
-
-                    // Apply dynamic movement and item-specific adjustments
-                    if (playerEntity instanceof OtherClientPlayerEntity) {
-                        applyDynamicMovement(matrixStack, playerEntity, item);
-                    } else if (playerEntity instanceof ClientPlayerEntity) {
-                        applyDynamicMovement(matrixStack, playerEntity, item);
-                    }
-
-                    applyItemSpecificAdjustments(matrixStack, armedEntityRenderState.mainArm, item);
 
                     // Render the item
                     heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, false, matrixStack, vertexConsumerProvider, light);
@@ -122,16 +125,14 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 	}
 
 	// Helper method for item-specific transformations
-	private void applyItemSpecificAdjustments(MatrixStack matrixStack, Arm arm, Item stack) {
+	private void applyItemSpecificAdjustments(MatrixStack matrixStack, boolean right, Item stack) {
 		if (stack instanceof BlockItem) {
 			transformationMode = ModelTransformationMode.FIXED;
-			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(30));
-			if (arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay) {
-				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-2.5F));
-			}
+			matrixStack.translate(-0.3, 0, 0);
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
-			matrixStack.translate(0.2, arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? -0.35 : -0.25, arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? 1.6 : 0.05);
-			if (arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay) {
+			matrixStack.translate(0.2, right ? -0.35 : -0.25, right ? -0.5 : -0.05);
+			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(30));
+			if (right) {
 				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
 			}
 		}
@@ -140,24 +141,19 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			matrixStack.translate(0.2, 0, 0);
 		}
 		if (stack instanceof BlockItem item && item.getBlock() instanceof BannerBlock) {
-			if (arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay) {
-				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(5));
-			}
-			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
-			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? -30 : 30));
-			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(12F));
-			matrixStack.translate(arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? 0.135 : -0.07, -0.2, arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? -1.8 : -0.75);
+			matrixStack.translate(right ? -0.2 : 0.2, 0.1, right ? 0.6 : -0.525);
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180F));
+			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(right ? -30 : 30));
+			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(right ? -8F : -12F));
 		}
 		if (stack instanceof ShieldItem) {
+			matrixStack.translate(-0.2, 0.0F, right ? -0.90f : -0.05);
 			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
-			matrixStack.translate(-0.4, 0, -0.15);
-			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? 180.0F : 0));
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(right ? 180.0F : 0));
 			transformationMode = ModelTransformationMode.FIXED;
 			matrixStack.scale(0.75F, 0.75F, 0.75F);
-			matrixStack.translate(arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? -0.25F : 0.25, 0.0F, arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? -0.11f : 0.1);
 		}
-		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
-		if (arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay) {
+		if (right) {
 			matrixStack.translate(0, 0, -0.55);
 		}
 	}
@@ -170,7 +166,7 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 	private float jiggleDecay = 0.9F; // Decay rate of jiggle intensity
 	private float jiggleTimer = 0.0F; // Timer to drive oscillation
 
-	private void setAngles(MatrixStack matrixStack, PlayerEntityRenderState playerEntityRenderState, ItemStack item, VertexConsumerProvider vertexConsumerProvider) {
+	private void setAngles(MatrixStack matrixStack, PlayerEntityRenderState playerEntityRenderState, ItemStack item, boolean right) {
 		BeltTransformData data = BeltTransformResourceReloadListener.getTransform(Registries.ITEM.getId(item.getItem()), item.getOrDefault(ModComponents.INTEGER_PROPERTY, -1).toString());
 
 		// Calculate banner-specific multiplier
@@ -180,13 +176,10 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 		}
 
 		float pivotAdjustmentY = 0.7F; // Pivot point ! ! !
-		float pivotAdjustmentX = playerEntityRenderState.mainArm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || playerEntityRenderState.mainArm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? 0.25F : -0.25F; // Pivot point ! ! !
+		float pivotAdjustmentX = right ? 0.25F : -0.25F; // Pivot point ! ! !
 
 		// Move to the pivot point
 		matrixStack.translate(pivotAdjustmentX, pivotAdjustmentY, 0.0F);
-
-		// Render debug point at pivot
-		renderDebugPoint(matrixStack, vertexConsumerProvider);
 
 		// Translate further and apply rotations
 		matrixStack.multiply((new Quaternionf())
@@ -200,24 +193,24 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 		matrixStack.translate(-pivotAdjustmentX, -pivotAdjustmentY, 0.0F); // Pivot Point ! ! !
 
 		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
-		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(playerEntityRenderState.mainArm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || playerEntityRenderState.mainArm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? 1F : -1F));
+		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(right ? 1F : -1F));
 
 		matrixStack.translate(-0.2, 1, -0.275);
 		if (item.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof BannerBlock) {
 			matrixStack.scale(1.5F, 1.5F, 1.5F);
-			matrixStack.translate(0.0, playerEntityRenderState.mainArm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || playerEntityRenderState.mainArm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? 0.0 : 0.075, playerEntityRenderState.mainArm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || playerEntityRenderState.mainArm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? 0.07 : -0.25);
-			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(playerEntityRenderState.mainArm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || playerEntityRenderState.mainArm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay ? -5 : 10F));
+			matrixStack.translate(0.0, right ? 0.0 : 0.075, right ? 0.07 : -0.25);
+			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(right ? -5 : 10F));
 		}
 	}
 
 	private void renderDebugPoint(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
-//		DebugRenderer.drawBox(
-//				matrixStack,
-//				vertexConsumerProvider,
-//				-0.02F, -0.02F, -0.02F, // Box min (relative to pivot)
-//				0.02F,  0.02F,  0.02F, // Box max (relative to pivot)
-//				1.0F, 0.0F, 0.0F, 1.0F  // Red color
-//		);
+		DebugRenderer.drawBox(
+				matrixStack,
+				vertexConsumerProvider,
+				-0.02F, -0.02F, -0.02F, // Box min (relative to pivot)
+				0.02F,  0.02F,  0.02F, // Box max (relative to pivot)
+				1.0F, 0.0F, 0.0F, 1.0F  // Red color
+		);
 	}
 
 	// Apply dynamic movement-based transformations
