@@ -5,6 +5,9 @@
   "subtitles.combatamenities.sword_unsheath": "Weapon Unsheathes",
   "gamerule.keepBackSlotItem": "Keep Back Slot Item on Death",
 
+  "death.attack.cleaved": "%1$s was cleaved in two",
+  "death.attack.cleaved.player": "%1$s was cut in half by %2$s",
+
   "text.autoconfig.combat_amenities.title": "Combat Amenities Config",
   "text.autoconfig.combat_amenities.option.backslotX": "Back Slot HUD X Offset",
   "text.autoconfig.combat_amenities.option.backslotY": "Back Slot HUD Y Offset",

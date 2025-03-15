@@ -44,7 +44,7 @@
     "TridentEntityRenderStateMixin",
     "items.BooleanPropertyMixin",
     "items.NumericPropertyMixin",
-    "slots.CreativeInventoryScreenMixin",
+    "slots.CACreativeInventoryScreenMixin",
     "slots.HandledScreenAccessor",
     "slots.InventoryScreenMixin"
   ]

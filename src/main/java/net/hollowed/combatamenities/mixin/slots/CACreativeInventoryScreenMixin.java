@@ -26,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Environment(EnvType.CLIENT)
 @Mixin(CreativeInventoryScreen.class)
-public abstract class CreativeInventoryScreenMixin extends HandledScreen<CreativeInventoryScreen.CreativeScreenHandler> {
+public abstract class CACreativeInventoryScreenMixin extends HandledScreen<CreativeInventoryScreen.CreativeScreenHandler> {
 
     @Unique
     private static final Identifier SLOT_TEXTURE = Identifier.of("textures/gui/sprites/container/slot.png");
@@ -35,7 +35,7 @@ public abstract class CreativeInventoryScreenMixin extends HandledScreen<Creativ
 
     @Shadow public abstract boolean isInventoryTabSelected();
 
-    public CreativeInventoryScreenMixin(CreativeInventoryScreen.CreativeScreenHandler handler, PlayerInventory inventory, Text title) {
+    public CACreativeInventoryScreenMixin(CreativeInventoryScreen.CreativeScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
     }
 

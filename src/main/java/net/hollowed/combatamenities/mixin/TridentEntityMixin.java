@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(TridentEntity.class)
 public abstract class TridentEntityMixin extends PersistentProjectileEntity {
@@ -61,12 +62,8 @@ public abstract class TridentEntityMixin extends PersistentProjectileEntity {
         }
     }
 
-    /**
-     * @author Hollowed
-     * @reason funny
-     */
-    @Overwrite
-    public boolean tryPickup(PlayerEntity player) {
+    @Inject(method = "tryPickup", at = @At("HEAD"), cancellable = true)
+    public void tryPickup(PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
         // Check if the player is the owner
         if (this.isOwner(player)) {
             // Check if the player's inventory is full
@@ -81,27 +78,20 @@ public abstract class TridentEntityMixin extends PersistentProjectileEntity {
             // Insert it into the player's inventory
             if (!player.isCreative() && !CombatAmenities.CONFIG.correctTridentReturn && hasSpace) {
                 player.getInventory().insertStack(this.asItemStack());
-                return true;
+                cir.setReturnValue(true);
             }
             // If the trident is in no-clip mode and original slot is valid
             if (this.isNoClip() && this.originalSlot != -1) {
                 // Place the trident in the original slot if it's empty
                 if (player.getInventory().getStack(this.originalSlot).isEmpty()) {
                     player.getInventory().setStack(this.originalSlot, this.asItemStack());
-                    return true;
+                    cir.setReturnValue(true);
                 }
             }
 
             if (!hasSpace && !player.isCreative()) {
-                return false;
+                cir.setReturnValue(false);
             }
-
-            // Insert it into the player's inventory
-            if (!player.isCreative()) {
-                player.getInventory().insertStack(this.asItemStack());
-            }
-            return true;
         }
-        return false;
     }
 }

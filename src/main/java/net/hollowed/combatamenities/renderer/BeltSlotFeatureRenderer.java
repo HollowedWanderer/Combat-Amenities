@@ -79,7 +79,6 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
                     bodyPart.rotate(matrixStack);
 
 					setAngles(matrixStack, armedEntityRenderState, backSlotStack, right);
-					matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
 					matrixStack.translate(0, -0.05, 0);
 
 					// Get the item's transformation data

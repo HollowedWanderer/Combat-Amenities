@@ -26,8 +26,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
 
-    @Shadow public abstract boolean disablesShield();
-
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     private void modifyShieldBlocking(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
