@@ -1,6 +1,7 @@
 package net.hollowed.combatamenities.mixin;
 
 import net.hollowed.combatamenities.CombatAmenities;
+import net.hollowed.combatamenities.util.ModDamageTypes;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -9,7 +10,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.ShieldItem;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -29,8 +32,10 @@ public abstract class LivingEntityMixin {
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     private void modifyShieldBlocking(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
+        boolean bypassShieldTweaks = source.getAttacker() instanceof LivingEntity living
+                && living.getMainHandStack().streamTags().toList().contains(TagKey.of(RegistryKeys.ITEM, Identifier.of(CombatAmenities.MOD_ID, "bypass_shield_tweaks")));
 
-        if (CombatAmenities.CONFIG.shieldTweaks) {
+        if (CombatAmenities.CONFIG.shieldTweaks && !source.isOf(ModDamageTypes.CLEAVED) && !bypassShieldTweaks) {
             // If the shield was raised for 10 ticks or fewer (0.5 seconds at 20 ticks per second)
             if (self.getItemUseTime() <= CombatAmenities.CONFIG.shieldParryTime && self.getItemUseTime() > 0 && self.getActiveItem().getItem() instanceof ShieldItem) {
                 // Check if the attack is from the front
