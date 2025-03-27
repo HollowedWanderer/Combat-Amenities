@@ -1,0 +1,22 @@
+{
+  "item": "minecraft:diamond_sword",
+  "scale": [2.0, 2.0, 1.0],
+  "rotation": [0.0, 0.0, 0.0],
+  "translation": [-0.1, 0.0, 0.0],
+  "mode": "NONE",
+  "sway": 1.0,
+  "secondary": {
+    "model": "combatamenities:apple",
+    "scale": [2.0, 2.0, 1.0],
+    "rotation": [0.0, 0.0, 0.0],
+    "translation": [-0.1, 0.0, 0.0],
+    "mode": "NONE"
+  },
+  "tertiary": {
+    "model": "combatamenities:strap",
+    "scale": [1.0, 1.0, 1.0],
+    "rotation": [0.0, 0.0, 0.0],
+    "translation": [0.0, 0.0, 0.0],
+    "mode": "NONE"
+  }
+}

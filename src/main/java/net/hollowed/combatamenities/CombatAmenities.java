@@ -3,16 +3,14 @@ package net.hollowed.combatamenities;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.hollowed.combatamenities.config.ModConfig;
 import net.hollowed.combatamenities.networking.*;
-import net.hollowed.combatamenities.util.BeltTransformResourceReloadListener;
-import net.hollowed.combatamenities.util.ItemSlotSoundHandler;
-import net.hollowed.combatamenities.util.ModComponents;
-import net.hollowed.combatamenities.util.TransformResourceReloadListener;
+import net.hollowed.combatamenities.util.*;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.registry.Registries;
@@ -57,6 +55,8 @@ public class CombatAmenities implements ModInitializer {
 				}
 			}
 		});
+
+		ServerTickEvents.END_SERVER_TICK.register(server -> TickDelayScheduler.tick());
 
 		// Json stuff
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new TransformResourceReloadListener());

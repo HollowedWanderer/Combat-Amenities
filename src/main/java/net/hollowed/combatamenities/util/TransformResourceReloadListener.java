@@ -60,15 +60,31 @@ public class TransformResourceReloadListener implements SimpleSynchronousResourc
             // Check if a specific component transformation exists
             if (baseTransform.componentTransforms().containsKey(component)) {
                 TransformData.SubTransformData subTransform = baseTransform.componentTransforms().get(component);
+                TransformData.SecondaryTransformData secondary = subTransform.secondaryTransforms();
+                TransformData.TertiaryTransformData tertiary = subTransform.tertiaryTransforms();
 
                 return new TransformData(
-                        itemId, // Preserve itemId
+                        itemId,
                         subTransform.scale(),
                         subTransform.rotation(),
                         subTransform.translation(),
                         subTransform.mode(),
                         subTransform.sway(),
-                        Map.of() // Sub-components don't need to be passed
+                        Map.of(),
+                        new TransformData.SecondaryTransformData(
+                                secondary.item(),
+                                secondary.scale(),
+                                secondary.rotation(),
+                                secondary.translation(),
+                                secondary.mode()
+                        ),
+                        new TransformData.TertiaryTransformData(
+                                tertiary.item(),
+                                tertiary.scale(),
+                                tertiary.rotation(),
+                                tertiary.translation(),
+                                tertiary.mode()
+                        )
                 );
             }
             return baseTransform;
@@ -82,7 +98,21 @@ public class TransformResourceReloadListener implements SimpleSynchronousResourc
                 List.of(0.0f, 0.0f, 0.0f), // Default translation
                 ModelTransformationMode.FIXED, // Default mode
                 1.0F, // Default sway
-                Map.of() // Empty component transforms
+                Map.of(), // Empty component transforms
+                new TransformData.SecondaryTransformData(
+                        Identifier.of("null"),
+                        List.of(1.0f, 1.0f, 1.0f), // Default scale
+                        List.of(0.0f, 0.0f, 0.0f), // Default rotation
+                        List.of(0.0f, 0.0f, 0.0f), // Default translation
+                        ModelTransformationMode.FIXED // Default mode
+                ),
+                new TransformData.TertiaryTransformData(
+                        Identifier.of("null"),
+                        List.of(1.0f, 1.0f, 1.0f), // Default scale
+                        List.of(0.0f, 0.0f, 0.0f), // Default rotation
+                        List.of(0.0f, 0.0f, 0.0f), // Default translation
+                        ModelTransformationMode.FIXED // Default mode
+                )
         );
     }
 }

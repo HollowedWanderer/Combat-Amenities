@@ -1,0 +1,6 @@
+{
+  "parent": "combatamenities:item/greatsword",
+  "textures": {
+    "layer0": "combatamenities:item/diamond_greatsword"
+  }
+}

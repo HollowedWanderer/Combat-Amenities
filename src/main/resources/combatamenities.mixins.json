@@ -20,6 +20,15 @@
     "ProjectileEntityMixin",
     "ServerPlayerEntityMixin",
     "TridentEntityMixin",
+    "meleeTweaks.AxeFunctions",
+    "meleeTweaks.EntityFreezer",
+    "meleeTweaks.ItemMixin",
+    "meleeTweaks.ItemStackMixin",
+    "meleeTweaks.LivingEntityAttackMixin",
+    "meleeTweaks.LivingEntityFreezer",
+    "meleeTweaks.MaceFunctions",
+    "meleeTweaks.SwordFunctions",
+    "meleeTweaks.TridentFunctions",
     "slots.PlayerInventoryMixin",
     "slots.ServerPlayerEntityMixin",
     "slots.SlotAccessor",
@@ -43,9 +52,11 @@
     "TridentEntityRendererMixin",
     "TridentEntityRenderStateMixin",
     "items.BooleanPropertyMixin",
+    "items.ItemRendererAccessor",
     "items.NumericPropertyMixin",
     "slots.CACreativeInventoryScreenMixin",
     "slots.HandledScreenAccessor",
+    "slots.HudRendererMixin",
     "slots.InventoryScreenMixin"
   ]
 }

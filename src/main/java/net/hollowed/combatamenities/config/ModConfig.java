@@ -36,4 +36,7 @@ public class ModConfig implements ConfigData {
     public int shieldParryTime = 5;
     public boolean enderPearlTweaks = true;
     public boolean bowTweaks = true;
+
+    @ConfigEntry.Gui.RequiresRestart
+    public boolean meleeRework = true;
 }
