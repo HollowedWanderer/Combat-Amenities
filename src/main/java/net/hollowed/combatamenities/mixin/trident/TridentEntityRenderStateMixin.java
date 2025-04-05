@@ -1,4 +1,4 @@
-package net.hollowed.combatamenities.mixin;
+package net.hollowed.combatamenities.mixin.trident;
 
 import net.hollowed.combatamenities.client.TridentEntityRenderStateAccess;
 import net.minecraft.client.render.entity.state.TridentEntityRenderState;

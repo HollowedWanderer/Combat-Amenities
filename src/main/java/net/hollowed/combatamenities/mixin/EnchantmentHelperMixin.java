@@ -46,7 +46,7 @@ public abstract class EnchantmentHelperMixin {
             }
         });
 
-        list.removeIf(entry -> isDisallowedEnchantment(entry.enchantment.value().toString()));
+        list.removeIf(entry -> isDisallowedEnchantment(entry.enchantment().value().toString()));
         return list;
     }
 
@@ -62,7 +62,7 @@ public abstract class EnchantmentHelperMixin {
             level = MathHelper.clamp(Math.round((float)level + (float)level * f), 1, Integer.MAX_VALUE);
             List<EnchantmentLevelEntry> list2 = getPossibleEntries(level, stack, possibleEnchantments);
             if (!list2.isEmpty()) {
-                Weighting.getRandom(random, list2).ifPresent(list::add);
+                Weighting.getRandom(random, list2, EnchantmentLevelEntry::getWeight).ifPresent(list::add);
 
                 while (random.nextInt(50) <= level) {
                     if (!list.isEmpty()) {
@@ -73,7 +73,7 @@ public abstract class EnchantmentHelperMixin {
                         break;
                     }
 
-                    Weighting.getRandom(random, list2).ifPresent(list::add);
+                    Weighting.getRandom(random, list2, EnchantmentLevelEntry::getWeight).ifPresent(list::add);
                     level /= 2;
                 }
             }

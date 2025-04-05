@@ -167,7 +167,7 @@ public abstract class LivingEntityAttackMixin extends LivingEntity {
 
                             boolean bl5 = target.sidedDamage(damageSource, i);
                             if (bl5) {
-                                float k = this.getKnockbackAgainst(target, damageSource) + (bl2 ? 1.0F : 0.0F);
+                                float k = this.getAttackKnockbackAgainst(target, damageSource) + (bl2 ? 1.0F : 0.0F);
                                 if (k > 0.0F) {
                                     if (target instanceof LivingEntity livingEntity2) {
                                         livingEntity2.takeKnockback(

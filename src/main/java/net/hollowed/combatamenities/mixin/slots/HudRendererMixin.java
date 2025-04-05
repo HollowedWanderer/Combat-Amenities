@@ -1,5 +1,6 @@
 package net.hollowed.combatamenities.mixin.slots;
 
+import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.hollowed.combatamenities.CombatAmenities;
 import net.minecraft.client.MinecraftClient;
@@ -62,7 +63,8 @@ public class HudRendererMixin {
                 final int x = getBeltX(drawContext);
                 int y = drawContext.getScaledWindowHeight() - yOffset - 4;
 
-                RenderSystem.enableBlend();
+                RenderSystem.assertOnRenderThread();
+                GlStateManager._enableBlend();
 
                 // Adjust position and scale based on animation ticks
                 float scaleY = 1.0f;
@@ -104,7 +106,8 @@ public class HudRendererMixin {
                 final int x = getX(drawContext);
                 int y = drawContext.getScaledWindowHeight() - yOffset - 4; // Y position remains the same
 
-                RenderSystem.enableBlend();
+                RenderSystem.assertOnRenderThread();
+                GlStateManager._disableBlend();
 
                 // Adjust position and scale based on animation ticks
                 float scaleY = 1.0f;

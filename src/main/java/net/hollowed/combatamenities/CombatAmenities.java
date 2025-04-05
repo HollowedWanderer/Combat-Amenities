@@ -11,13 +11,22 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.hollowed.combatamenities.config.ModConfig;
 import net.hollowed.combatamenities.networking.*;
 import net.hollowed.combatamenities.util.*;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.AxeItem;
-import net.minecraft.item.SwordItem;
+import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongepowered.asm.mixin.Unique;
 
 import java.util.Set;
 
@@ -40,6 +49,25 @@ public class CombatAmenities implements ModInitializer {
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
+	public static Vec3d matrixToVec(MatrixStack matrixStack) {
+		// Extract transformation matrix
+		Matrix4f matrix = matrixStack.peek().getPositionMatrix();
+
+		// Convert local position to world space
+		Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
+		return transformToWorld(matrix, camera);
+	}
+
+	private static Vec3d transformToWorld(Matrix4f matrix, Camera camera) {
+		// Convert (0,0,0) in local item space to transformed coordinates
+		Vector4f localPos = new Vector4f(0, 0, 0, 1);
+		matrix.transform(localPos);
+
+		// Convert view space to world space by adding the camera position
+		Vec3d cameraPos = camera.getPos();
+		return new Vec3d(cameraPos.x + localPos.x(), cameraPos.y + localPos.y(), cameraPos.z + localPos.z());
+	}
+
 	@Override
 	public void onInitialize() {
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
@@ -47,14 +75,6 @@ public class CombatAmenities implements ModInitializer {
 		// Proceed with mild caution.
 
 		ModComponents.initialize();
-
-		Registries.ITEM.forEach(item -> {
-			if (item instanceof ItemSlotSoundHandler soundItem) {
-				if (soundItem instanceof SwordItem || soundItem instanceof AxeItem) {
-					soundItem.combat_Amenities$setUnsheatheSound(ModSounds.SWORD_UNSHEATH);
-				}
-			}
-		});
 
 		ServerTickEvents.END_SERVER_TICK.register(server -> TickDelayScheduler.tick());
 

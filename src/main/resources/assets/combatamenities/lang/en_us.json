@@ -26,5 +26,6 @@
   "text.autoconfig.combat_amenities.option.shieldTweaks": "Shield Tweaks",
   "text.autoconfig.combat_amenities.option.shieldParryTime": "Shield Parry Window (Ticks)",
   "text.autoconfig.combat_amenities.option.enderPearlTweaks": "Ender Pearl Tweaks",
-  "text.autoconfig.combat_amenities.option.bowTweaks": "Bow Tweaks"
+  "text.autoconfig.combat_amenities.option.bowTweaks": "Bow Tweaks",
+  "text.autoconfig.combat_amenities.option.meleeRework": "Melee Rework [EXPERIMENTAL - WIP]"
 }

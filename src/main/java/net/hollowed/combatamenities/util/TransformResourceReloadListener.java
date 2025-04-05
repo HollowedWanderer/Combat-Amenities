@@ -4,7 +4,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.hollowed.combatamenities.CombatAmenities;
-import net.minecraft.item.ModelTransformationMode;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -96,7 +96,7 @@ public class TransformResourceReloadListener implements SimpleSynchronousResourc
                 List.of(1.0f, 1.0f, 1.0f), // Default scale
                 List.of(0.0f, 0.0f, 0.0f), // Default rotation
                 List.of(0.0f, 0.0f, 0.0f), // Default translation
-                ModelTransformationMode.FIXED, // Default mode
+                ItemDisplayContext.FIXED, // Default mode
                 1.0F, // Default sway
                 Map.of(), // Empty component transforms
                 new TransformData.SecondaryTransformData(
@@ -104,14 +104,14 @@ public class TransformResourceReloadListener implements SimpleSynchronousResourc
                         List.of(1.0f, 1.0f, 1.0f), // Default scale
                         List.of(0.0f, 0.0f, 0.0f), // Default rotation
                         List.of(0.0f, 0.0f, 0.0f), // Default translation
-                        ModelTransformationMode.FIXED // Default mode
+                        ItemDisplayContext.FIXED // Default mode
                 ),
                 new TransformData.TertiaryTransformData(
                         Identifier.of("null"),
                         List.of(1.0f, 1.0f, 1.0f), // Default scale
                         List.of(0.0f, 0.0f, 0.0f), // Default rotation
                         List.of(0.0f, 0.0f, 0.0f), // Default translation
-                        ModelTransformationMode.FIXED // Default mode
+                        ItemDisplayContext.FIXED // Default mode
                 )
         );
     }

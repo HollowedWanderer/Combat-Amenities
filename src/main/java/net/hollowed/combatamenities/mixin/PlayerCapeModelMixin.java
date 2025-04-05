@@ -42,7 +42,7 @@ public class PlayerCapeModelMixin {
             float backslotMultiplier = 1.0F;
             if (!stack.isEmpty()) {
                 backslotMultiplier = data.sway() * bannerMultiplier * 0.9F;
-                this.cape.translate(new Vector3f(0.01F, 0F, -0.25F));
+                this.cape.moveOrigin(new Vector3f(0.01F, 0F, -0.25F));
             }
 
             // Calculate the adjusted cape rotation

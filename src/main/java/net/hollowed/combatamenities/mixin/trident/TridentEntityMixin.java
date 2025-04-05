@@ -1,4 +1,4 @@
-package net.hollowed.combatamenities.mixin;
+package net.hollowed.combatamenities.mixin.trident;
 
 import net.hollowed.combatamenities.CombatAmenities;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -68,7 +68,7 @@ public abstract class TridentEntityMixin extends PersistentProjectileEntity {
         if (this.isOwner(player)) {
             // Check if the player's inventory is full
             boolean hasSpace = false;
-            for (ItemStack stack : player.getInventory().main) {
+            for (ItemStack stack : player.getInventory().getMainStacks()) {
                 if (stack.isEmpty()) {
                     hasSpace = true;
                     break;

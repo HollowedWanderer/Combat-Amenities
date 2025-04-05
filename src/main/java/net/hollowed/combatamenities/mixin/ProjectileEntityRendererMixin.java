@@ -86,7 +86,7 @@ public abstract class ProjectileEntityRendererMixin<T extends PersistentProjecti
                 ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
                 itemRenderer.renderItem(
                         itemStack,
-                        ModelTransformationMode.NONE,
+                        ItemDisplayContext.NONE,
                         light,
                         OverlayTexture.DEFAULT_UV,
                         matrixStack,

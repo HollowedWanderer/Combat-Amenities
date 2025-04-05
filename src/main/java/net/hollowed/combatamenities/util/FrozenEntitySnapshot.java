@@ -2,7 +2,6 @@ package net.hollowed.combatamenities.util;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 
 import java.util.UUID;
 
@@ -14,7 +13,7 @@ public class FrozenEntitySnapshot {
 
     public FrozenEntitySnapshot(LivingEntity entity) {
         this.uuid = entity.getUuid();
-        this.fallDistance = entity.fallDistance;
+        this.fallDistance = (float) entity.fallDistance;
         this.sprinting = entity.isSprinting();
 
         // Save entity's NBT data

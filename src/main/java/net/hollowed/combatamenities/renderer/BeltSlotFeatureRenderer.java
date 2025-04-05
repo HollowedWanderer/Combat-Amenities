@@ -12,6 +12,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.debug.DebugRenderer;
+import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
@@ -22,6 +23,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -36,7 +38,7 @@ import java.util.Queue;
 public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> {
 
 	private final HeldItemRenderer heldItemRenderer;
-	private ModelTransformationMode transformationMode = ModelTransformationMode.FIXED;
+	private ItemDisplayContext transformationMode = ItemDisplayContext.FIXED;
 
     public BeltSlotFeatureRenderer(FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel> context, HeldItemRenderer heldItemRenderer) {
 		super(context);
@@ -58,7 +60,7 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
                         double offsetX = (Math.random() - 0.5); // Random value between -1 and 1
                         double offsetY = Math.random(); // Random value between 0 and 1.5 for height variation
                         double offsetZ = (Math.random() - 0.5); // Random value between -1 and 1
-                        playerEntity.getWorld().addParticle(
+                        playerEntity.getWorld().addParticleClient(
                                 ParticleTypes.ENCHANT,
                                 playerEntity.getX() + offsetX,
                                 playerEntity.getY() + offsetY, // Add 1.2 to keep particles near the head
@@ -73,10 +75,6 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
 					Arm arm = armedEntityRenderState.mainArm;
 					boolean right = arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay;
-
-                    // Rotate based on body
-                    ModelPart bodyPart = this.getContextModel().body;
-                    bodyPart.rotate(matrixStack);
 
 					setAngles(matrixStack, armedEntityRenderState, backSlotStack, right);
 					matrixStack.translate(0, -0.05, 0);
@@ -115,7 +113,7 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					}
 
                     // Render the item
-                    heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, false, matrixStack, vertexConsumerProvider, light);
+                    heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, matrixStack, vertexConsumerProvider, light);
 
                     matrixStack.pop();
                 }
@@ -123,10 +121,15 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 		}
 	}
 
+	private static final TagKey<Item> PICKAXE_TAG = TagKey.of(Registries.ITEM.getKey(), Identifier.ofVanilla("pickaxes"));
+	private static final TagKey<Item> AXE_TAG = TagKey.of(Registries.ITEM.getKey(), Identifier.ofVanilla("axes"));
+	private static final TagKey<Item> SHOVEL_TAG = TagKey.of(Registries.ITEM.getKey(), Identifier.ofVanilla("shovels"));
+	private static final TagKey<Item> HOE_TAG = TagKey.of(Registries.ITEM.getKey(), Identifier.ofVanilla("hoes"));
+
 	// Helper method for item-specific transformations
 	private void applyItemSpecificAdjustments(MatrixStack matrixStack, boolean right, Item stack) {
 		if (stack instanceof BlockItem) {
-			transformationMode = ModelTransformationMode.FIXED;
+			transformationMode = ItemDisplayContext.FIXED;
 			matrixStack.translate(-0.3, 0, 0);
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
 			matrixStack.translate(0.2, right ? -0.35 : -0.25, right ? -0.5 : -0.05);
@@ -135,7 +138,7 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
 			}
 		}
-		if (stack instanceof MiningToolItem) {
+		if (stack.getDefaultStack().isIn(PICKAXE_TAG) || stack.getDefaultStack().isIn(AXE_TAG) || stack.getDefaultStack().isIn(SHOVEL_TAG) || stack.getDefaultStack().isIn(HOE_TAG)) {
 			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-30));
 			matrixStack.translate(0.2, 0, 0);
 		}
@@ -149,7 +152,7 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			matrixStack.translate(-0.2, 0.0F, right ? -0.90f : -0.05);
 			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
 			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(right ? 180.0F : 0));
-			transformationMode = ModelTransformationMode.FIXED;
+			transformationMode = ItemDisplayContext.FIXED;
 			matrixStack.scale(0.75F, 0.75F, 0.75F);
 		}
 		if (right) {

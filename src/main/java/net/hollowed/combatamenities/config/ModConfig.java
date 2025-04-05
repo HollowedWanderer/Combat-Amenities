@@ -38,5 +38,5 @@ public class ModConfig implements ConfigData {
     public boolean bowTweaks = true;
 
     @ConfigEntry.Gui.RequiresRestart
-    public boolean meleeRework = true;
+    public boolean meleeRework = false;
 }

@@ -17,9 +17,9 @@
     "ItemStackMixin",
     "LivingEntityMixin",
     "MinecraftClientMixin",
+    "MinecraftServerMixin",
     "ProjectileEntityMixin",
     "ServerPlayerEntityMixin",
-    "TridentEntityMixin",
     "meleeTweaks.AxeFunctions",
     "meleeTweaks.EntityFreezer",
     "meleeTweaks.ItemMixin",
@@ -32,7 +32,9 @@
     "slots.PlayerInventoryMixin",
     "slots.ServerPlayerEntityMixin",
     "slots.SlotAccessor",
-    "slots.SlotsMixin"
+    "slots.SlotNBTMixin",
+    "slots.SlotsMixin",
+    "trident.TridentEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -49,14 +51,13 @@
     "PlayerRenderStateMixin",
     "ProjectileEntityRendererMixin",
     "StuckObjectsFeatureRendererMixin",
-    "TridentEntityRendererMixin",
-    "TridentEntityRenderStateMixin",
     "items.BooleanPropertyMixin",
-    "items.ItemRendererAccessor",
     "items.NumericPropertyMixin",
     "slots.CACreativeInventoryScreenMixin",
     "slots.HandledScreenAccessor",
     "slots.HudRendererMixin",
-    "slots.InventoryScreenMixin"
+    "slots.InventoryScreenMixin",
+    "trident.TridentEntityRendererMixin",
+    "trident.TridentEntityRenderStateMixin"
   ]
 }

@@ -2,7 +2,7 @@ package net.hollowed.combatamenities.util;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.item.ModelTransformationMode;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public record TransformData(
         List<Float> scale,
         List<Float> rotation,
         List<Float> translation,
-        ModelTransformationMode mode,
+        ItemDisplayContext mode,
         Float sway,
         Map<String, SubTransformData> componentTransforms, // Map of int -> TransformData
         SecondaryTransformData secondaryTransforms,
@@ -25,7 +25,7 @@ public record TransformData(
             Codec.FLOAT.listOf().fieldOf("rotation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(TransformData::rotation),
             Codec.FLOAT.listOf().fieldOf("translation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(TransformData::translation),
             Codec.STRING.fieldOf("mode").orElse("FIXED")
-                    .xmap(ModelTransformationMode::valueOf, ModelTransformationMode::name)
+                    .xmap(ItemDisplayContext::valueOf, ItemDisplayContext::name)
                     .forGetter(TransformData::mode),
             Codec.FLOAT.fieldOf("sway").orElse(1.0F).forGetter(TransformData::sway),
             Codec.unboundedMap(Codec.STRING, SubTransformData.CODEC) // Map<Integer, SubTransformData>
@@ -36,7 +36,7 @@ public record TransformData(
                             List.of(1.0f, 1.0f, 1.0f),
                             List.of(0.0f, 0.0f, 0.0f),
                             List.of(0.0f, 0.0f, 0.0f),
-                            ModelTransformationMode.NONE
+                            ItemDisplayContext.NONE
                     ))
                     .forGetter(TransformData::secondaryTransforms),
             TertiaryTransformData.CODEC.fieldOf("tertiary").orElse(new TertiaryTransformData(
@@ -44,7 +44,7 @@ public record TransformData(
                             List.of(1.0f, 1.0f, 1.0f),
                             List.of(0.0f, 0.0f, 0.0f),
                             List.of(0.0f, 0.0f, 0.0f),
-                            ModelTransformationMode.NONE
+                            ItemDisplayContext.NONE
                     ))
                     .forGetter(TransformData::tertiaryTransforms)
     ).apply(instance, TransformData::new));
@@ -54,7 +54,7 @@ public record TransformData(
             List<Float> scale,
             List<Float> rotation,
             List<Float> translation,
-            ModelTransformationMode mode,
+            ItemDisplayContext mode,
             Float sway,
             SecondaryTransformData secondaryTransforms,
             TertiaryTransformData tertiaryTransforms
@@ -64,7 +64,7 @@ public record TransformData(
                 Codec.FLOAT.listOf().fieldOf("rotation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(SubTransformData::rotation),
                 Codec.FLOAT.listOf().fieldOf("translation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(SubTransformData::translation),
                 Codec.STRING.fieldOf("mode").orElse("FIXED")
-                        .xmap(ModelTransformationMode::valueOf, ModelTransformationMode::name)
+                        .xmap(ItemDisplayContext::valueOf, ItemDisplayContext::name)
                         .forGetter(SubTransformData::mode),
                 Codec.FLOAT.fieldOf("sway").orElse(1.0F).forGetter(SubTransformData::sway),
                 SecondaryTransformData.CODEC.fieldOf("secondary")
@@ -79,7 +79,7 @@ public record TransformData(
             List<Float> scale,
             List<Float> rotation,
             List<Float> translation,
-            ModelTransformationMode mode
+            ItemDisplayContext mode
     ) {
         public static final Codec<SecondaryTransformData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Identifier.CODEC.fieldOf("model").forGetter(SecondaryTransformData::item),
@@ -87,7 +87,7 @@ public record TransformData(
                 Codec.FLOAT.listOf().fieldOf("rotation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(SecondaryTransformData::rotation),
                 Codec.FLOAT.listOf().fieldOf("translation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(SecondaryTransformData::translation),
                 Codec.STRING.fieldOf("mode").orElse("FIXED")
-                        .xmap(ModelTransformationMode::valueOf, ModelTransformationMode::name)
+                        .xmap(ItemDisplayContext::valueOf, ItemDisplayContext::name)
                         .forGetter(SecondaryTransformData::mode)
         ).apply(instance, SecondaryTransformData::new));
     }
@@ -97,7 +97,7 @@ public record TransformData(
             List<Float> scale,
             List<Float> rotation,
             List<Float> translation,
-            ModelTransformationMode mode
+            ItemDisplayContext mode
     ) {
         public static final Codec<TertiaryTransformData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Identifier.CODEC.fieldOf("model").forGetter(TertiaryTransformData::item),
@@ -105,7 +105,7 @@ public record TransformData(
                 Codec.FLOAT.listOf().fieldOf("rotation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(TertiaryTransformData::rotation),
                 Codec.FLOAT.listOf().fieldOf("translation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(TertiaryTransformData::translation),
                 Codec.STRING.fieldOf("mode").orElse("FIXED")
-                        .xmap(ModelTransformationMode::valueOf, ModelTransformationMode::name)
+                        .xmap(ItemDisplayContext::valueOf, ItemDisplayContext::name)
                         .forGetter(TertiaryTransformData::mode)
         ).apply(instance, TertiaryTransformData::new));
     }

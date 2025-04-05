@@ -40,7 +40,7 @@ import java.util.Queue;
 public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> {
 
 	private final HeldItemRenderer heldItemRenderer;
-	private ModelTransformationMode transformationMode = ModelTransformationMode.FIXED;
+	private ItemDisplayContext transformationMode = ItemDisplayContext.FIXED;
 
     public BackSlotFeatureRenderer(FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel> context, HeldItemRenderer heldItemRenderer) {
 		super(context);
@@ -62,7 +62,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						double offsetX = (Math.random() - 0.5); // Random value between -1 and 1
 						double offsetY = Math.random(); // Random value between 0 and 1.5 for height variation
 						double offsetZ = (Math.random() - 0.5); // Random value between -1 and 1
-						playerEntity.getWorld().addParticle(
+						playerEntity.getWorld().addParticleClient(
 								ParticleTypes.ENCHANT,
 								playerEntity.getX() + offsetX,
 								playerEntity.getY() + offsetY + 0.75, // Add 1.2 to keep particles near the head
@@ -91,9 +91,6 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
 					if (!secondaryModel.equals(Identifier.of("null"))) {
 						matrixStack.push();
-
-						ModelPart bodyPart = this.getContextModel().body;
-						bodyPart.rotate(matrixStack);
 
 						matrixStack.translate(0.0F, 0.0F, -0.15F);
 						if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
@@ -128,14 +125,12 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 							applyDynamicMovement(matrixStack, playerEntity, item);
 						}
 
-						heldItemRenderer.renderItem(playerEntity, secondaryAppleStack, transformationMode, false, matrixStack, vertexConsumerProvider, light);
+						heldItemRenderer.renderItem(playerEntity, secondaryAppleStack, transformationMode, matrixStack, vertexConsumerProvider, light);
 						matrixStack.pop();
 					}
 
 					if (!tertiaryModel.equals(Identifier.of("null"))) {
 						matrixStack.push();
-						ModelPart bodyPart = this.getContextModel().body;
-						bodyPart.rotate(matrixStack);
 
 						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180)); // Rotation Y
 
@@ -154,15 +149,13 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
 						matrixStack.translate(0.0F, 0.0F, -0.25F); // Pivot Point ! !
 
-						heldItemRenderer.renderItem(playerEntity, tertiaryAppleStack, transformationMode, false, matrixStack, vertexConsumerProvider, light);
+						heldItemRenderer.renderItem(playerEntity, tertiaryAppleStack, transformationMode, matrixStack, vertexConsumerProvider, light);
 						matrixStack.pop();
 					}
 
 					matrixStack.push();
 
 					// Rotate based on body
-					ModelPart bodyPart = this.getContextModel().body;
-					bodyPart.rotate(matrixStack);
 
 					matrixStack.translate(0.0F, 0.0F, -0.15F);
 					if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
@@ -199,7 +192,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					}
 
 					// Render the item
-					heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, false, matrixStack, vertexConsumerProvider, light);
+					heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, matrixStack, vertexConsumerProvider, light);
 
 					matrixStack.pop();
 				}
@@ -218,17 +211,17 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
 			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(45.0F));
 			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0F));
-			transformationMode = ModelTransformationMode.FIRST_PERSON_RIGHT_HAND;
-			matrixStack.scale(1.25F, 1.25F, 1.25F);
+			transformationMode = ItemDisplayContext.FIRST_PERSON_RIGHT_HAND;
+			matrixStack.scale(1.5F, 1.5F, 1.5F);
 			if (arm == Arm.RIGHT && CombatAmenities.CONFIG.flipBackslotDisplay || arm == Arm.LEFT && !CombatAmenities.CONFIG.flipBackslotDisplay) {
 				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
 				matrixStack.translate(0, 0, -0.2);
 			}
 		} else if (item instanceof FishingRodItem || item instanceof OnAStickItem) {
 			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
-			transformationMode = ModelTransformationMode.FIXED;
+			transformationMode = ItemDisplayContext.FIXED;
 		} else if (item instanceof BlockItem blockItem) {
-			transformationMode = ModelTransformationMode.GROUND;
+			transformationMode = ItemDisplayContext.GROUND;
 			matrixStack.scale(2, 2, 2);
 
 			matrixStack.translate(0, -0.1, 0);
