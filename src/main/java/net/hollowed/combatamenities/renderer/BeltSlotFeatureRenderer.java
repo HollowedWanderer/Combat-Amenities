@@ -3,16 +3,15 @@ package net.hollowed.combatamenities.renderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.hollowed.combatamenities.CombatAmenities;
-import net.hollowed.combatamenities.client.PlayerEntityRenderStateAccess;
-import net.hollowed.combatamenities.util.*;
+import net.hollowed.combatamenities.util.interfaces.PlayerEntityRenderStateAccess;
+import net.hollowed.combatamenities.util.items.ModComponents;
+import net.hollowed.combatamenities.util.json.BeltTransformData;
+import net.hollowed.combatamenities.util.json.BeltTransformResourceReloadListener;
 import net.minecraft.block.BannerBlock;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.debug.DebugRenderer;
-import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
@@ -72,6 +71,7 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
                 if (!backSlotStack.isEmpty()) {
                     matrixStack.push();
+					this.getContextModel().body.applyTransform(matrixStack);
 
 					Arm arm = armedEntityRenderState.mainArm;
 					boolean right = arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay;
@@ -95,6 +95,10 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					}
 
 					applyItemSpecificAdjustments(matrixStack, right, item);
+					if (right) {
+						matrixStack.translate(0, 0, 1.1);
+					}
+					matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
 
                     // Apply the transformations from TransformData using List<Float> format
                     List<Float> scale = transformData.scale();
@@ -103,14 +107,14 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					List<Float> translation = transformData.translation();
 					matrixStack.translate(translation.get(0), translation.get(1), translation.get(2)); // Translation
 
+
                     List<Float> rotation = transformData.rotation();
                     matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotation.get(0))); // Rotation X
+					if (!right) {
+						matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-rotation.getFirst() * 2)); // Rotation Z
+					}
                     matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.get(1))); // Rotation Y
                     matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2))); // Rotation Z
-
-					if (right) {
-						matrixStack.translate(0, 0, 1.1);
-					}
 
                     // Render the item
                     heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, matrixStack, vertexConsumerProvider, light);
@@ -130,17 +134,17 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 	private void applyItemSpecificAdjustments(MatrixStack matrixStack, boolean right, Item stack) {
 		if (stack instanceof BlockItem) {
 			transformationMode = ItemDisplayContext.FIXED;
-			matrixStack.translate(-0.3, 0, 0);
+			matrixStack.translate(0.1, 0.2, 0);
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
-			matrixStack.translate(0.2, right ? -0.35 : -0.25, right ? -0.5 : -0.05);
+			matrixStack.translate(0.2, -0.35, right ? 1.7 : -0.05);
 			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(30));
 			if (right) {
 				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
 			}
 		}
 		if (stack.getDefaultStack().isIn(PICKAXE_TAG) || stack.getDefaultStack().isIn(AXE_TAG) || stack.getDefaultStack().isIn(SHOVEL_TAG) || stack.getDefaultStack().isIn(HOE_TAG)) {
-			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-30));
-			matrixStack.translate(0.2, 0, 0);
+			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-15));
+			matrixStack.translate(0.1, 0.1, 0);
 		}
 		if (stack instanceof BlockItem item && item.getBlock() instanceof BannerBlock) {
 			matrixStack.translate(right ? -0.2 : 0.2, 0.1, right ? 0.6 : -0.525);
@@ -203,16 +207,6 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			matrixStack.translate(0.0, right ? 0.0 : 0.075, right ? 0.07 : -0.25);
 			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(right ? -5 : 10F));
 		}
-	}
-
-	private void renderDebugPoint(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
-		DebugRenderer.drawBox(
-				matrixStack,
-				vertexConsumerProvider,
-				-0.02F, -0.02F, -0.02F, // Box min (relative to pivot)
-				0.02F,  0.02F,  0.02F, // Box max (relative to pivot)
-				1.0F, 0.0F, 0.0F, 1.0F  // Red color
-		);
 	}
 
 	// Apply dynamic movement-based transformations

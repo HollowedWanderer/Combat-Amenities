@@ -1,0 +1,6 @@
+{
+	"parent": "combatamenities:item/bundle_model_template",
+	"textures": {
+		"0": "combatamenities:item/cyan_bundle_model"
+	}
+}

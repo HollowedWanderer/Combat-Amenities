@@ -1,6 +1,6 @@
 package net.hollowed.combatamenities.util.mixinFunctions;
 
-import net.hollowed.combatamenities.client.TridentEntityRenderStateAccess;
+import net.hollowed.combatamenities.util.interfaces.TridentEntityRenderStateAccess;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;

@@ -1,7 +1,8 @@
 package net.hollowed.combatamenities.mixin.meleeTweaks;
 
-import net.hollowed.combatamenities.util.WeaponRework;
+import net.hollowed.combatamenities.util.interfaces.WeaponRework;
 import net.minecraft.item.AxeItem;
+import net.minecraft.item.Item;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import org.spongepowered.asm.mixin.Mixin;
@@ -9,7 +10,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import java.util.List;
 
 @Mixin(AxeItem.class)
-public class AxeFunctions implements WeaponRework {
+public class AxeFunctions extends Item implements WeaponRework {
+    public AxeFunctions(Settings settings) {
+        super(settings);
+    }
+
     @Override
     public int combat_Amenities$delay() {
         return 2;

@@ -1,7 +1,6 @@
 package net.hollowed.combatamenities.mixin.meleeTweaks;
 
-import net.hollowed.combatamenities.util.WeaponRework;
-import net.minecraft.item.AxeItem;
+import net.hollowed.combatamenities.util.interfaces.WeaponRework;
 import net.minecraft.item.TridentItem;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;

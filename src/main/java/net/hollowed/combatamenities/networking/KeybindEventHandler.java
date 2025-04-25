@@ -2,7 +2,9 @@ package net.hollowed.combatamenities.networking;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.hollowed.combatamenities.ModKeyBindings;
+import net.hollowed.combatamenities.networking.slots.back.BackslotPacketPayload;
+import net.hollowed.combatamenities.networking.slots.belt.BeltslotPacketPayload;
+import net.hollowed.combatamenities.util.ModKeyBindings;
 
 public class KeybindEventHandler {
     private static boolean wasBackSlotKeyPressed = false;

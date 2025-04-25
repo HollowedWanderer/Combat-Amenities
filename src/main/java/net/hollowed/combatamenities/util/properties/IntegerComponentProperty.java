@@ -1,7 +1,7 @@
 package net.hollowed.combatamenities.util.properties;
 
 import com.mojang.serialization.MapCodec;
-import net.hollowed.combatamenities.util.ModComponents;
+import net.hollowed.combatamenities.util.items.ModComponents;
 import net.minecraft.client.render.item.property.numeric.NumericProperty;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;

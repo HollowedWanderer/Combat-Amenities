@@ -3,17 +3,15 @@ package net.hollowed.combatamenities.renderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.hollowed.combatamenities.CombatAmenities;
-import net.hollowed.combatamenities.client.PlayerEntityRenderStateAccess;
-import net.hollowed.combatamenities.util.ModComponents;
-import net.hollowed.combatamenities.util.TransformData;
-import net.hollowed.combatamenities.util.TransformResourceReloadListener;
+import net.hollowed.combatamenities.util.interfaces.PlayerEntityRenderStateAccess;
+import net.hollowed.combatamenities.util.items.ModComponents;
+import net.hollowed.combatamenities.util.json.TransformData;
+import net.hollowed.combatamenities.util.json.TransformResourceReloadListener;
 import net.minecraft.block.BannerBlock;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
@@ -91,6 +89,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
 					if (!secondaryModel.equals(Identifier.of("null"))) {
 						matrixStack.push();
+						this.getContextModel().body.applyTransform(matrixStack);
 
 						matrixStack.translate(0.0F, 0.0F, -0.15F);
 						if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
@@ -100,8 +99,8 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						// Use transformation mode from the transform data (JSON)
 						transformationMode = transformData.mode();
 
-						setAngles(matrixStack, armedEntityRenderState, backSlotStack, vertexConsumerProvider);
-						applyItemSpecificAdjustments(matrixStack, armedEntityRenderState, item, armedEntityRenderState.mainArm, vertexConsumerProvider);
+						setAngles(matrixStack, armedEntityRenderState, backSlotStack);
+						applyItemSpecificAdjustments(matrixStack, armedEntityRenderState, item, armedEntityRenderState.mainArm);
 
 						List<Float> secondaryScale = secondaryTransformData.scale();
 						matrixStack.scale(secondaryScale.get(0), secondaryScale.get(1), secondaryScale.get(2)); // Scale
@@ -131,6 +130,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
 					if (!tertiaryModel.equals(Identifier.of("null"))) {
 						matrixStack.push();
+						this.getContextModel().body.applyTransform(matrixStack);
 
 						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180)); // Rotation Y
 
@@ -156,6 +156,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					matrixStack.push();
 
 					// Rotate based on body
+					this.getContextModel().body.applyTransform(matrixStack);
 
 					matrixStack.translate(0.0F, 0.0F, -0.15F);
 					if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
@@ -165,8 +166,8 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					// Use transformation mode from the transform data (JSON)
 					transformationMode = transformData.mode();
 
-					setAngles(matrixStack, armedEntityRenderState, backSlotStack, vertexConsumerProvider);
-					applyItemSpecificAdjustments(matrixStack, armedEntityRenderState, item, armedEntityRenderState.mainArm, vertexConsumerProvider);
+					setAngles(matrixStack, armedEntityRenderState, backSlotStack);
+					applyItemSpecificAdjustments(matrixStack, armedEntityRenderState, item, armedEntityRenderState.mainArm);
 
 					List<Float> scale = transformData.scale();
 					matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
@@ -201,7 +202,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 	}
 
 	// Helper method for item-specific transformations
-	private void applyItemSpecificAdjustments(MatrixStack matrixStack, PlayerEntityRenderState armedEntityRenderState, Item item, Arm arm, VertexConsumerProvider vertexConsumerProvider) {
+	private void applyItemSpecificAdjustments(MatrixStack matrixStack, PlayerEntityRenderState armedEntityRenderState, Item item, Arm arm) {
 		if (item instanceof TridentItem) {
 			matrixStack.translate(0, 0.2, 0);
 			matrixStack.translate(0.0F, 0.0F, -0.1F);
@@ -253,7 +254,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 	private float jiggleDecay = 0.9F; // Decay rate of jiggle intensity
 	private float jiggleTimer = 0.0F; // Timer to drive oscillation
 
-	private void setAngles(MatrixStack matrixStack, PlayerEntityRenderState playerEntityRenderState, ItemStack item, VertexConsumerProvider vertexConsumerProvider) {
+	private void setAngles(MatrixStack matrixStack, PlayerEntityRenderState playerEntityRenderState, ItemStack item) {
 		TransformData data = TransformResourceReloadListener.getTransform(Registries.ITEM.getId(item.getItem()), item.getOrDefault(ModComponents.INTEGER_PROPERTY, -1).toString());
 
 		// Calculate banner-specific multiplier
@@ -278,16 +279,6 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
 		matrixStack.translate(0.0F, 0.0F, -0.2F); // Pivot Point ! ! !
 
-	}
-
-	private void renderDebugPoint(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
-		DebugRenderer.drawBox(
-				matrixStack,
-				vertexConsumerProvider,
-				-0.02F, -0.02F, -0.02F, // Box min (relative to pivot)
-				0.02F,  0.02F,  0.02F, // Box max (relative to pivot)
-				1.0F, 0.0F, 0.0F, 1.0F  // Red color
-		);
 	}
 
 	// Apply dynamic movement-based transformations

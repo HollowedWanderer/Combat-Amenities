@@ -9,24 +9,32 @@ import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.hollowed.combatamenities.config.ModConfig;
-import net.hollowed.combatamenities.networking.*;
-import net.hollowed.combatamenities.util.*;
+import net.hollowed.combatamenities.networking.slots.SlotClientPacketPayload;
+import net.hollowed.combatamenities.networking.slots.SlotCreativeClientPacket;
+import net.hollowed.combatamenities.networking.slots.SlotCreativeClientPacketPayload;
+import net.hollowed.combatamenities.networking.slots.back.BackSlotInventoryPacketPayload;
+import net.hollowed.combatamenities.networking.slots.back.BackSlotInventoryPacketReceiver;
+import net.hollowed.combatamenities.networking.slots.back.BackSlotServerPacket;
+import net.hollowed.combatamenities.networking.slots.back.BackslotPacketPayload;
+import net.hollowed.combatamenities.networking.slots.belt.BeltSlotInventoryPacketPayload;
+import net.hollowed.combatamenities.networking.slots.belt.BeltSlotInventoryPacketReceiver;
+import net.hollowed.combatamenities.networking.slots.belt.BeltSlotServerPacket;
+import net.hollowed.combatamenities.networking.slots.belt.BeltslotPacketPayload;
+import net.hollowed.combatamenities.particles.ModParticles;
+import net.hollowed.combatamenities.util.delay.TickDelayScheduler;
+import net.hollowed.combatamenities.util.items.ModComponents;
+import net.hollowed.combatamenities.util.json.BeltTransformResourceReloadListener;
+import net.hollowed.combatamenities.util.json.TransformResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.AxeItem;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spongepowered.asm.mixin.Unique;
 
 import java.util.Set;
 
@@ -49,6 +57,7 @@ public class CombatAmenities implements ModInitializer {
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
+	@SuppressWarnings("unused")
 	public static Vec3d matrixToVec(MatrixStack matrixStack) {
 		// Extract transformation matrix
 		Matrix4f matrix = matrixStack.peek().getPositionMatrix();
@@ -74,6 +83,7 @@ public class CombatAmenities implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
+		ModParticles.initialize();
 		ModComponents.initialize();
 
 		ServerTickEvents.END_SERVER_TICK.register(server -> TickDelayScheduler.tick());
@@ -86,14 +96,14 @@ public class CombatAmenities implements ModInitializer {
 		PayloadTypeRegistry.playC2S().register(BeltslotPacketPayload.ID, BeltslotPacketPayload.CODEC);
 		PayloadTypeRegistry.playC2S().register(BackSlotInventoryPacketPayload.BACKSLOT_INVENTORY_PACKET_ID, BackSlotInventoryPacketPayload.CODEC);
 		PayloadTypeRegistry.playC2S().register(BeltSlotInventoryPacketPayload.BELTSLOT_INVENTORY_PACKET_ID, BeltSlotInventoryPacketPayload.CODEC);
-		PayloadTypeRegistry.playC2S().register(BackSlotCreativeClientPacketPayload.BACKSLOT_CREATIVE_CLIENT_PACKET_ID, BackSlotCreativeClientPacketPayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(BackSlotClientPacketPayload.BACKSLOT_CLIENT_PACKET_ID, BackSlotClientPacketPayload.CODEC);
+		PayloadTypeRegistry.playC2S().register(SlotCreativeClientPacketPayload.BACKSLOT_CREATIVE_CLIENT_PACKET_ID, SlotCreativeClientPacketPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(SlotClientPacketPayload.BACKSLOT_CLIENT_PACKET_ID, SlotClientPacketPayload.CODEC);
 
 		BackSlotInventoryPacketReceiver.registerServerPacket();
 		BeltSlotInventoryPacketReceiver.registerServerPacket();
         BackSlotServerPacket.registerServerPacket();
 		BeltSlotServerPacket.registerServerPacket();
-		BackSlotCreativeClientPacket.registerClientPacket();
+		SlotCreativeClientPacket.registerClientPacket();
 
 		// Config
 		AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);

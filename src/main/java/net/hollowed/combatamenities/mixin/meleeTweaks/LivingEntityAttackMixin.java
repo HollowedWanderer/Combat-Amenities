@@ -1,9 +1,10 @@
 package net.hollowed.combatamenities.mixin.meleeTweaks;
 
 import net.hollowed.combatamenities.CombatAmenities;
-import net.hollowed.combatamenities.util.EntityFreezer;
-import net.hollowed.combatamenities.util.TickDelayScheduler;
-import net.hollowed.combatamenities.util.WeaponRework;
+import net.hollowed.combatamenities.particles.ModParticles;
+import net.hollowed.combatamenities.util.interfaces.EntityFreezer;
+import net.hollowed.combatamenities.util.delay.TickDelayScheduler;
+import net.hollowed.combatamenities.util.interfaces.WeaponRework;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -33,10 +34,10 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -64,6 +65,7 @@ public abstract class LivingEntityAttackMixin extends LivingEntity {
 
     @Shadow public abstract void addExhaustion(float exhaustion);
 
+    @SuppressWarnings("deprecation")
     @Inject(method = "attack", at = @At("HEAD"), cancellable = true)
     private void attackChanges(Entity target, CallbackInfo ci) {
         PlayerEntity player = (PlayerEntity) (Object) this;
@@ -76,7 +78,6 @@ public abstract class LivingEntityAttackMixin extends LivingEntity {
         float h = this.getAttackCooldownProgress(0.5F);
         f[0] *= 0.2F + h * h * 0.8F;
         g *= h;
-        Vec3d vec3d = target.getVelocity();
 
         boolean bl = h > 0.9F;
         boolean bl3 = bl
@@ -92,6 +93,7 @@ public abstract class LivingEntityAttackMixin extends LivingEntity {
         boolean onGround = this.isOnGround();
 
         if (attackPower > 0.8 && target instanceof LivingEntity && itemStack.getItem() instanceof WeaponRework access && CombatAmenities.CONFIG.meleeRework) {
+            ci.cancel();
 
             itemStack.postDamageEntity((LivingEntity) target, player);
 
@@ -104,24 +106,56 @@ public abstract class LivingEntityAttackMixin extends LivingEntity {
                     (float) access.combat_Amenities$sound().get(2),
                     (float) access.combat_Amenities$sound().get(3)
             );
+            if (itemStack.streamTags().toList().contains(TagKey.of(RegistryKeys.ITEM, Identifier.ofVanilla("swords")))) {
+                player.getWorld().playSound(
+                        null,
+                        player.getBlockPos(),
+                        SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP,
+                        SoundCategory.PLAYERS,
+                        1,
+                        1
+                );
+            }
 
-            if (itemStack.streamTags().toList().contains(TagKey.of(RegistryKeys.ITEM, Identifier.of(CombatAmenities.MOD_ID, "weapon_freeze"))) || itemStack.getItem() instanceof MaceItem && this.getVelocity().y < -0.5) {
-                if (target instanceof net.hollowed.combatamenities.util.EntityFreezer freezer) {
-                    freezer.antiquities$setFrozen(true);
+            if (itemStack.streamTags().toList().contains(TagKey.of(RegistryKeys.ITEM, Identifier.of(CombatAmenities.MOD_ID, "weapon_freeze"))) || itemStack.getItem() instanceof MaceItem && this.fallDistance > 7) {
+                if (target instanceof EntityFreezer freezer) {
+                    freezer.antiquities$setFrozen(true, delay);
                 }
-                if (this instanceof EntityFreezer freezer) {
-                    freezer.antiquities$setFrozen(true);
+                if (player instanceof EntityFreezer freezer) {
+                    freezer.antiquities$setFrozen(true, delay);
                 }
             }
 
+            boolean bl2Pre;
+            if (this.isSprinting() && bl) {
+                this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_KNOCKBACK, this.getSoundCategory(), 1.0F, 1.0F);
+                bl2Pre = true;
+            } else {
+                bl2Pre = false;
+            }
+            boolean bl4Pre = false;
+            if (bl && !bl3 && !bl2Pre && onGround) {
+                double d = this.getMovement().horizontalLengthSquared();
+                double e = (double) this.getMovementSpeed() * 2.5;
+                if (d < MathHelper.square(e) && this.getStackInHand(Hand.MAIN_HAND).isIn(ItemTags.SWORDS)) {
+                    bl4Pre = true;
+                }
+            }
+            if (!bl4Pre) {
+                if (bl3) {
+                    this.spawnCritAttackParticles();
+                } else {
+                    this.spawnNormalAttackParticles();
+                }
+            } else {
+                this.spawnSweepAttackParticles();
+            }
+
+            this.spawnHitMarkerParticles(target);
+
             TickDelayScheduler.schedule(delay, () -> {
 
-                if (target instanceof EntityFreezer freezer) {
-                    freezer.antiquities$setFrozen(false);
-                }
-                if (player instanceof EntityFreezer freezer) {
-                    freezer.antiquities$setFrozen(false);
-                }
+                this.spawnRingParticles(target);
 
                 /*
                     Manual attack logic call
@@ -182,9 +216,6 @@ public abstract class LivingEntityAttackMixin extends LivingEntity {
                                                 MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)) * k * 0.5F
                                         );
                                     }
-
-                                    this.setVelocity(this.getVelocity().multiply(0.6, 1.0, 0.6));
-                                    this.setSprinting(false);
                                 }
 
                                 if (bl4) {
@@ -208,13 +239,11 @@ public abstract class LivingEntityAttackMixin extends LivingEntity {
                                     }
 
                                     this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, this.getSoundCategory(), 1.0F, 1.0F);
-                                    this.spawnSweepAttackParticles();
                                 }
 
                                 if (target instanceof ServerPlayerEntity && target.velocityModified) {
                                     ((ServerPlayerEntity) target).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(target));
                                     target.velocityModified = false;
-                                    target.setVelocity(vec3d);
                                 }
 
                                 if (bl3) {
@@ -272,7 +301,38 @@ public abstract class LivingEntityAttackMixin extends LivingEntity {
                     }
                 }
             });
-            ci.cancel();
+        }
+    }
+
+    @Unique
+    public void spawnNormalAttackParticles() {
+        double d = -MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)) * 1.5;
+        double e = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)) * 1.5;
+        if (this.getWorld() instanceof ServerWorld) {
+            ((ServerWorld)this.getWorld()).spawnParticles(Math.random() > 0.5 ? ModParticles.NORMAL_ATTACK : ModParticles.LEFT_NORMAL_ATTACK, this.getX() + d, this.getBodyY(0.5) + 0.25, this.getZ() + e, 0, d, 0.0, e, 0.0);
+        }
+    }
+
+    @Unique
+    public void spawnCritAttackParticles() {
+        double d = -MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)) * 1.5;
+        double e = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)) * 1.5;
+        if (this.getWorld() instanceof ServerWorld) {
+            ((ServerWorld)this.getWorld()).spawnParticles(ModParticles.CRIT_ATTACK, this.getX() + d, this.getBodyY(0.5) + 0.25, this.getZ() + e, 0, d, 0.0, e, 0.0);
+        }
+    }
+
+    @Unique
+    public void spawnHitMarkerParticles(Entity target) {
+        if (this.getWorld() instanceof ServerWorld) {
+            ((ServerWorld)this.getWorld()).spawnParticles(ModParticles.HIT_MARKER, target.getX() + (Math.random() - 0.5), target.getBodyY(0.5) + Math.random(), target.getZ() + (Math.random() - 0.5), 0, 0, 0.0, 0, 0.0);
+        }
+    }
+
+    @Unique
+    public void spawnRingParticles(Entity target) {
+        if (this.getWorld() instanceof ServerWorld) {
+            ((ServerWorld)this.getWorld()).spawnParticles(ModParticles.RING, target.getX() + (Math.random() - 0.5), target.getBodyY(0.5) + Math.random(), target.getZ() + (Math.random() - 0.5), 0, 0, 0.0, 0, 0.0);
         }
     }
 }

@@ -1,8 +1,8 @@
 package net.hollowed.combatamenities.mixin;
 
 import com.mojang.datafixers.DataFixer;
-import net.hollowed.combatamenities.ModSounds;
-import net.hollowed.combatamenities.util.ItemSlotSoundHandler;
+import net.hollowed.combatamenities.util.ModSounds;
+import net.hollowed.combatamenities.util.interfaces.ItemSlotSoundHandler;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;

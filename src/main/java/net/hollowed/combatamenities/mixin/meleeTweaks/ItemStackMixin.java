@@ -1,18 +1,16 @@
 package net.hollowed.combatamenities.mixin.meleeTweaks;
 
 import net.hollowed.combatamenities.CombatAmenities;
-import net.hollowed.combatamenities.util.EntityFreezer;
-import net.hollowed.combatamenities.util.FrozenEntitySnapshot;
-import net.hollowed.combatamenities.util.TickDelayScheduler;
-import net.hollowed.combatamenities.util.WeaponRework;
+import net.hollowed.combatamenities.util.delay.TickDelayScheduler;
+import net.hollowed.combatamenities.util.entities.FrozenEntitySnapshot;
+import net.hollowed.combatamenities.util.interfaces.WeaponRework;
+import net.hollowed.combatamenities.util.items.EnchantmentListener;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.item.MaceItem;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -20,14 +18,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.stream.Stream;
+import java.util.Objects;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
 
     @Shadow public abstract Item getItem();
-
-    @Shadow public abstract Stream<TagKey<Item>> streamTags();
 
     @Unique
     private boolean ran = false;
@@ -36,6 +32,10 @@ public abstract class ItemStackMixin {
     public void postHitModify(LivingEntity target, LivingEntity user, CallbackInfo ci) {
         if (CombatAmenities.CONFIG.meleeRework) {
             if (!ran) {
+                if (this.getItem() instanceof MaceItem && !(user.getVelocity().y < -1)) {
+                    return;
+                }
+                user.fallDistance += 2;
                 ci.cancel();
                 ran = true;
 
@@ -50,7 +50,11 @@ public abstract class ItemStackMixin {
                 FrozenEntitySnapshot frozenTarget = new FrozenEntitySnapshot(target);
 
                 if (this.getItem() instanceof WeaponRework access) {
-                    TickDelayScheduler.schedule(access.combat_Amenities$delay(), () -> {
+                    int delay = access.combat_Amenities$delay();
+                    if (EnchantmentListener.hasEnchantment((ItemStack) (Object) this, "minecraft:wind_burst")) {
+                        delay -= 2;
+                    }
+                    TickDelayScheduler.schedule(delay, () -> {
 
                         // Retrieve the correct ServerWorld
                         ServerWorld world = server.getWorld(user.getWorld().getRegistryKey());
@@ -69,8 +73,8 @@ public abstract class ItemStackMixin {
                                 frozenTarget.restoreEntityState(restoredTarget);
 
                                 // Execute postHit with frozen entity states
-                                //user.getMainHandStack().postDamageEntity(restoredTarget, restoredUser);
-                                user.getMainHandStack().postHit(restoredTarget, restoredUser);
+                                user.getMainHandStack().getItem().postHit(user.getMainHandStack(), restoredTarget, restoredUser);
+                                Objects.requireNonNull(user.getServer()).save(true, false, true);
 
                                 LivingEntity restoredUser1 = (LivingEntity) world.getEntity(frozenUser1.uuid);
                                 LivingEntity restoredTarget1 = (LivingEntity) world.getEntity(frozenTarget1.uuid);
@@ -79,14 +83,12 @@ public abstract class ItemStackMixin {
                                 ci.cancel();
                             }
                         }
-                        user.setSprinting(false);
-                        user.setSprinting(frozenUser.sprinting);
-                        target.setSprinting(false);
-                        target.setSprinting(frozenTarget.sprinting);
+                        world.getChunkManager().markForUpdate(user.getBlockPos());
                     });
                 }
             } else {
                 ran = false;
+                ci.cancel();
             }
         }
     }
