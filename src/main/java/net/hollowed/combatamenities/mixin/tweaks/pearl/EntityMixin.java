@@ -1,13 +1,13 @@
 package net.hollowed.combatamenities.mixin.tweaks.pearl;
 
-import net.hollowed.combatamenities.CombatAmenities;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.hollowed.combatamenities.networking.slots.SoundPacketPayload;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,14 +24,12 @@ public class EntityMixin {
 
             // Check if back slot item exists and is valid
             if ((!backSlotItem.isEmpty() && !(backSlotItem.getItem() instanceof BlockItem)) || (!beltSlotItem.isEmpty() && !(beltSlotItem.getItem() instanceof BlockItem))) {
-                player.getWorld().playSound(
-                        null,
-                        player.getBlockPos(),
-                        SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(),
-                        SoundCategory.PLAYERS,
-                        0.15F * (CombatAmenities.CONFIG.backslotAmbientSoundVolume / 100F),
-                        1.2F
-                );
+                if (player instanceof ServerPlayerEntity serverPlayer) {
+                    // Play the sound with the calculated volume
+                    for (ServerPlayerEntity serverPlayerTemp : serverPlayer.getServerWorld().getPlayers()) {
+                        ServerPlayNetworking.send(serverPlayerTemp, new SoundPacketPayload(1, player.getPos(), false, 0.15F, 1.2F, 0, ItemStack.EMPTY));
+                    }
+                }
             }
         }
     }

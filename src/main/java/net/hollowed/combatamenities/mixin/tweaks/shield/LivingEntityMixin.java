@@ -106,6 +106,11 @@ public abstract class LivingEntityMixin {
     private void modifyShieldBlockingEnd(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (shield != null) self.getActiveItem().set(DataComponentTypes.BLOCKS_ATTACKS, shield);
+        ServerWorld serverWorld = (ServerWorld) self.getWorld();
+        if (self instanceof PlayerEntity) {
+            serverWorld.playSound(null, self.getBlockPos(), SoundEvents.ENTITY_PLAYER_HURT, SoundCategory.PLAYERS, 1.0F, 1.0F);
+        }
+
     }
 }
 

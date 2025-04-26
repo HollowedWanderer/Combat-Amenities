@@ -13,7 +13,6 @@
     "slots.networking.EntityTrackerEntryMixin",
     "tweaks.fireCharge.FireChargeItemMixin",
     "tweaks.enchantments.ItemGroupMixin",
-    "slots.registration.ItemMixin",
     "tweaks.durability.ItemStackMixin",
     "tweaks.shield.LivingEntityMixin",
     "MinecraftClientMixin",

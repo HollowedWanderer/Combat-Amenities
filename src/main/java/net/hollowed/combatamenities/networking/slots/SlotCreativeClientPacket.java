@@ -4,12 +4,12 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
-import static net.hollowed.combatamenities.networking.slots.SlotCreativeClientPacketPayload.BACKSLOT_CREATIVE_CLIENT_PACKET_ID;
+import static net.hollowed.combatamenities.networking.slots.SlotCreativeClientPacketPayload.ID;
 
 public class SlotCreativeClientPacket {
 
     public static void registerClientPacket() {
-        ServerPlayNetworking.registerGlobalReceiver(BACKSLOT_CREATIVE_CLIENT_PACKET_ID, (payload, context) -> {
+        ServerPlayNetworking.registerGlobalReceiver(ID, (payload, context) -> {
             int entityId = payload.entityId();
             int slotId = payload.slotId();
             ItemStack itemStack = payload.itemStack();

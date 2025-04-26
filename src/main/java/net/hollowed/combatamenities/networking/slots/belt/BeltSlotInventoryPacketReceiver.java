@@ -9,7 +9,7 @@ import net.minecraft.sound.SoundEvents;
 public class BeltSlotInventoryPacketReceiver {
 
     public static void registerServerPacket() {
-        ServerPlayNetworking.registerGlobalReceiver(BeltSlotInventoryPacketPayload.BELTSLOT_INVENTORY_PACKET_ID, ((payload, context) -> context.server().execute(() -> {
+        ServerPlayNetworking.registerGlobalReceiver(BeltSlotInventoryPacketPayload.ID, ((payload, context) -> context.server().execute(() -> {
             PlayerEntity player = context.player();
             if (player == null || player.currentScreenHandler == null) {
                 return;

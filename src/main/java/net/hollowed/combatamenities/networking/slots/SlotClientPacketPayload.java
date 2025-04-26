@@ -1,5 +1,6 @@
 package net.hollowed.combatamenities.networking.slots;
 
+import net.hollowed.combatamenities.CombatAmenities;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -8,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 public record SlotClientPacketPayload(int entityId, int slotId, ItemStack itemStack) implements CustomPayload {
 
-    public static final CustomPayload.Id<SlotClientPacketPayload> BACKSLOT_CLIENT_PACKET_ID = new CustomPayload.Id<>(Identifier.of("combatamenities", "backslot_client_packet"));
+    public static final CustomPayload.Id<SlotClientPacketPayload> ID = new CustomPayload.Id<>(Identifier.of(CombatAmenities.MOD_ID, "backslot_client_packet"));
 
     public static final PacketCodec<RegistryByteBuf, SlotClientPacketPayload> CODEC = PacketCodec.of(SlotClientPacketPayload::write, SlotClientPacketPayload::new);
 
@@ -27,6 +28,6 @@ public record SlotClientPacketPayload(int entityId, int slotId, ItemStack itemSt
 
     @Override
     public Id<? extends CustomPayload> getId() {
-        return BACKSLOT_CLIENT_PACKET_ID;
+        return ID;
     }
 }

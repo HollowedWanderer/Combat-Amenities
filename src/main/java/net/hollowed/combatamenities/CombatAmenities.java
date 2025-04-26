@@ -12,6 +12,7 @@ import net.hollowed.combatamenities.config.ModConfig;
 import net.hollowed.combatamenities.networking.slots.SlotClientPacketPayload;
 import net.hollowed.combatamenities.networking.slots.SlotCreativeClientPacket;
 import net.hollowed.combatamenities.networking.slots.SlotCreativeClientPacketPayload;
+import net.hollowed.combatamenities.networking.slots.SoundPacketPayload;
 import net.hollowed.combatamenities.networking.slots.back.BackSlotInventoryPacketPayload;
 import net.hollowed.combatamenities.networking.slots.back.BackSlotInventoryPacketReceiver;
 import net.hollowed.combatamenities.networking.slots.back.BackSlotServerPacket;
@@ -21,10 +22,12 @@ import net.hollowed.combatamenities.networking.slots.belt.BeltSlotInventoryPacke
 import net.hollowed.combatamenities.networking.slots.belt.BeltSlotServerPacket;
 import net.hollowed.combatamenities.networking.slots.belt.BeltslotPacketPayload;
 import net.hollowed.combatamenities.particles.ModParticles;
+import net.hollowed.combatamenities.util.ModSounds;
 import net.hollowed.combatamenities.util.delay.TickDelayScheduler;
 import net.hollowed.combatamenities.util.items.ModComponents;
 import net.hollowed.combatamenities.util.json.BeltTransformResourceReloadListener;
-import net.hollowed.combatamenities.util.json.TransformResourceReloadListener;
+import net.hollowed.combatamenities.util.json.BackTransformResourceReloadListener;
+import net.hollowed.combatamenities.util.json.ItemTransformResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
@@ -85,19 +88,22 @@ public class CombatAmenities implements ModInitializer {
 
 		ModParticles.initialize();
 		ModComponents.initialize();
+		ModSounds.initialize();
 
 		ServerTickEvents.END_SERVER_TICK.register(server -> TickDelayScheduler.tick());
 
 		// Json stuff
-		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new TransformResourceReloadListener());
+		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new BackTransformResourceReloadListener());
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new BeltTransformResourceReloadListener());
+		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new ItemTransformResourceReloadListener());
 
 		PayloadTypeRegistry.playC2S().register(BackslotPacketPayload.ID, BackslotPacketPayload.CODEC);
 		PayloadTypeRegistry.playC2S().register(BeltslotPacketPayload.ID, BeltslotPacketPayload.CODEC);
-		PayloadTypeRegistry.playC2S().register(BackSlotInventoryPacketPayload.BACKSLOT_INVENTORY_PACKET_ID, BackSlotInventoryPacketPayload.CODEC);
-		PayloadTypeRegistry.playC2S().register(BeltSlotInventoryPacketPayload.BELTSLOT_INVENTORY_PACKET_ID, BeltSlotInventoryPacketPayload.CODEC);
-		PayloadTypeRegistry.playC2S().register(SlotCreativeClientPacketPayload.BACKSLOT_CREATIVE_CLIENT_PACKET_ID, SlotCreativeClientPacketPayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(SlotClientPacketPayload.BACKSLOT_CLIENT_PACKET_ID, SlotClientPacketPayload.CODEC);
+		PayloadTypeRegistry.playC2S().register(BackSlotInventoryPacketPayload.ID, BackSlotInventoryPacketPayload.CODEC);
+		PayloadTypeRegistry.playC2S().register(BeltSlotInventoryPacketPayload.ID, BeltSlotInventoryPacketPayload.CODEC);
+		PayloadTypeRegistry.playC2S().register(SlotCreativeClientPacketPayload.ID, SlotCreativeClientPacketPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(SlotClientPacketPayload.ID, SlotClientPacketPayload.CODEC);
+		PayloadTypeRegistry.playS2C().register(SoundPacketPayload.ID, SoundPacketPayload.CODEC);
 
 		BackSlotInventoryPacketReceiver.registerServerPacket();
 		BeltSlotInventoryPacketReceiver.registerServerPacket();

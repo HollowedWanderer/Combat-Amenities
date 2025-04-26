@@ -1,15 +1,13 @@
 package net.hollowed.combatamenities.mixin.slots.networking;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.hollowed.combatamenities.CombatAmenities;
 import net.hollowed.combatamenities.networking.slots.SlotClientPacketPayload;
+import net.hollowed.combatamenities.networking.slots.SoundPacketPayload;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.*;
@@ -113,7 +111,11 @@ public class EntityTrackerEntryMixin {
         // Calculate volume based on velocity
         float volume = MathHelper.clamp((float) (-verticalVelocity / 2.0), 0.1F, 1.0F);
 
-        // Play the sound with the calculated volume
-        playerEntity.getWorld().playSound(null, playerEntity.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND.value(), SoundCategory.PLAYERS, volume * ((float) CombatAmenities.CONFIG.backslotAmbientSoundVolume / 100), 1.0F);
+        if (playerEntity instanceof ServerPlayerEntity serverPlayer) {
+            // Play the sound with the calculated volume
+            for (ServerPlayerEntity player : serverPlayer.getServerWorld().getPlayers()) {
+                ServerPlayNetworking.send(player, new SoundPacketPayload(0, playerEntity.getPos(), false, volume, 1.0F, 0, playerEntity.getInventory().getStack(41)));
+            }
+        }
     }
 }

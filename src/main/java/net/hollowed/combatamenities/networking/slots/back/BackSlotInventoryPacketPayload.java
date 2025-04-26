@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 public record BackSlotInventoryPacketPayload(ItemStack itemStack, int i) implements CustomPayload {
 
-    public static final Id<BackSlotInventoryPacketPayload> BACKSLOT_INVENTORY_PACKET_ID = new Id<>(Identifier.of(CombatAmenities.MOD_ID, "backslot_inventory_packet"));
+    public static final Id<BackSlotInventoryPacketPayload> ID = new Id<>(Identifier.of(CombatAmenities.MOD_ID, "backslot_inventory_packet"));
 
     public static final PacketCodec<RegistryByteBuf, BackSlotInventoryPacketPayload> CODEC = PacketCodec.of(BackSlotInventoryPacketPayload::write, BackSlotInventoryPacketPayload::new);
 
@@ -27,6 +27,6 @@ public record BackSlotInventoryPacketPayload(ItemStack itemStack, int i) impleme
 
     @Override
     public Id<? extends CustomPayload> getId() {
-        return BACKSLOT_INVENTORY_PACKET_ID;
+        return ID;
     }
 }

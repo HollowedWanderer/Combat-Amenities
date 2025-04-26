@@ -20,7 +20,6 @@ public class NumericPropertyMixin {
 
     @Inject(method = "bootstrap", at = @At("HEAD"))
     private static void bootstrap(CallbackInfo ci) {
-        System.out.println("Registered new properties");
         ID_MAPPER.put(Identifier.of(CombatAmenities.MOD_ID, "int_property"), IntegerComponentProperty.CODEC);
     }
 }

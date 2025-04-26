@@ -4,7 +4,10 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.hollowed.combatamenities.CombatAmenities;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemDisplayContext;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -17,9 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class TransformResourceReloadListener implements SimpleSynchronousResourceReloadListener {
-    private static final Map<Identifier, TransformData> transforms = new HashMap<>();
-    private static TransformData defaultTransforms;
+public class BackTransformResourceReloadListener implements SimpleSynchronousResourceReloadListener {
+    private static final Map<Identifier, BackTransformData> transforms = new HashMap<>();
+    private static BackTransformData defaultTransforms;
 
     @Override
     public Identifier getFabricId() {
@@ -35,12 +38,30 @@ public class TransformResourceReloadListener implements SimpleSynchronousResourc
             if (manager.getResource(id).isPresent()) {
                 try (InputStream stream = manager.getResource(id).get().getInputStream()) {
                     var json = JsonHelper.deserialize(new InputStreamReader(stream, StandardCharsets.UTF_8));
-                    DataResult<TransformData> result = TransformData.CODEC.parse(JsonOps.INSTANCE, json);
+                    DataResult<BackTransformData> result = BackTransformData.CODEC.parse(JsonOps.INSTANCE, json);
 
                     result.resultOrPartial(CombatAmenities.LOGGER::error).ifPresent(data -> {
                         CombatAmenities.LOGGER.info("Loaded transform for: {}", data.item());
                         if (Objects.equals(data.item(), Identifier.of("backslot", "default"))) {
                             defaultTransforms = data;
+                        } else if (data.item().getPath().startsWith("#")) {
+                            // Remove the '#' prefix
+                            String tagPath = data.item().getPath().substring(1);
+                            Identifier tagId = Identifier.of(data.item().getNamespace(), tagPath);
+
+                            TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), tagId);
+
+                            if (tag != null) {
+                                Registries.ITEM.forEach(item -> {
+                                    if (item.getDefaultStack().isIn(tag)) {
+                                        Identifier itemId = Registries.ITEM.getId(item);
+                                        transforms.put(itemId, data);
+                                    }
+                                });
+                                CombatAmenities.LOGGER.info("Loaded transforms for tag: #{}", tagId);
+                            } else {
+                                CombatAmenities.LOGGER.warn("Tag #{} not found while loading item transforms!", tagId);
+                            }
                         } else {
                             transforms.put(data.item(), data);
                         }
@@ -54,18 +75,18 @@ public class TransformResourceReloadListener implements SimpleSynchronousResourc
         CombatAmenities.LOGGER.info("Loaded transforms: {}", transforms);
     }
 
-    public static TransformData getTransform(Identifier itemId, String component) {
-        TransformData baseTransform = transforms.getOrDefault(itemId, defaultTransforms);
+    public static BackTransformData getTransform(Identifier itemId, String component) {
+        BackTransformData baseTransform = transforms.getOrDefault(itemId, defaultTransforms);
 
         if (baseTransform != null) {
 
             // Check if a specific component transformation exists
             if (baseTransform.componentTransforms().containsKey(component)) {
-                TransformData.SubTransformData subTransform = baseTransform.componentTransforms().get(component);
-                TransformData.SecondaryTransformData secondary = subTransform.secondaryTransforms();
-                TransformData.TertiaryTransformData tertiary = subTransform.tertiaryTransforms();
+                BackTransformData.SubTransformData subTransform = baseTransform.componentTransforms().get(component);
+                BackTransformData.SecondaryTransformData secondary = subTransform.secondaryTransforms();
+                BackTransformData.TertiaryTransformData tertiary = subTransform.tertiaryTransforms();
 
-                return new TransformData(
+                return new BackTransformData(
                         itemId,
                         subTransform.scale(),
                         subTransform.rotation(),
@@ -73,14 +94,14 @@ public class TransformResourceReloadListener implements SimpleSynchronousResourc
                         subTransform.mode(),
                         subTransform.sway(),
                         Map.of(),
-                        new TransformData.SecondaryTransformData(
+                        new BackTransformData.SecondaryTransformData(
                                 secondary.item(),
                                 secondary.scale(),
                                 secondary.rotation(),
                                 secondary.translation(),
                                 secondary.mode()
                         ),
-                        new TransformData.TertiaryTransformData(
+                        new BackTransformData.TertiaryTransformData(
                                 tertiary.item(),
                                 tertiary.scale(),
                                 tertiary.rotation(),
@@ -93,7 +114,7 @@ public class TransformResourceReloadListener implements SimpleSynchronousResourc
         }
 
         // Fallback to a fully default transform if no data is available
-        return new TransformData(
+        return new BackTransformData(
                 itemId,
                 List.of(1.0f, 1.0f, 1.0f), // Default scale
                 List.of(0.0f, 0.0f, 0.0f), // Default rotation
@@ -101,14 +122,14 @@ public class TransformResourceReloadListener implements SimpleSynchronousResourc
                 ItemDisplayContext.FIXED, // Default mode
                 1.0F, // Default sway
                 Map.of(), // Empty component transforms
-                new TransformData.SecondaryTransformData(
+                new BackTransformData.SecondaryTransformData(
                         Identifier.of("null"),
                         List.of(1.0f, 1.0f, 1.0f), // Default scale
                         List.of(0.0f, 0.0f, 0.0f), // Default rotation
                         List.of(0.0f, 0.0f, 0.0f), // Default translation
                         ItemDisplayContext.FIXED // Default mode
                 ),
-                new TransformData.TertiaryTransformData(
+                new BackTransformData.TertiaryTransformData(
                         Identifier.of("null"),
                         List.of(1.0f, 1.0f, 1.0f), // Default scale
                         List.of(0.0f, 0.0f, 0.0f), // Default rotation

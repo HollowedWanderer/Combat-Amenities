@@ -5,8 +5,8 @@ import net.fabricmc.api.Environment;
 import net.hollowed.combatamenities.CombatAmenities;
 import net.hollowed.combatamenities.util.interfaces.PlayerEntityRenderStateAccess;
 import net.hollowed.combatamenities.util.items.ModComponents;
-import net.hollowed.combatamenities.util.json.TransformData;
-import net.hollowed.combatamenities.util.json.TransformResourceReloadListener;
+import net.hollowed.combatamenities.util.json.BackTransformData;
+import net.hollowed.combatamenities.util.json.BackTransformResourceReloadListener;
 import net.minecraft.block.BannerBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -74,10 +74,10 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					// Get the item's transformation data
 					Item item = backSlotStack.getItem();
 					Identifier itemId = Registries.ITEM.getId(item); // Retrieve the Identifier of the item
-					TransformData transformData = TransformResourceReloadListener.getTransform(itemId, backSlotStack.getOrDefault(ModComponents.INTEGER_PROPERTY, -1).toString());
+					BackTransformData transformData = BackTransformResourceReloadListener.getTransform(itemId, backSlotStack.getOrDefault(ModComponents.INTEGER_PROPERTY, -1).toString());
 
-					TransformData.SecondaryTransformData secondaryTransformData = transformData.secondaryTransforms();
-					TransformData.TertiaryTransformData tertiaryTransformData = transformData.tertiaryTransforms();
+					BackTransformData.SecondaryTransformData secondaryTransformData = transformData.secondaryTransforms();
+					BackTransformData.TertiaryTransformData tertiaryTransformData = transformData.tertiaryTransforms();
 
 					Identifier secondaryModel = secondaryTransformData.item();
 					ItemStack secondaryAppleStack = Items.APPLE.getDefaultStack();
@@ -255,7 +255,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 	private float jiggleTimer = 0.0F; // Timer to drive oscillation
 
 	private void setAngles(MatrixStack matrixStack, PlayerEntityRenderState playerEntityRenderState, ItemStack item) {
-		TransformData data = TransformResourceReloadListener.getTransform(Registries.ITEM.getId(item.getItem()), item.getOrDefault(ModComponents.INTEGER_PROPERTY, -1).toString());
+		BackTransformData data = BackTransformResourceReloadListener.getTransform(Registries.ITEM.getId(item.getItem()), item.getOrDefault(ModComponents.INTEGER_PROPERTY, -1).toString());
 
 		// Calculate banner-specific multiplier
 		float bannerMultiplier = 0.4F;

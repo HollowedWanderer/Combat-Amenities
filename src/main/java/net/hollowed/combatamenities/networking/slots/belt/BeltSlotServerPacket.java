@@ -1,12 +1,10 @@
 package net.hollowed.combatamenities.networking.slots.belt;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.hollowed.combatamenities.CombatAmenities;
-import net.hollowed.combatamenities.util.interfaces.ItemSlotSoundHandler;
+import net.hollowed.combatamenities.networking.slots.SoundPacketPayload;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 
 public class BeltSlotServerPacket {
@@ -22,10 +20,16 @@ public class BeltSlotServerPacket {
             ItemStack handStack = player.getMainHandStack();
             ItemStack backStack = player.getInventory().getStack(42);
 
-            if (backStack.getItem() instanceof ItemSlotSoundHandler item) {
-                player.getWorld().playSound(null, player.getBlockPos(), item.combat_Amenities$getUnsheatheSound(), SoundCategory.PLAYERS, (CombatAmenities.CONFIG.backslotSwapSoundVolume / 100F), 0.9F);
-            } else if (handStack.getItem() instanceof ItemSlotSoundHandler item) {
-                player.getWorld().playSound(null, player.getBlockPos(), item.combat_Amenities$getSheatheSound(), SoundCategory.PLAYERS, (CombatAmenities.CONFIG.backslotSwapSoundVolume / 100F), 0.9F);
+            if (player instanceof ServerPlayerEntity serverPlayer) {
+                for (ServerPlayerEntity serverPlayerTemp : serverPlayer.getServerWorld().getPlayers()) {
+                    ServerPlayNetworking.send(serverPlayerTemp, new SoundPacketPayload(0, player.getPos(), true, 1.0F, 1.0F, 1, backStack));
+                }
+            }
+
+            if (player instanceof ServerPlayerEntity serverPlayer) {
+                for (ServerPlayerEntity serverPlayerTemp : serverPlayer.getServerWorld().getPlayers()) {
+                    ServerPlayNetworking.send(serverPlayerTemp, new SoundPacketPayload(0, player.getPos(), true, 1.0F, 1.0F, 2, backStack));
+                }
             }
 
             if (!handStack.isEmpty()) {
@@ -39,10 +43,6 @@ public class BeltSlotServerPacket {
                     player.setStackInHand(Hand.MAIN_HAND, backStack.copy());
                     player.getInventory().setStack(42, handStack.copy());
                 }
-            }
-
-            if (!offhandStack.isEmpty() || !handStack.isEmpty() || !backStack.isEmpty()) {
-                player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, (CombatAmenities.CONFIG.backslotSwapSoundVolume / 100F), 1F);
             }
 
             // Sync the player's inventory back to the client

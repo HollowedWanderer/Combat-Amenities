@@ -4,7 +4,10 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.hollowed.combatamenities.CombatAmenities;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemDisplayContext;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -29,7 +32,6 @@ public class BeltTransformResourceReloadListener implements SimpleSynchronousRes
     @Override
     public void reload(ResourceManager manager) {
         transforms.clear();
-        System.out.println("Reloading transform data...");
 
         manager.findResources("beltslot_transforms", path -> path.getPath().endsWith(".json")).keySet().forEach(id -> {
             if (manager.getResource(id).isPresent()) {
@@ -41,6 +43,24 @@ public class BeltTransformResourceReloadListener implements SimpleSynchronousRes
                         CombatAmenities.LOGGER.info("Loaded transform for: {}", data.item());
                         if (Objects.equals(data.item(), Identifier.of("beltslot", "default"))) {
                             defaultTransforms = data;
+                        } else if (data.item().getPath().startsWith("#")) {
+                            // Remove the '#' prefix
+                            String tagPath = data.item().getPath().substring(1);
+                            Identifier tagId = Identifier.of(data.item().getNamespace(), tagPath);
+
+                            TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), tagId);
+
+                            if (tag != null) {
+                                Registries.ITEM.forEach(item -> {
+                                    if (item.getDefaultStack().isIn(tag)) {
+                                        Identifier itemId = Registries.ITEM.getId(item);
+                                        transforms.put(itemId, data);
+                                    }
+                                });
+                                CombatAmenities.LOGGER.info("Loaded transforms for tag: #{}", tagId);
+                            } else {
+                                CombatAmenities.LOGGER.warn("Tag #{} not found while loading item transforms!", tagId);
+                            }
                         } else {
                             transforms.put(data.item(), data);
                         }

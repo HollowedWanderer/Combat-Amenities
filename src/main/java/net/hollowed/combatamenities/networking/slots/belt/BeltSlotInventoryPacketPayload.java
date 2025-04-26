@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 public record BeltSlotInventoryPacketPayload(ItemStack itemStack, int i) implements CustomPayload {
 
-    public static final Id<BeltSlotInventoryPacketPayload> BELTSLOT_INVENTORY_PACKET_ID = new Id<>(Identifier.of(CombatAmenities.MOD_ID, "beltslot_inventory_packet"));
+    public static final Id<BeltSlotInventoryPacketPayload> ID = new Id<>(Identifier.of(CombatAmenities.MOD_ID, "beltslot_inventory_packet"));
 
     public static final PacketCodec<RegistryByteBuf, BeltSlotInventoryPacketPayload> CODEC = PacketCodec.of(BeltSlotInventoryPacketPayload::write, BeltSlotInventoryPacketPayload::new);
 
@@ -27,6 +27,6 @@ public record BeltSlotInventoryPacketPayload(ItemStack itemStack, int i) impleme
 
     @Override
     public Id<? extends CustomPayload> getId() {
-        return BELTSLOT_INVENTORY_PACKET_ID;
+        return ID;
     }
 }

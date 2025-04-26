@@ -47,7 +47,6 @@ public class TridentItemMixin {
             PlayerInventory inventory = player.getInventory();
             for (int i = 0; i < inventory.size(); i++) {
                 ItemStack itemStack = inventory.getStack(i);
-                System.out.println(itemStack.getName());
                 if (itemStack.equals(stack)) {
                     this.getTheFuckingGodDamnSlot = i;
                 }

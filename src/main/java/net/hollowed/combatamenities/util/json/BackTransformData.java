@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 import java.util.List;
 import java.util.Map;
 
-public record TransformData(
+public record BackTransformData(
         Identifier item,
         List<Float> scale,
         List<Float> rotation,
@@ -19,18 +19,18 @@ public record TransformData(
         SecondaryTransformData secondaryTransforms,
         TertiaryTransformData tertiaryTransforms
 ) {
-    public static final Codec<TransformData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Identifier.CODEC.fieldOf("item").forGetter(TransformData::item),
-            Codec.FLOAT.listOf().fieldOf("scale").orElseGet(() -> List.of(1.0f, 1.0f, 1.0f)).forGetter(TransformData::scale),
-            Codec.FLOAT.listOf().fieldOf("rotation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(TransformData::rotation),
-            Codec.FLOAT.listOf().fieldOf("translation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(TransformData::translation),
+    public static final Codec<BackTransformData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Identifier.CODEC.fieldOf("item").forGetter(BackTransformData::item),
+            Codec.FLOAT.listOf().fieldOf("scale").orElseGet(() -> List.of(1.0f, 1.0f, 1.0f)).forGetter(BackTransformData::scale),
+            Codec.FLOAT.listOf().fieldOf("rotation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(BackTransformData::rotation),
+            Codec.FLOAT.listOf().fieldOf("translation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(BackTransformData::translation),
             Codec.STRING.fieldOf("mode").orElse("FIXED")
                     .xmap(ItemDisplayContext::valueOf, ItemDisplayContext::name)
-                    .forGetter(TransformData::mode),
-            Codec.FLOAT.fieldOf("sway").orElse(1.0F).forGetter(TransformData::sway),
+                    .forGetter(BackTransformData::mode),
+            Codec.FLOAT.fieldOf("sway").orElse(1.0F).forGetter(BackTransformData::sway),
             Codec.unboundedMap(Codec.STRING, SubTransformData.CODEC)
                     .fieldOf("componentTransforms").orElse(Map.of())
-                    .forGetter(TransformData::componentTransforms),
+                    .forGetter(BackTransformData::componentTransforms),
             SecondaryTransformData.CODEC.fieldOf("secondary").orElse(new SecondaryTransformData(
                             Identifier.of("null"),
                             List.of(1.0f, 1.0f, 1.0f),
@@ -38,7 +38,7 @@ public record TransformData(
                             List.of(0.0f, 0.0f, 0.0f),
                             ItemDisplayContext.NONE
                     ))
-                    .forGetter(TransformData::secondaryTransforms),
+                    .forGetter(BackTransformData::secondaryTransforms),
             TertiaryTransformData.CODEC.fieldOf("tertiary").orElse(new TertiaryTransformData(
                             Identifier.of("null"),
                             List.of(1.0f, 1.0f, 1.0f),
@@ -46,8 +46,8 @@ public record TransformData(
                             List.of(0.0f, 0.0f, 0.0f),
                             ItemDisplayContext.NONE
                     ))
-                    .forGetter(TransformData::tertiaryTransforms)
-    ).apply(instance, TransformData::new));
+                    .forGetter(BackTransformData::tertiaryTransforms)
+    ).apply(instance, BackTransformData::new));
 
     // Sub-class to store transformations per component value
     public record SubTransformData(

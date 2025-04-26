@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 public record SlotCreativeClientPacketPayload(int entityId, int slotId, ItemStack itemStack) implements CustomPayload {
 
-    public static final Id<SlotCreativeClientPacketPayload> BACKSLOT_CREATIVE_CLIENT_PACKET_ID = new Id<>(Identifier.of(CombatAmenities.MOD_ID, "backslot_creative_client_packet"));
+    public static final Id<SlotCreativeClientPacketPayload> ID = new Id<>(Identifier.of(CombatAmenities.MOD_ID, "backslot_creative_client_packet"));
 
     public static final PacketCodec<RegistryByteBuf, SlotCreativeClientPacketPayload> CODEC = PacketCodec.of(SlotCreativeClientPacketPayload::write, SlotCreativeClientPacketPayload::new);
 
@@ -28,6 +28,6 @@ public record SlotCreativeClientPacketPayload(int entityId, int slotId, ItemStac
 
     @Override
     public Id<? extends CustomPayload> getId() {
-        return BACKSLOT_CREATIVE_CLIENT_PACKET_ID;
+        return ID;
     }
 }
