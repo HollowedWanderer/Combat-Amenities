@@ -105,7 +105,10 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						float pivot = 0.0F;
 
 						if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
-							matrixStack.translate(0, 0, 0.1F);
+							matrixStack.translate(0, 0, 0.05F);
+						}
+						if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
+							matrixStack.translate(0, -0.1, 0.075);
 						}
 
 						matrixStack.translate(0, pivot, 0.125); // pivot point
@@ -153,6 +156,10 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 							matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2) * -2)); // Rotation X
 						}
 
+						if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
+							matrixStack.translate(0, 0.1, 0);
+						}
+
 						heldItemRenderer.renderItem(playerEntity, secondaryAppleStack, transformationMode, matrixStack, vertexConsumerProvider, light);
 						matrixStack.pop();
 					}
@@ -188,10 +195,10 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					float pivot = 0.0F;
 
 					if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
-						matrixStack.translate(0, 0, 0.1F);
-					}
-					if (armedEntityRenderState.capeVisible) {
 						matrixStack.translate(0, 0, 0.05F);
+					}
+					if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
+						matrixStack.translate(0, -0.1, 0.075);
 					}
 
 					matrixStack.translate(0, pivot, 0.125); // pivot point
@@ -237,6 +244,10 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2))); // Rotation Z
 					if (right && (item instanceof BlockItem || transformData.noFlip())) {
 						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2) * -2)); // Rotation X
+					}
+
+					if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
+						matrixStack.translate(0, 0.1, 0);
 					}
 
 					// Render the item
