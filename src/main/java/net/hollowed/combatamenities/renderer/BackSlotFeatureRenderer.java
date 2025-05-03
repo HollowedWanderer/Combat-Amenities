@@ -94,7 +94,6 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
 					if (!right) {
 						if (!(item instanceof BlockItem) && !transformData.noFlip()) {
-							matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
 							flip = true;
 						}
 					}
@@ -119,6 +118,10 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						);
 
 						matrixStack.translate(0, 0.35, 0);
+
+						if (flip) {
+							matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
+						}
 
 						// Use transformation mode from the transform data (JSON)
 						transformationMode = secondaryTransformData.mode();
@@ -158,6 +161,10 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						matrixStack.push();
 						this.getContextModel().body.applyTransform(matrixStack);
 
+						if (flip) {
+							matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
+						}
+
 						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180));
 
 						List<Float> scale = tertiaryTransformData.scale();
@@ -183,6 +190,9 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
 						matrixStack.translate(0, 0, 0.1F);
 					}
+					if (armedEntityRenderState.capeVisible) {
+						matrixStack.translate(0, 0, 0.05F);
+					}
 
 					matrixStack.translate(0, pivot, 0.125); // pivot point
 
@@ -194,6 +204,10 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					);
 
 					matrixStack.translate(0, 0.35, 0);
+
+					if (flip) {
+						matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
+					}
 
 					// Use transformation mode from the transform data (JSON)
 					transformationMode = transformData.mode();
