@@ -1,8 +1,8 @@
 {
-  "item": "default",
+  "item": "#minecraft:shovels",
   "scale": [1.0, 1.0, 1.0],
-  "rotation": [0.0, 0.0, 0.0],
+  "rotation": [0.0, 0.0, -15.0],
   "translation": [0.0, 0.0, 0.0],
   "mode": "FIXED",
-  "sway": 0.5
+  "sway": 0.4
 }

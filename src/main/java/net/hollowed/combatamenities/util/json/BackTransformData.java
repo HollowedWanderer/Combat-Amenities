@@ -9,18 +9,19 @@ import java.util.List;
 import java.util.Map;
 
 public record BackTransformData(
-        Identifier item,
+        String item,
         List<Float> scale,
         List<Float> rotation,
         List<Float> translation,
         ItemDisplayContext mode,
         Float sway,
+        Boolean noFlip,
         Map<String, SubTransformData> componentTransforms, // Map of int -> TransformData
         SecondaryTransformData secondaryTransforms,
         TertiaryTransformData tertiaryTransforms
 ) {
     public static final Codec<BackTransformData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Identifier.CODEC.fieldOf("item").forGetter(BackTransformData::item),
+            Codec.STRING.fieldOf("item").forGetter(BackTransformData::item),
             Codec.FLOAT.listOf().fieldOf("scale").orElseGet(() -> List.of(1.0f, 1.0f, 1.0f)).forGetter(BackTransformData::scale),
             Codec.FLOAT.listOf().fieldOf("rotation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(BackTransformData::rotation),
             Codec.FLOAT.listOf().fieldOf("translation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(BackTransformData::translation),
@@ -28,6 +29,7 @@ public record BackTransformData(
                     .xmap(ItemDisplayContext::valueOf, ItemDisplayContext::name)
                     .forGetter(BackTransformData::mode),
             Codec.FLOAT.fieldOf("sway").orElse(1.0F).forGetter(BackTransformData::sway),
+            Codec.BOOL.fieldOf("noFlip").orElse(false).forGetter(BackTransformData::noFlip),
             Codec.unboundedMap(Codec.STRING, SubTransformData.CODEC)
                     .fieldOf("componentTransforms").orElse(Map.of())
                     .forGetter(BackTransformData::componentTransforms),

@@ -22,13 +22,12 @@ public class BeltSlotServerPacket {
 
             if (player instanceof ServerPlayerEntity serverPlayer) {
                 for (ServerPlayerEntity serverPlayerTemp : serverPlayer.getServerWorld().getPlayers()) {
-                    ServerPlayNetworking.send(serverPlayerTemp, new SoundPacketPayload(0, player.getPos(), true, 1.0F, 1.0F, 1, backStack));
-                }
-            }
-
-            if (player instanceof ServerPlayerEntity serverPlayer) {
-                for (ServerPlayerEntity serverPlayerTemp : serverPlayer.getServerWorld().getPlayers()) {
-                    ServerPlayNetworking.send(serverPlayerTemp, new SoundPacketPayload(0, player.getPos(), true, 1.0F, 1.0F, 2, backStack));
+                    if (!backStack.isEmpty()) {
+                        ServerPlayNetworking.send(serverPlayerTemp, new SoundPacketPayload(0, player.getPos(), true, 1.0F, 1.0F, 1, backStack));
+                    }
+                    if (!handStack.isEmpty() || (!offhandStack.isEmpty() && backStack.isEmpty())) {
+                        ServerPlayNetworking.send(serverPlayerTemp, new SoundPacketPayload(0, player.getPos(), true, 1.0F, 1.0F, 2, !handStack.isEmpty() ? handStack : offhandStack));
+                    }
                 }
             }
 

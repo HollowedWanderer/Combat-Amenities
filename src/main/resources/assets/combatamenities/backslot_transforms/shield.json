@@ -1,0 +1,9 @@
+{
+  "item": "minecraft:shield",
+  "scale": [1.5, 1.5, 1.5],
+  "rotation": [180.0, 0.0, 0.0],
+  "translation": [0.0, 0.15, 0.0],
+  "mode": "FIXED",
+  "sway": 0.5,
+  "noFlip": true
+}

@@ -1,7 +1,7 @@
 {
-  "item": "default",
+  "item": "#combatamenities:on_a_stick_items",
   "scale": [1.0, 1.0, 1.0],
-  "rotation": [0.0, 0.0, 0.0],
+  "rotation": [0.0, 0.0, 180.0],
   "translation": [0.0, 0.0, 0.0],
   "mode": "FIXED",
   "sway": 0.5

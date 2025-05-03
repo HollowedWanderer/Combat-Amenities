@@ -15,14 +15,9 @@ import net.minecraft.util.math.Vec3d;
 public class SoundPacket {
     public static void registerClientPacket() {
         ClientPlayNetworking.registerGlobalReceiver(SoundPacketPayload.ID, (payload, context) -> context.client().execute(() -> {
-            int soundId = payload.soundId();
             Vec3d pos = payload.pos();
             PlayerEntity player = context.player();
-            SoundEvent sound = switch (soundId) {
-                case 0 -> SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND.value();
-                case 1 -> SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value();
-                default -> SoundEvents.INTENTIONALLY_EMPTY;
-            };
+            SoundEvent sound = SoundEvents.INTENTIONALLY_EMPTY;
 
             if (payload.stack() != null) {
                 ItemStack stack = payload.stack();

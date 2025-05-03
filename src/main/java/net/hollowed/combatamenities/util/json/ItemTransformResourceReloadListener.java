@@ -10,6 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
@@ -35,7 +36,6 @@ public class ItemTransformResourceReloadListener implements SimpleSynchronousRes
     private void actuallyLoad(ResourceManager manager) {
         ClientTickDelayScheduler.schedule(-1, () -> {
             transforms.clear();
-            CombatAmenities.LOGGER.info("Reloading item transform data...");
 
             manager.findResources("item_transforms", path -> path.getPath().endsWith(".json")).keySet().forEach(id -> {
                 if (manager.getResource(id).isPresent()) {
@@ -44,6 +44,7 @@ public class ItemTransformResourceReloadListener implements SimpleSynchronousRes
                         DataResult<ItemTransformData> result = ItemTransformData.CODEC.parse(JsonOps.INSTANCE, json);
 
                         result.resultOrPartial(CombatAmenities.LOGGER::error).ifPresent(data -> {
+                            CombatAmenities.LOGGER.info(data.sheatheId() + " and " + data.unsheatheId());
                             if (Objects.equals(data.item(), "default")) {
                                 defaultTransforms = data;
                             } else if (data.item().startsWith("#")) {
@@ -60,7 +61,6 @@ public class ItemTransformResourceReloadListener implements SimpleSynchronousRes
                                             transforms.put(itemId, data);
                                         }
                                     });
-                                    CombatAmenities.LOGGER.info("Loaded transforms for tag: #{}", tagId);
                                 } else {
                                     CombatAmenities.LOGGER.warn("Tag #{} not found while loading item transforms!", tagId);
                                 }
@@ -73,12 +73,18 @@ public class ItemTransformResourceReloadListener implements SimpleSynchronousRes
                     }
                 }
             });
-
-            CombatAmenities.LOGGER.info("Loaded transforms: {}", transforms);
         });
     }
 
     public static ItemTransformData getTransform(Identifier itemId) {
-        return transforms.getOrDefault(itemId, defaultTransforms);
+        ItemTransformData transformData = transforms.getOrDefault(itemId, defaultTransforms);
+        if (transformData != null) {
+            return transformData;
+        }
+        return new ItemTransformData(
+                itemId.toString(),
+                SoundEvents.INTENTIONALLY_EMPTY.id(),
+                SoundEvents.INTENTIONALLY_EMPTY.id()
+        );
     }
 }

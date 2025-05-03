@@ -4,6 +4,8 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.hollowed.combatamenities.CombatAmenities;
+import net.hollowed.combatamenities.util.delay.ClientTickDelayScheduler;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.registry.Registries;
@@ -18,7 +20,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class BeltTransformResourceReloadListener implements SimpleSynchronousResourceReloadListener {
     private static final Map<Identifier, BeltTransformData> transforms = new HashMap<>();
@@ -31,47 +32,49 @@ public class BeltTransformResourceReloadListener implements SimpleSynchronousRes
 
     @Override
     public void reload(ResourceManager manager) {
-        transforms.clear();
+        MinecraftClient.getInstance().execute(() -> this.actuallyLoad(manager));
+    }
 
-        manager.findResources("beltslot_transforms", path -> path.getPath().endsWith(".json")).keySet().forEach(id -> {
-            if (manager.getResource(id).isPresent()) {
-                try (InputStream stream = manager.getResource(id).get().getInputStream()) {
-                    var json = JsonHelper.deserialize(new InputStreamReader(stream, StandardCharsets.UTF_8));
-                    DataResult<BeltTransformData> result = BeltTransformData.CODEC.parse(JsonOps.INSTANCE, json);
+    private void actuallyLoad(ResourceManager manager) {
+        ClientTickDelayScheduler.schedule(-1, () -> {
+            transforms.clear();
 
-                    result.resultOrPartial(CombatAmenities.LOGGER::error).ifPresent(data -> {
-                        CombatAmenities.LOGGER.info("Loaded transform for: {}", data.item());
-                        if (Objects.equals(data.item(), Identifier.of("beltslot", "default"))) {
-                            defaultTransforms = data;
-                        } else if (data.item().getPath().startsWith("#")) {
-                            // Remove the '#' prefix
-                            String tagPath = data.item().getPath().substring(1);
-                            Identifier tagId = Identifier.of(data.item().getNamespace(), tagPath);
+            manager.findResources("beltslot_transforms", path -> path.getPath().endsWith(".json")).keySet().forEach(id -> {
+                if (manager.getResource(id).isPresent()) {
+                    try (InputStream stream = manager.getResource(id).get().getInputStream()) {
+                        var json = JsonHelper.deserialize(new InputStreamReader(stream, StandardCharsets.UTF_8));
+                        DataResult<BeltTransformData> result = BeltTransformData.CODEC.parse(JsonOps.INSTANCE, json);
 
-                            TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), tagId);
+                        result.resultOrPartial(CombatAmenities.LOGGER::error).ifPresent(data -> {
+                            if (data.item().equals("default")) {
+                                defaultTransforms = data;
+                            } else if (data.item().startsWith("#")) {
+                                // Remove the '#' prefix
+                                String tagString = data.item().substring(1);
+                                Identifier tagId = Identifier.of(tagString);
 
-                            if (tag != null) {
-                                Registries.ITEM.forEach(item -> {
-                                    if (item.getDefaultStack().isIn(tag)) {
+                                TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), tagId);
+
+                                if (tag != null) {
+                                    Registries.ITEM.forEach(item -> {
                                         Identifier itemId = Registries.ITEM.getId(item);
-                                        transforms.put(itemId, data);
-                                    }
-                                });
-                                CombatAmenities.LOGGER.info("Loaded transforms for tag: #{}", tagId);
+                                        if (item.getDefaultStack().getRegistryEntry().isIn(tag)) {
+                                            transforms.put(itemId, data);
+                                        }
+                                    });
+                                } else {
+                                    CombatAmenities.LOGGER.warn("Tag #{} not found while loading item transforms!", tagId);
+                                }
                             } else {
-                                CombatAmenities.LOGGER.warn("Tag #{} not found while loading item transforms!", tagId);
+                                transforms.put(Identifier.of(data.item()), data);
                             }
-                        } else {
-                            transforms.put(data.item(), data);
-                        }
-                    });
-                } catch (Exception e) {
-                    CombatAmenities.LOGGER.error("Failed to load transform for {}: {}", id, e.getMessage());
+                        });
+                    } catch (Exception e) {
+                        CombatAmenities.LOGGER.error("Failed to load transform for {}: {}", id, e.getMessage());
+                    }
                 }
-            }
+            });
         });
-
-        CombatAmenities.LOGGER.info("Loaded transforms: {}", transforms);
     }
 
     public static BeltTransformData getTransform(Identifier itemId, String component) {
@@ -83,13 +86,14 @@ public class BeltTransformResourceReloadListener implements SimpleSynchronousRes
                 BeltTransformData.SubTransformData subTransform = baseTransform.componentTransforms().get(component);
 
                 return new BeltTransformData(
-                        itemId, // Preserve itemId
+                        itemId.toString(), // Preserve itemId
                         subTransform.scale(),
                         subTransform.rotation(),
                         subTransform.translation(),
                         subTransform.mode(),
                         subTransform.sway(),
-                        Map.of() // Sub-components don't need to be passed
+                        Map.of(), // Sub-components don't need to be passed
+                        subTransform.flip()
                 );
             }
             return baseTransform;
@@ -97,13 +101,14 @@ public class BeltTransformResourceReloadListener implements SimpleSynchronousRes
 
         // Fallback to a fully default transform if no data is available
         return new BeltTransformData(
-                itemId,
+                itemId.toString(),
                 List.of(1.0f, 1.0f, 1.0f), // Default scale
                 List.of(0.0f, 0.0f, 0.0f), // Default rotation
                 List.of(0.0f, 0.0f, 0.0f), // Default translation
                 ItemDisplayContext.FIXED, // Default mode
                 1.0F, // Default sway
-                Map.of() // Empty component transforms
+                Map.of(), // Empty component transforms
+                false
         );
     }
 }

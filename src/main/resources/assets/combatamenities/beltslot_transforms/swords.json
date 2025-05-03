@@ -1,9 +1,8 @@
 {
-  "item": "default",
-  "scale": [0.6, 0.6, 0.6],
+  "item": "#minecraft:swords",
+  "scale": [1.0, 1.0, 1.0],
   "rotation": [0.0, 0.0, 0.0],
   "translation": [0.0, 0.0, 0.0],
   "mode": "FIXED",
-  "sway": 0.4,
-  "flip": false
+  "sway": 0.4
 }

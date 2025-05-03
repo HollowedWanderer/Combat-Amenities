@@ -1,0 +1,8 @@
+{
+  "item": "#combatamenities:buckets",
+  "scale": [0.6, 0.6, 0.6],
+  "rotation": [0.0, 0.0, 180.0],
+  "translation": [0.0, 0.0, 0.0],
+  "mode": "FIXED",
+  "sway": 0.4
+}

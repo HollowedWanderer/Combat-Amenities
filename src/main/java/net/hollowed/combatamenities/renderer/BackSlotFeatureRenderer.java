@@ -90,40 +90,6 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					if (!secondaryModel.equals(Identifier.of("null"))) {
 						matrixStack.push();
 						this.getContextModel().body.applyTransform(matrixStack);
-
-						matrixStack.translate(0.0F, 0.0F, -0.15F);
-						if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
-							matrixStack.translate(0.0F, 0.0F, 0.05F);
-						}
-
-						// Use transformation mode from the transform data (JSON)
-						transformationMode = transformData.mode();
-
-						setAngles(matrixStack, armedEntityRenderState, backSlotStack);
-						applyItemSpecificAdjustments(matrixStack, armedEntityRenderState, item, armedEntityRenderState.mainArm);
-
-						List<Float> secondaryScale = secondaryTransformData.scale();
-						matrixStack.scale(secondaryScale.get(0), secondaryScale.get(1), secondaryScale.get(2)); // Scale
-
-						matrixStack.translate(0.0F, 0.0F, 0.25F); // Pivot Point ! !
-
-						List<Float> secondaryTranslation = secondaryTransformData.translation();
-						matrixStack.translate(secondaryTranslation.get(0), secondaryTranslation.get(1), secondaryTranslation.get(2)); // Translation
-
-						List<Float> secondaryRotation = secondaryTransformData.rotation();
-						matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(secondaryRotation.get(0))); // Rotation X
-						matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(secondaryRotation.get(1))); // Rotation Y
-						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(secondaryRotation.get(2))); // Rotation Z
-
-						matrixStack.translate(0.0F, 0.0F, -0.25F); // Pivot Point ! !
-
-						// Apply dynamic movement and item-specific adjustments
-						if (playerEntity instanceof OtherClientPlayerEntity) {
-							applyDynamicMovement(matrixStack, playerEntity, item);
-						} else if (playerEntity instanceof ClientPlayerEntity) {
-							applyDynamicMovement(matrixStack, playerEntity, item);
-						}
-
 						heldItemRenderer.renderItem(playerEntity, secondaryAppleStack, transformationMode, matrixStack, vertexConsumerProvider, light);
 						matrixStack.pop();
 					}
@@ -132,12 +98,8 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						matrixStack.push();
 						this.getContextModel().body.applyTransform(matrixStack);
 
-						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180)); // Rotation Y
-
 						List<Float> scale = tertiaryTransformData.scale();
 						matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
-
-						matrixStack.translate(0.0F, 0.0F, 0.25F); // Pivot Point ! !
 
 						List<Float> translation = tertiaryTransformData.translation();
 						matrixStack.translate(translation.get(0), translation.get(1), translation.get(2)); // Translation
@@ -147,43 +109,43 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.get(1))); // Rotation Y
 						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2))); // Rotation Z
 
-						matrixStack.translate(0.0F, 0.0F, -0.25F); // Pivot Point ! !
-
 						heldItemRenderer.renderItem(playerEntity, tertiaryAppleStack, transformationMode, matrixStack, vertexConsumerProvider, light);
 						matrixStack.pop();
 					}
 
 					matrixStack.push();
-
-					// Rotate based on body
 					this.getContextModel().body.applyTransform(matrixStack);
+					Arm arm = armedEntityRenderState.mainArm;
+					boolean right = arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBackslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBackslotDisplay;
 
-					matrixStack.translate(0.0F, 0.0F, -0.15F);
+					float pivot = 0.0F;
+
 					if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
-						matrixStack.translate(0.0F, 0.0F, 0.05F);
+						matrixStack.translate(0, 0, 0.1F);
 					}
+
+					matrixStack.translate(0, pivot, 0.125); // pivot point
+
+					matrixStack.multiply((new Quaternionf())
+							.rotateY(-3.1415927F)
+							.rotateX(transformData.sway() * -(6.0F + armedEntityRenderState.field_53537 / 2.0F + armedEntityRenderState.field_53536) * 0.017453292F)
+							.rotateZ(-(armedEntityRenderState.field_53538 / 2.0F * 0.017453292F))
+							.rotateY((180.0F - armedEntityRenderState.field_53538 / 2.0F) * 0.017453292F)
+					);
+
+					matrixStack.translate(0, 0.35, 0);
 
 					// Use transformation mode from the transform data (JSON)
 					transformationMode = transformData.mode();
 
-					setAngles(matrixStack, armedEntityRenderState, backSlotStack);
-					applyItemSpecificAdjustments(matrixStack, armedEntityRenderState, item, armedEntityRenderState.mainArm);
+					boolean flip = false;
 
-					List<Float> scale = transformData.scale();
-					matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
-
-					// Apply the transformations from TransformData using List<Float> format
-					matrixStack.translate(0.0F, 0.0F, 0.25F); // Pivot Point ! !
-
-					List<Float> translation = transformData.translation();
-					matrixStack.translate(translation.get(0), translation.get(1), translation.get(2)); // Translation
-
-					List<Float> rotation = transformData.rotation();
-					matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotation.get(0))); // Rotation X
-					matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.get(1))); // Rotation Y
-					matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2))); // Rotation Z
-
-					matrixStack.translate(0.0F, 0.0F, -0.25F); // Pivot Point ! !
+					if (!right) {
+						if (!(item instanceof BlockItem) && !transformData.noFlip()) {
+							matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
+							flip = true;
+						}
+					}
 
 					// Apply dynamic movement and item-specific adjustments
 					if (playerEntity instanceof OtherClientPlayerEntity) {
@@ -192,57 +154,33 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						applyDynamicMovement(matrixStack, playerEntity, item);
 					}
 
+					List<Float> scale = transformData.scale();
+					matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
+
+					List<Float> translation = transformData.translation();
+					matrixStack.translate(translation.get(0), translation.get(1), flip ? translation.get(2) : -translation.get(2)); // Translation
+					if (right && (item instanceof BlockItem || transformData.noFlip())) {
+						matrixStack.translate(translation.getFirst() * -2, 0, 0); // Translation
+					}
+
+					List<Float> rotation = transformData.rotation();
+					matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotation.get(0))); // Rotation X
+					if (flip) {
+						matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotation.getFirst() * -2)); // Rotation X
+					}
+					matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.get(1))); // Rotation Y
+					matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2))); // Rotation Z
+					if (right && (item instanceof BlockItem || transformData.noFlip())) {
+						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2) * -2)); // Rotation X
+					}
+
 					// Render the item
 					heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, matrixStack, vertexConsumerProvider, light);
 
+					matrixStack.translate(0, -pivot, -0.125); // pivot point
 					matrixStack.pop();
 				}
 			}
-		}
-	}
-
-	// Helper method for item-specific transformations
-	private void applyItemSpecificAdjustments(MatrixStack matrixStack, PlayerEntityRenderState armedEntityRenderState, Item item, Arm arm) {
-		if (item instanceof TridentItem) {
-			matrixStack.translate(0, 0.2, 0);
-			matrixStack.translate(0.0F, 0.0F, -0.1F);
-			if (!armedEntityRenderState.equippedChestStack.isEmpty()) {
-				matrixStack.translate(0.0F, 0.0F, 0.01F);
-			}
-			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
-			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(45.0F));
-			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0F));
-			transformationMode = ItemDisplayContext.FIRST_PERSON_RIGHT_HAND;
-			matrixStack.scale(1.5F, 1.5F, 1.5F);
-			if (arm == Arm.RIGHT && CombatAmenities.CONFIG.flipBackslotDisplay || arm == Arm.LEFT && !CombatAmenities.CONFIG.flipBackslotDisplay) {
-				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
-				matrixStack.translate(0, 0, -0.2);
-			}
-		} else if (item instanceof FishingRodItem || item instanceof OnAStickItem) {
-			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
-			transformationMode = ItemDisplayContext.FIXED;
-		} else if (item instanceof BlockItem blockItem) {
-			transformationMode = ItemDisplayContext.GROUND;
-			matrixStack.scale(2, 2, 2);
-
-			matrixStack.translate(0, -0.1, 0);
-
-			if (blockItem.getBlock() instanceof BannerBlock) {
-				matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
-				matrixStack.translate(0, -0.5, 0);
-				matrixStack.scale(1.5F, 1.5F, 1.5F);
-			}
-		} else if (item instanceof ShieldItem) {
-			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
-			matrixStack.scale(1.5F, 1.5F, 1.5F);
-			matrixStack.translate(0F, 0.1F, 0f);
-		} else {
-			matrixStack.translate(0, -0.3, 0); // Pivot Point ! ! !
-			//renderDebugPoint(matrixStack, vertexConsumerProvider);
-			if (arm == Arm.RIGHT && CombatAmenities.CONFIG.flipBackslotDisplay || arm == Arm.LEFT && !CombatAmenities.CONFIG.flipBackslotDisplay) {
-				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
-			}
-			matrixStack.translate(0, 0.3, -0); // Pivot Point ! ! !
 		}
 	}
 
@@ -253,33 +191,6 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 	private float jiggleIntensity = 0.0F; // Current jiggle intensity
 	private float jiggleDecay = 0.9F; // Decay rate of jiggle intensity
 	private float jiggleTimer = 0.0F; // Timer to drive oscillation
-
-	private void setAngles(MatrixStack matrixStack, PlayerEntityRenderState playerEntityRenderState, ItemStack item) {
-		BackTransformData data = BackTransformResourceReloadListener.getTransform(Registries.ITEM.getId(item.getItem()), item.getOrDefault(ModComponents.INTEGER_PROPERTY, -1).toString());
-
-		// Calculate banner-specific multiplier
-		float bannerMultiplier = 0.4F;
-		if (item.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof BannerBlock) {
-			bannerMultiplier = 1.0F; // Increase rotation for banners
-			matrixStack.translate(0F, 0.05F, 0); // Move the banner because it's WRONG
-		}
-
-		matrixStack.translate(0.0F, 0.0F, 0.2F); // Pivot Point ! ! !
-		matrixStack.translate(0, 0, 0.1);
-
-		//renderDebugPoint(matrixStack, vertexConsumerProvider);
-
-		matrixStack.multiply((new Quaternionf())
-				.rotateY(-3.1415927F)
-				.rotateX(data.sway() * bannerMultiplier * -(6.0F + playerEntityRenderState.field_53537 / 2.0F + playerEntityRenderState.field_53536) * 0.017453292F)
-				.rotateZ(-(playerEntityRenderState.field_53538 / 2.0F * 0.017453292F))
-				.rotateY((180.0F - playerEntityRenderState.field_53538 / 2.0F) * 0.017453292F)
-		);
-		matrixStack.translate(0F, 0.3F, 0.2);
-
-		matrixStack.translate(0.0F, 0.0F, -0.2F); // Pivot Point ! ! !
-
-	}
 
 	// Apply dynamic movement-based transformations
 	private void applyDynamicMovement(MatrixStack matrixStack, PlayerEntity playerEntity, Item item) {
@@ -296,7 +207,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			verticalVelocityHistory.offer((float) velocityY); // Add the current velocity
 
 			// Jiggle oscillation effect for landing
-			if (detectOtherLanding((ClientPlayerEntity) playerEntity)) {
+			if (detectLanding((ClientPlayerEntity) playerEntity)) {
 				// Scale jiggle intensity based on fall velocity
 				float landingVelocity = Math.abs(verticalVelocityHistory.peek() != null ? verticalVelocityHistory.peek() : 0.0F);
 				jiggleIntensity = MathHelper.clamp(landingVelocity * 10.0F, 5.0F, 50.0F); // Scale between 5 and 50 degrees
@@ -367,7 +278,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 	}
 
 	// Detect landing based on velocity history
-	private boolean detectOtherLanding(ClientPlayerEntity playerEntity) {
+	private boolean detectLanding(ClientPlayerEntity playerEntity) {
 		if (playerEntity.isOnGround() && !wasOnGroundLastTick) {
 			// Check if recent velocities indicate falling
 			for (float velocity : verticalVelocityHistory) {
