@@ -84,6 +84,8 @@ public class BeltTransformResourceReloadListener implements SimpleSynchronousRes
             // Check if a specific component transformation exists
             if (baseTransform.componentTransforms().containsKey(component)) {
                 BeltTransformData.SubTransformData subTransform = baseTransform.componentTransforms().get(component);
+                BeltTransformData.SecondaryTransformData secondary = subTransform.secondaryTransforms();
+                BeltTransformData.TertiaryTransformData tertiary = subTransform.tertiaryTransforms();
 
                 return new BeltTransformData(
                         itemId.toString(), // Preserve itemId
@@ -92,8 +94,23 @@ public class BeltTransformResourceReloadListener implements SimpleSynchronousRes
                         subTransform.translation(),
                         subTransform.mode(),
                         subTransform.sway(),
-                        Map.of(), // Sub-components don't need to be passed
-                        subTransform.flip()
+                        Map.of(), // Subcomponents don't need to be passed
+                        subTransform.flip(),
+                        new BeltTransformData.SecondaryTransformData(
+                                secondary.item(),
+                                secondary.scale(),
+                                secondary.rotation(),
+                                secondary.translation(),
+                                secondary.mode()
+                        ),
+                        new BeltTransformData.TertiaryTransformData(
+                                tertiary.item(),
+                                tertiary.scale(),
+                                tertiary.rotation(),
+                                tertiary.translation(),
+                                tertiary.mode()
+                        )
+
                 );
             }
             return baseTransform;
@@ -108,7 +125,21 @@ public class BeltTransformResourceReloadListener implements SimpleSynchronousRes
                 ItemDisplayContext.FIXED, // Default mode
                 1.0F, // Default sway
                 Map.of(), // Empty component transforms
-                false
+                false,
+                new BeltTransformData.SecondaryTransformData(
+                        Identifier.of("null"),
+                        List.of(1.0f, 1.0f, 1.0f), // Default scale
+                        List.of(0.0f, 0.0f, 0.0f), // Default rotation
+                        List.of(0.0f, 0.0f, 0.0f), // Default translation
+                        ItemDisplayContext.FIXED // Default mode
+                ),
+                new BeltTransformData.TertiaryTransformData(
+                        Identifier.of("null"),
+                        List.of(1.0f, 1.0f, 1.0f), // Default scale
+                        List.of(0.0f, 0.0f, 0.0f), // Default rotation
+                        List.of(0.0f, 0.0f, 0.0f), // Default translation
+                        ItemDisplayContext.FIXED // Default mode
+                )
         );
     }
 }

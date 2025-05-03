@@ -59,7 +59,9 @@ public record BeltTransformData(
             List<Float> translation,
             ItemDisplayContext mode,
             Float sway,
-            Boolean flip
+            Boolean flip,
+            SecondaryTransformData secondaryTransforms,
+            TertiaryTransformData tertiaryTransforms
     ) {
         public static final Codec<SubTransformData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.FLOAT.listOf().fieldOf("scale").orElseGet(() -> List.of(1.0f, 1.0f, 1.0f)).forGetter(SubTransformData::scale),
@@ -69,7 +71,23 @@ public record BeltTransformData(
                         .xmap(ItemDisplayContext::valueOf, ItemDisplayContext::name)
                         .forGetter(SubTransformData::mode),
                 Codec.FLOAT.fieldOf("sway").orElse(1.0F).forGetter(SubTransformData::sway),
-                Codec.BOOL.fieldOf("flip").orElse(false).forGetter(SubTransformData::flip)
+                Codec.BOOL.fieldOf("flip").orElse(false).forGetter(SubTransformData::flip),
+                SecondaryTransformData.CODEC.fieldOf("secondary").orElse(new SecondaryTransformData(
+                                Identifier.of("null"),
+                                List.of(1.0f, 1.0f, 1.0f),
+                                List.of(0.0f, 0.0f, 0.0f),
+                                List.of(0.0f, 0.0f, 0.0f),
+                                ItemDisplayContext.NONE
+                        ))
+                        .forGetter(SubTransformData::secondaryTransforms),
+                TertiaryTransformData.CODEC.fieldOf("tertiary").orElse(new TertiaryTransformData(
+                                Identifier.of("null"),
+                                List.of(1.0f, 1.0f, 1.0f),
+                                List.of(0.0f, 0.0f, 0.0f),
+                                List.of(0.0f, 0.0f, 0.0f),
+                                ItemDisplayContext.NONE
+                        ))
+                        .forGetter(SubTransformData::tertiaryTransforms)
         ).apply(instance, SubTransformData::new));
     }
 
