@@ -43,12 +43,12 @@ public abstract class LivingEntityMixin {
                 && living.getMainHandStack().streamTags().toList().contains(TagKey.of(RegistryKeys.ITEM, Identifier.of(CombatAmenities.MOD_ID, "bypass_shield_tweaks")));
 
         if (CombatAmenities.CONFIG.shieldTweaks && !source.isOf(ModDamageTypes.CLEAVED) && !bypassShieldTweaks) {
+            Vec3d attackDirection = source.getPosition() != null ? source.getPosition().subtract(self.getPos()).normalize() : Vec3d.ZERO;
+            Vec3d lookDirection = self.getRotationVec(1.0F).normalize();
+            double angle = attackDirection.dotProduct(lookDirection); // Cosine of the angle between attack and look direction
+
             // If the shield was raised for 10 ticks or fewer (0.5 seconds at 20 ticks per second)
             if (self.getItemUseTime() <= CombatAmenities.CONFIG.shieldParryTime && self.getItemUseTime() > 0 && blocksAttacksComponent != null) {
-                // Check if the attack is from the front
-                Vec3d attackDirection = source.getPosition() != null ? source.getPosition().subtract(self.getPos()).normalize() : Vec3d.ZERO;
-                Vec3d lookDirection = self.getRotationVec(1.0F).normalize();
-                double angle = attackDirection.dotProduct(lookDirection); // Cosine of the angle between attack and look direction
 
                 // If the attack is in front of the player (within ~90 degrees)
                 if (angle > 0.0) {
@@ -60,7 +60,7 @@ public abstract class LivingEntityMixin {
 
                         // Grant "Not Today, Thank You!" advancement
                         AdvancementEntry advancement = serverWorld.getServer().getAdvancementLoader().get(Identifier.ofVanilla("story/deflect_arrow"));
-                        if (advancement != null && player instanceof ServerPlayerEntity serverPlayer) {
+                        if (advancement != null && player instanceof ServerPlayerEntity serverPlayer && source.isIn(DamageTypeTags.IS_PROJECTILE)) {
                             serverPlayer.getAdvancementTracker().grantCriterion(advancement, "deflected_projectile");
                         }
 
@@ -93,11 +93,17 @@ public abstract class LivingEntityMixin {
                 }
             }
 
+            if (source.isIn(DamageTypeTags.IS_PROJECTILE) && self.getItemUseTime() > 0 && blocksAttacksComponent != null && angle > 0.0F) {
+                if (self instanceof PlayerEntity player) {
+                    ServerWorld serverWorld = (ServerWorld) player.getWorld();
+                    serverWorld.playSound(null, player.getBlockPos(), SoundEvents.ITEM_SHIELD_BLOCK.value(), SoundCategory.PLAYERS, 1.0F, 1.0F); // Higher-pitched block sound
+                    cir.setReturnValue(false);
+                }
+            }
+
             if (blocksAttacksComponent != null && self.getActiveItem().getItem() instanceof ShieldItem) {
-                ServerWorld serverWorld = (ServerWorld) self.getWorld();
                 shield = self.getActiveItem().get(DataComponentTypes.BLOCKS_ATTACKS);
                 self.getActiveItem().set(DataComponentTypes.BLOCKS_ATTACKS, new BlocksAttacksComponent(0.25F, 1.0F, List.of(new BlocksAttacksComponent.DamageReduction(90.0F, Optional.empty(), 0.0F, 0.5F)), new BlocksAttacksComponent.ItemDamage(3.0F, 1.0F, 1.0F), Optional.of(DamageTypeTags.BYPASSES_SHIELD), Optional.of(SoundEvents.ITEM_SHIELD_BLOCK), Optional.of(SoundEvents.ITEM_SHIELD_BREAK)));
-                serverWorld.playSound(null, self.getBlockPos(), SoundEvents.ITEM_SHIELD_BLOCK.value(), SoundCategory.PLAYERS, 1.0F, 1.0F); // Higher-pitched block sound
             }
         }
     }

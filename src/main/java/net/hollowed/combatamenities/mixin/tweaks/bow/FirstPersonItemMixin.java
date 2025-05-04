@@ -10,8 +10,8 @@ import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.util.Hand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -24,10 +24,20 @@ public class FirstPersonItemMixin {
             at = @At("HEAD"), cancellable = true)
     private void hideOffhandItemWhenUsingRiptide(LivingEntity entity, ItemStack stack, ItemDisplayContext renderMode, MatrixStack matrices, VertexConsumerProvider vertexConsumer, int light, CallbackInfo ci) {
         // Check if the player is in first person, using Riptide, and if this is the offhand
-        if (entity instanceof ClientPlayerEntity && entity.isUsingRiptide()) {
+        if (entity.isUsingRiptide()) {
             Arm offhandArm = entity.getMainArm() == Arm.RIGHT ? Arm.LEFT : Arm.RIGHT;
-            if (entity.getMainArm() == Arm.LEFT == (offhandArm == Arm.LEFT) && renderMode == ItemDisplayContext.FIRST_PERSON_LEFT_HAND && CombatAmenities.CONFIG.riptideFix) {
-                ci.cancel(); // Prevent the offhand item from rendering
+            if (entity.getActiveHand() == Hand.MAIN_HAND) {
+                if (((offhandArm == Arm.LEFT && renderMode == ItemDisplayContext.FIRST_PERSON_LEFT_HAND)
+                        || (offhandArm == Arm.RIGHT && renderMode == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND))
+                        && CombatAmenities.CONFIG.riptideFix) {
+                    ci.cancel(); // Prevent the offhand item from rendering
+                }
+            } else {
+                if (((offhandArm == Arm.RIGHT && renderMode == ItemDisplayContext.FIRST_PERSON_LEFT_HAND)
+                        || (offhandArm == Arm.LEFT && renderMode == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND))
+                        && CombatAmenities.CONFIG.riptideFix) {
+                    ci.cancel(); // Prevent the offhand item from rendering
+                }
             }
         }
 

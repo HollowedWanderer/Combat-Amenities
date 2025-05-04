@@ -103,14 +103,6 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						this.getContextModel().body.applyTransform(matrixStack);
 
 						float pivot = 0.0F;
-
-						if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
-							matrixStack.translate(0, 0, 0.05F);
-						}
-						if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
-							matrixStack.translate(0, -0.1, 0.075);
-						}
-
 						matrixStack.translate(0, pivot, 0.125); // pivot point
 
 						matrixStack.multiply((new Quaternionf())
@@ -139,6 +131,16 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						List<Float> scale = secondaryTransformData.scale();
 						matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
 
+						if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
+							matrixStack.translate(0, 0, 0.05F);
+							if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
+								matrixStack.translate(0, 0, 0.05);
+							}
+						}
+						if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
+							matrixStack.translate(0, 0, 0.075);
+						}
+
 						List<Float> translation = secondaryTransformData.translation();
 						matrixStack.translate(translation.get(0), translation.get(1), flip ? translation.get(2) : -translation.get(2)); // Translation
 						if (right && (item instanceof BlockItem || transformData.noFlip())) {
@@ -154,10 +156,6 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2))); // Rotation Z
 						if (right && (item instanceof BlockItem || transformData.noFlip())) {
 							matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2) * -2)); // Rotation X
-						}
-
-						if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
-							matrixStack.translate(0, 0.1, 0);
 						}
 
 						heldItemRenderer.renderItem(playerEntity, secondaryAppleStack, transformationMode, matrixStack, vertexConsumerProvider, light);
@@ -193,14 +191,6 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					this.getContextModel().body.applyTransform(matrixStack);
 
 					float pivot = 0.0F;
-
-					if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
-						matrixStack.translate(0, 0, 0.05F);
-					}
-					if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
-						matrixStack.translate(0, -0.1, 0.075);
-					}
-
 					matrixStack.translate(0, pivot, 0.125); // pivot point
 
 					matrixStack.multiply((new Quaternionf())
@@ -229,6 +219,16 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					List<Float> scale = transformData.scale();
 					matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
 
+					if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
+						matrixStack.translate(0, 0, 0.05F);
+						if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
+							matrixStack.translate(0, 0, 0.05);
+						}
+					}
+					if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
+						matrixStack.translate(0, 0, 0.075);
+					}
+
 					List<Float> translation = transformData.translation();
 					matrixStack.translate(translation.get(0), translation.get(1), flip ? translation.get(2) : -translation.get(2)); // Translation
 					if (right && (item instanceof BlockItem || transformData.noFlip())) {
@@ -244,10 +244,6 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2))); // Rotation Z
 					if (right && (item instanceof BlockItem || transformData.noFlip())) {
 						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2) * -2)); // Rotation X
-					}
-
-					if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
-						matrixStack.translate(0, 0.1, 0);
 					}
 
 					// Render the item

@@ -30,9 +30,13 @@ public class PlayerCapeModelMixin {
 
             ItemStack stack = client.player.getInventory().getStack(41);
             BackTransformData transformData = BackTransformResourceReloadListener.getTransform(Registries.ITEM.getId(stack.getItem()), stack.getOrDefault(ModComponents.INTEGER_PROPERTY, -1).toString());
+            float sway = 1.0F;
+            if (!stack.isEmpty()) {
+                sway = transformData.sway();
+            }
 
             // Calculate the adjusted cape rotation
-            float adjustedXRotation = transformData.sway() * (6.0F + playerEntityRenderState.field_53537 / 2.0F + playerEntityRenderState.field_53536)
+            float adjustedXRotation = sway * (6.0F + playerEntityRenderState.field_53537 / 2.0F + playerEntityRenderState.field_53536)
                     * 0.017453292F;
             float zRotation = playerEntityRenderState.field_53538 / 2.0F * 0.017453292F;
             float yRotation = (180.0F - playerEntityRenderState.field_53538 / 2.0F) * 0.017453292F;
