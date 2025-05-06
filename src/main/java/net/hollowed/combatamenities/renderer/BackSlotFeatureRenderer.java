@@ -138,7 +138,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 							}
 						}
 						if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
-							matrixStack.translate(0, 0, 0.075);
+							matrixStack.translate(0, 0, 0.1);
 						}
 
 						List<Float> translation = secondaryTransformData.translation();
@@ -226,7 +226,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						}
 					}
 					if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
-						matrixStack.translate(0, 0, 0.075);
+						matrixStack.translate(0, 0, 0.1);
 					}
 
 					List<Float> translation = transformData.translation();
