@@ -116,8 +116,10 @@ public class ModKeyBindings {
                 ItemStack hoveredSlotStack = hoveredSlot.getStack();
 
                 // Send packet
-                BackSlotInventoryPacketPayload payload = new BackSlotInventoryPacketPayload(hoveredSlotStack, hoveredSlot.getIndex());
-                ClientPlayNetworking.send(payload);
+                if (client.player.getInventory().getStack(hoveredSlot.getIndex()).equals(hoveredSlotStack)) {
+                    BackSlotInventoryPacketPayload payload = new BackSlotInventoryPacketPayload(hoveredSlotStack, hoveredSlot.getIndex());
+                    ClientPlayNetworking.send(payload);
+                }
 
                 lastSwapTime = System.currentTimeMillis();
             } catch (Exception e) {
@@ -147,8 +149,10 @@ public class ModKeyBindings {
                 ItemStack hoveredSlotStack = hoveredSlot.getStack();
 
                 // Send packet
-                BackSlotInventoryPacketPayload payload = new BackSlotInventoryPacketPayload(hoveredSlotStack, hoveredSlot.getIndex());
-                ClientPlayNetworking.send(payload);
+                if (client.player.getInventory().getStack(hoveredSlot.getIndex()).equals(hoveredSlotStack)) {
+                    BackSlotInventoryPacketPayload payload = new BackSlotInventoryPacketPayload(hoveredSlotStack, hoveredSlot.getIndex());
+                    ClientPlayNetworking.send(payload);
+                }
 
                 lastSwapTime = System.currentTimeMillis();
             } catch (Exception e) {
@@ -194,8 +198,10 @@ public class ModKeyBindings {
                 ItemStack hoveredSlotStack = hoveredSlot.getStack();
 
                 // Send packet
-                BeltSlotInventoryPacketPayload payload = new BeltSlotInventoryPacketPayload(hoveredSlotStack, hoveredSlot.getIndex());
-                ClientPlayNetworking.send(payload);
+                if (client.player.getInventory().getStack(hoveredSlot.getIndex()).equals(hoveredSlotStack)) {
+                    BeltSlotInventoryPacketPayload payload = new BeltSlotInventoryPacketPayload(hoveredSlotStack, hoveredSlot.getIndex());
+                    ClientPlayNetworking.send(payload);
+                }
 
                 lastSwapTime1 = System.currentTimeMillis();
             } catch (Exception e) {
@@ -225,8 +231,10 @@ public class ModKeyBindings {
                 ItemStack hoveredSlotStack = hoveredSlot.getStack();
 
                 // Send packet
-                BeltSlotInventoryPacketPayload payload = new BeltSlotInventoryPacketPayload(hoveredSlotStack, hoveredSlot.getIndex());
-                ClientPlayNetworking.send(payload);
+                if (client.player.getInventory().getStack(hoveredSlot.getIndex()).equals(hoveredSlotStack)) {
+                    BeltSlotInventoryPacketPayload payload = new BeltSlotInventoryPacketPayload(hoveredSlotStack, hoveredSlot.getIndex());
+                    ClientPlayNetworking.send(payload);
+                }
 
                 lastSwapTime1 = System.currentTimeMillis();
             } catch (Exception e) {
