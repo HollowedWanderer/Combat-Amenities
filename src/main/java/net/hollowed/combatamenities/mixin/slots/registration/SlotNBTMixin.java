@@ -5,10 +5,8 @@ import net.hollowed.combatamenities.util.interfaces.EquipmentInterface;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.RegistryOps;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -26,18 +24,16 @@ public abstract class SlotNBTMixin extends Entity implements EquipmentInterface 
         super(type, world);
     }
 
-    @Inject(method = "writeCustomDataToNbt", at = @At("HEAD"))
-    public void writeNBT(NbtCompound nbt, CallbackInfo ci) {
-        RegistryOps<NbtElement> registryOps = this.getRegistryManager().getOps(NbtOps.INSTANCE);
+    @Inject(method = "writeCustomData", at = @At("HEAD"))
+    public void writeNBT(WriteView view, CallbackInfo ci) {
         if (!this.extraEquipment.isEmpty()) {
-            nbt.put("extraEquipment", EntityEquipment.CODEC, registryOps, this.extraEquipment);
+            view.put("extraEquipment", EntityEquipment.CODEC, this.extraEquipment);
         }
     }
 
-    @Inject(method = "readCustomDataFromNbt", at = @At("HEAD"))
-    public void readNBT(NbtCompound nbt, CallbackInfo ci) {
-        RegistryOps<NbtElement> registryOps = this.getRegistryManager().getOps(NbtOps.INSTANCE);
-        this.extraEquipment.copyFrom(nbt.get("extraEquipment", EntityEquipment.CODEC, registryOps).orElseGet(EntityEquipment::new));
+    @Inject(method = "readCustomData", at = @At("HEAD"))
+    public void readNBT(ReadView view, CallbackInfo ci) {
+        this.extraEquipment.copyFrom(view.read("extraEquipment", EntityEquipment.CODEC).orElseGet(EntityEquipment::new));
     }
 
     @Override

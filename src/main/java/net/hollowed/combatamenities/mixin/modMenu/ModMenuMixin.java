@@ -6,8 +6,8 @@ import com.terraformersmc.modmenu.util.mod.Mod;
 import net.hollowed.combatamenities.CombatAmenities;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -71,13 +71,13 @@ public abstract class ModMenuMixin {
             );
 
             // Draw small icon
-            drawContext.drawTexture(RenderLayer::getGuiTexturedOverlay, Identifier.of(CombatAmenities.MOD_ID, "ca_small_icon.png"), x + iconSize + 85, y - 3, 0, 0, 16, 16, 16, 16);
+            drawContext.drawTexture(RenderPipelines.GUI_TEXTURED, Identifier.of(CombatAmenities.MOD_ID, "ca_small_icon.png"), x + iconSize + 85, y - 3, 0, 0, 16, 16, 16, 16);
 
             // Draw colored line below 2 rows of text
-            drawContext.drawTexture(RenderLayer::getGuiTexturedOverlay, Identifier.of(CombatAmenities.MOD_ID, "ca_line.png"), x + iconSize + 3, y + 31, 0, 0, 76, 1, 76, 1);
+            drawContext.drawTexture(RenderPipelines.GUI_TEXTURED, Identifier.of(CombatAmenities.MOD_ID, "ca_line.png"), x + iconSize + 3, y + 31, 0, 0, 76, 1, 76, 1);
 
             // Draw H signature
-            drawContext.drawTexture(RenderLayer::getGuiTexturedOverlay, Identifier.of(CombatAmenities.MOD_ID, "h.png"), rowWidth - 2, y, 0, 0, 16, 16, 16, 16);
+            drawContext.drawTexture(RenderPipelines.GUI_TEXTURED, Identifier.of(CombatAmenities.MOD_ID, "h.png"), rowWidth - 2, y, 0, 0, 16, 16, 16, 16);
         }
     }
 }

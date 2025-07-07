@@ -1,10 +1,10 @@
 package net.hollowed.combatamenities.mixin.slots.rendering;
 
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.ingame.RecipeBookScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.Text;
@@ -28,13 +28,13 @@ public abstract class InventoryScreenMixin extends RecipeBookScreen<PlayerScreen
     @Inject(method = "drawBackground", at = @At("TAIL"))
     public void render(DrawContext context, float delta, int mouseX, int mouseY, CallbackInfo ci) {
         context.drawTexture(
-                RenderLayer::getGuiOpaqueTexturedBackground,
+                RenderPipelines.GUI_OPAQUE_TEX_BG,
                 SLOT_TEXTURE,
                 this.x + 76, this.y + 7,
                 0, 0, 18, 18, 18, 18 // Texture coordinates and dimensions
         );
         context.drawTexture(
-                RenderLayer::getGuiOpaqueTexturedBackground,
+                RenderPipelines.GUI_OPAQUE_TEX_BG,
                 SLOT_TEXTURE,
                 this.x + 76, this.y + 25,
                 0, 0, 18, 18, 18, 18 // Texture coordinates and dimensions

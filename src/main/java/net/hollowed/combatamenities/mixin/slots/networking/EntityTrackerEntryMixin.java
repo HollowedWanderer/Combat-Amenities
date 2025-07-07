@@ -113,7 +113,7 @@ public class EntityTrackerEntryMixin {
 
         if (playerEntity instanceof ServerPlayerEntity serverPlayer) {
             // Play the sound with the calculated volume
-            for (ServerPlayerEntity player : serverPlayer.getServerWorld().getPlayers()) {
+            for (ServerPlayerEntity player : serverPlayer.getWorld().getPlayers()) {
                 ServerPlayNetworking.send(player, new SoundPacketPayload(0, playerEntity.getPos(), false, volume, 1.0F, 0, playerEntity.getInventory().getStack(41)));
             }
         }

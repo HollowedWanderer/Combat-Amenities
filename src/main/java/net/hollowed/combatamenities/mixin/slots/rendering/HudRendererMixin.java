@@ -4,9 +4,9 @@ import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.hollowed.combatamenities.CombatAmenities;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -23,10 +23,6 @@ public class HudRendererMixin {
 
     @Unique
     private static final Identifier WIDGETS_TEXTURE = Identifier.of("textures/gui/sprites/hud/hotbar_offhand_left.png");
-    @Unique
-    private static final int xOffset = CombatAmenities.CONFIG.backslotX; // Default position
-    @Unique
-    private static final int yOffset = CombatAmenities.CONFIG.backslotY;
 
     // Track the previous item in the back slot for animation
     @Unique
@@ -61,7 +57,7 @@ public class HudRendererMixin {
 
             if (!backSlotStack.isEmpty()) {
                 final int x = getBeltX(drawContext);
-                int y = drawContext.getScaledWindowHeight() - yOffset - 4;
+                int y = drawContext.getScaledWindowHeight() - CombatAmenities.CONFIG.backslotY - 4;
 
                 RenderSystem.assertOnRenderThread();
                 GlStateManager._enableBlend();
@@ -77,7 +73,7 @@ public class HudRendererMixin {
                 }
 
                 drawContext.drawTexture(
-                        RenderLayer::getGuiTextured,
+                        RenderPipelines.GUI_TEXTURED,
                         WIDGETS_TEXTURE,
                         x + 1, y - 19,
                         0, 0, 22, 23, 29, 24 // Texture coordinates and dimensions
@@ -104,7 +100,7 @@ public class HudRendererMixin {
 
             if (!backSlotStack.isEmpty()) {
                 final int x = getX(drawContext);
-                int y = drawContext.getScaledWindowHeight() - yOffset - 4; // Y position remains the same
+                int y = drawContext.getScaledWindowHeight() - CombatAmenities.CONFIG.backslotY - 4; // Y position remains the same
 
                 RenderSystem.assertOnRenderThread();
                 GlStateManager._disableBlend();
@@ -120,7 +116,7 @@ public class HudRendererMixin {
                 }
 
                 drawContext.drawTexture(
-                        RenderLayer::getGuiTextured,
+                        RenderPipelines.GUI_TEXTURED,
                         WIDGETS_TEXTURE,
                         x + 1, y - 19,
                         0, 0, 22, 23, 29, 24 // Texture coordinates and dimensions
@@ -137,16 +133,16 @@ public class HudRendererMixin {
         if (stack.isEmpty()) return;
 
         // Push the current transformation matrix
-        context.getMatrices().push();
+        context.getMatrices().pushMatrix();
 
         // Translate to the center of the item slot
         float scaledX = x + 8; // Center the item
         float scaledY = y + 10;
 
         // Apply the scaling effect
-        context.getMatrices().translate(scaledX, scaledY, 0);
-        context.getMatrices().scale(scaleX, scaleY, 1.0f);
-        context.getMatrices().translate(-scaledX, -scaledY, 0); // Undo translation after scaling
+        context.getMatrices().translate(scaledX, scaledY);
+        context.getMatrices().scale(scaleX, scaleY);
+        context.getMatrices().translate(-scaledX, -scaledY);
 
         // Render the item
         context.drawItem(player, stack, x, y, 0);
@@ -155,7 +151,7 @@ public class HudRendererMixin {
         context.drawStackOverlay(client.textRenderer, stack, x, y);
 
         // Pop the transformation matrix to reset transformations
-        context.getMatrices().pop();
+        context.getMatrices().popMatrix();
     }
 
 
@@ -166,9 +162,9 @@ public class HudRendererMixin {
         // Calculate positions based on hand preference
         int x;
         if (isLeftHanded) {
-            x = drawContext.getScaledWindowWidth() / 2 - xOffset - 120; // Position on the left of the hotbar
+            x = drawContext.getScaledWindowWidth() / 2 - CombatAmenities.CONFIG.backslotX - 120; // Position on the left of the hotbar
         } else {
-            x = drawContext.getScaledWindowWidth() / 2 + xOffset + 97; // Position on the right of the hotbar
+            x = drawContext.getScaledWindowWidth() / 2 + CombatAmenities.CONFIG.backslotX + 97; // Position on the right of the hotbar
         }
         return x;
     }
@@ -180,9 +176,9 @@ public class HudRendererMixin {
         // Calculate positions based on hand preference
         int x;
         if (isLeftHanded) {
-            x = drawContext.getScaledWindowWidth() / 2 - xOffset - 143; // Position on the left of the hotbar
+            x = drawContext.getScaledWindowWidth() / 2 - CombatAmenities.CONFIG.backslotX - 143; // Position on the left of the hotbar
         } else {
-            x = drawContext.getScaledWindowWidth() / 2 + xOffset + 120; // Position on the right of the hotbar
+            x = drawContext.getScaledWindowWidth() / 2 + CombatAmenities.CONFIG.backslotX + 120; // Position on the right of the hotbar
         }
         return x;
     }

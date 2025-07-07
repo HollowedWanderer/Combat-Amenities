@@ -26,7 +26,7 @@ public class EntityMixin {
             if ((!backSlotItem.isEmpty() && !(backSlotItem.getItem() instanceof BlockItem)) || (!beltSlotItem.isEmpty() && !(beltSlotItem.getItem() instanceof BlockItem))) {
                 if (player instanceof ServerPlayerEntity serverPlayer) {
                     // Play the sound with the calculated volume
-                    for (ServerPlayerEntity serverPlayerTemp : serverPlayer.getServerWorld().getPlayers()) {
+                    for (ServerPlayerEntity serverPlayerTemp : serverPlayer.getWorld().getPlayers()) {
                         ServerPlayNetworking.send(serverPlayerTemp, new SoundPacketPayload(1, player.getPos(), false, 0.15F, 1.2F, 0, ItemStack.EMPTY));
                     }
                 }

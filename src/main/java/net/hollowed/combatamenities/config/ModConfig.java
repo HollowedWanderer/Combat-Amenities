@@ -7,9 +7,7 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 @Config(name = "combat_amenities")
 @Config.Gui.Background("minecraft:textures/block/stripped_spruce_log.png")
 public class ModConfig implements ConfigData {
-    @ConfigEntry.Gui.RequiresRestart
     public int backslotX = 0;
-    @ConfigEntry.Gui.RequiresRestart
     public int backslotY = 0;
 
     public boolean backslotParticles = true;

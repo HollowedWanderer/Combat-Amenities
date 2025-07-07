@@ -21,7 +21,7 @@ public class BackSlotServerPacket {
             ItemStack backStack = player.getInventory().getStack(41);
 
             if (player instanceof ServerPlayerEntity serverPlayer) {
-                for (ServerPlayerEntity serverPlayerTemp : serverPlayer.getServerWorld().getPlayers()) {
+                for (ServerPlayerEntity serverPlayerTemp : serverPlayer.getWorld().getPlayers()) {
                     if (!backStack.isEmpty()) {
                         ServerPlayNetworking.send(serverPlayerTemp, new SoundPacketPayload(0, player.getPos(), true, 1.0F, 1.0F, 1, backStack));
                     }

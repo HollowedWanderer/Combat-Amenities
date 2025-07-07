@@ -5,10 +5,10 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.hollowed.combatamenities.networking.slots.SlotCreativeClientPacketPayload;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;
@@ -68,13 +68,13 @@ public abstract class CACreativeInventoryScreenMixin extends HandledScreen<Creat
     public void render(DrawContext context, float delta, int mouseX, int mouseY, CallbackInfo ci) {
         if (this.isInventoryTabSelected()) {
             context.drawTexture(
-                    RenderLayer::getGuiOpaqueTexturedBackground,
+                    RenderPipelines.GUI_OPAQUE_TEX_BG,
                     SLOT_TEXTURE,
                     this.x + 126, this.y + 19,
                     0, 0, 18, 18, 18, 18 // Texture coordinates and dimensions
             );
             context.drawTexture(
-                    RenderLayer::getGuiOpaqueTexturedBackground,
+                    RenderPipelines.GUI_OPAQUE_TEX_BG,
                     SLOT_TEXTURE,
                     this.x + 144, this.y + 19,
                     0, 0, 18, 18, 18, 18 // Texture coordinates and dimensions

@@ -15,10 +15,9 @@ public class SlotCreativeClientPacket {
             ItemStack itemStack = payload.itemStack();
 
             context.server().execute(() -> {
-                PlayerEntity player = (PlayerEntity) context.player().getWorld().getEntityById(entityId);
-                if (player instanceof PlayerEntity) {
-                    // Set the stack to the correct item or empty stack
-                    player.getInventory().setStack(slotId, itemStack);
+                PlayerEntity entity = (PlayerEntity) context.player().getWorld().getEntityById(entityId);
+                if (entity instanceof PlayerEntity && entity.isCreative()) {
+                    entity.getInventory().setStack(slotId, itemStack);
                 }
             });
         });

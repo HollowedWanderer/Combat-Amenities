@@ -18,40 +18,43 @@ public class BackSlotInventoryPacketReceiver {
             ItemStack hoveredStack = payload.itemStack();
             ItemStack backSlotStack = player.getInventory().getStack(41); // Backslot is slot 41
 
-            // Locate the hovered slot in the player's inventory screen
-            int hoveredSlotIndex = payload.i();
-            if (hoveredSlotIndex < 0 || hoveredSlotIndex >= player.getInventory().size()) {
-                return; // Invalid slot index
-            }
+            if (player.getInventory().contains(hoveredStack)) {
 
-            // Check if the player is in Creative Mode
-            boolean isCreative = player.isCreative();
+                // Locate the hovered slot in the player's inventory screen
+                int hoveredSlotIndex = payload.i();
+                if (hoveredSlotIndex < 0 || hoveredSlotIndex >= player.getInventory().size()) {
+                    return; // Invalid slot index
+                }
 
-            // Swap the items, respecting the hotbar in creative mode
-            if (hoveredSlotIndex < 9) {
-                // Handling hotbar to backslot swap
-                if (!isCreative) {
-                    player.getInventory().setStack(41, hoveredStack); // Place item in backslot
-                    player.getInventory().setStack(hoveredSlotIndex, backSlotStack); // Move backslot item to hotbar
-                    // If the hovered stack is not empty or the backslot stack is not empty, play a sound
-                    if (!hoveredStack.isEmpty() || !backSlotStack.isEmpty()) {
-                        player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 1F, 1F);
+                // Check if the player is in Creative Mode
+                boolean isCreative = player.isCreative();
+
+                // Swap the items, respecting the hotbar in creative mode
+                if (hoveredSlotIndex < 9) {
+                    // Handling hotbar to backslot swap
+                    if (!isCreative) {
+                        player.getInventory().setStack(41, hoveredStack); // Place item in backslot
+                        player.getInventory().setStack(hoveredSlotIndex, backSlotStack); // Move backslot item to hotbar
+                        // If the hovered stack is not empty or the backslot stack is not empty, play a sound
+                        if (!hoveredStack.isEmpty() || !backSlotStack.isEmpty()) {
+                            player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 1F, 1F);
+                        }
+                    }
+                } else {
+                    // Handling general inventory slots to backslot
+                    if (hoveredSlotIndex < 36) {
+                        player.getInventory().setStack(41, hoveredStack); // Move item to backslot
+                        player.getInventory().setStack(hoveredSlotIndex, backSlotStack); // Move backslot item to general inventory
+                        // If the hovered stack is not empty or the backslot stack is not empty, play a sound
+                        if (!hoveredStack.isEmpty() || !backSlotStack.isEmpty()) {
+                            player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 1F, 1F);
+                        }
                     }
                 }
-            } else {
-                // Handling general inventory slots to backslot
-                if (hoveredSlotIndex < 36) {
-                    player.getInventory().setStack(41, hoveredStack); // Move item to backslot
-                    player.getInventory().setStack(hoveredSlotIndex, backSlotStack); // Move backslot item to general inventory
-                    // If the hovered stack is not empty or the backslot stack is not empty, play a sound
-                    if (!hoveredStack.isEmpty() || !backSlotStack.isEmpty()) {
-                        player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 1F, 1F);
-                    }
-                }
-            }
 
-            // Sync the inventory
-            player.currentScreenHandler.sendContentUpdates();
+                // Sync the inventory
+                player.currentScreenHandler.sendContentUpdates();
+            }
         })));
     }
 }
