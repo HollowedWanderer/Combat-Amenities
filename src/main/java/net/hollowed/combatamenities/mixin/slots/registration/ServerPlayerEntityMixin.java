@@ -56,4 +56,14 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
             reservedSlotInventory.clear();
         }
     }
+
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void tickItems(CallbackInfo ci) {
+        if (!this.getInventory().getStack(41).isEmpty()) {
+            this.getInventory().getStack(41).inventoryTick(this.getWorld(), this, null);
+        }
+        if (!this.getInventory().getStack(42).isEmpty()) {
+            this.getInventory().getStack(42).inventoryTick(this.getWorld(), this, null);
+        }
+    }
 }
