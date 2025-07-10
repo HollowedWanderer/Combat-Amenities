@@ -3,8 +3,8 @@
 **Fabric API**
 - P7dR8mSH
 
-**Cloth Config**
-- 9s6osm5g
+**MidnightLib**
+- codAaoxh
 
 **Mod Menu**
 - mOgUt4GM
