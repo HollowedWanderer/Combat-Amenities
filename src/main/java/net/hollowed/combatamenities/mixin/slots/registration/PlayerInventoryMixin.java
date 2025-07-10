@@ -117,14 +117,6 @@ public abstract class PlayerInventoryMixin implements Inventory {
         }
     }
 
-    @Inject(method = "dropAll", at = @At("HEAD"))
-    public void dropAll(CallbackInfo ci) {
-        if (this.player instanceof EquipmentInterface access) {
-            EntityEquipment equipment = access.combat_Amenities$getEquipment();
-            equipment.dropAll(this.player);
-        }
-    }
-
     @Inject(method = "clear", at = @At("HEAD"))
     public void clear(CallbackInfo ci) {
         if (this.player instanceof EquipmentInterface access) {

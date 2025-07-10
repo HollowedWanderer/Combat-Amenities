@@ -1,6 +1,6 @@
 package net.hollowed.combatamenities.mixin.tweaks.grass;
 
-import net.hollowed.combatamenities.CombatAmenities;
+import net.hollowed.combatamenities.config.ModConfig;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.hit.EntityHitResult;
@@ -32,7 +32,7 @@ public class GameRendererMixin {
 			ordinal = 0
 	)
 	private HitResult getReach(HitResult hitResult, Entity camera, double blockInteractionRange, double entityInteractionRange, float tickDelta) {
-		if (hitResult.getType() == HitResult.Type.BLOCK && hitResult instanceof BlockHitResult blockHit && CombatAmenities.CONFIG.swingThrough) {
+		if (hitResult.getType() == HitResult.Type.BLOCK && hitResult instanceof BlockHitResult blockHit && ModConfig.swingThrough) {
 			BlockPos blockPos = blockHit.getBlockPos();
             assert MinecraftClient.getInstance().world != null;
             validBlock = MinecraftClient.getInstance().world.getBlockState(blockPos)
@@ -60,7 +60,7 @@ public class GameRendererMixin {
 			ordinal = 0
 	)
 	private EntityHitResult iWonderIfThisEntityIsValid(EntityHitResult hitResult, Entity camera, double blockInteractionRange, double entityInteractionRange, float tickDelta) {
-		if (hitResult != null && CombatAmenities.CONFIG.swingThrough) {
+		if (hitResult != null && ModConfig.swingThrough) {
 			Entity hitEntity = hitResult.getEntity();
 			Vec3d cameraPos = camera.getPos();
 			validEntity = hitEntity instanceof LivingEntity &&

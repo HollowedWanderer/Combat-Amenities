@@ -1,6 +1,6 @@
 package net.hollowed.combatamenities.mixin.tweaks.arrow;
 
-import net.hollowed.combatamenities.CombatAmenities;
+import net.hollowed.combatamenities.config.ModConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -26,7 +26,7 @@ public abstract class StuckObjectsFeatureRendererMixin {
             cancellable = true
     )
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumers, int light, float f, float directionX, float directionY, CallbackInfo ci) {
-        if ((StuckObjectsFeatureRenderer<?>) (Object) this instanceof StuckArrowsFeatureRenderer<?> && CombatAmenities.CONFIG.itemArrows) {
+        if ((StuckObjectsFeatureRenderer<?>) (Object) this instanceof StuckArrowsFeatureRenderer<?> && ModConfig.itemArrows) {
             // Push the matrix stack for transformations
             matrixStack.push();
 

@@ -1,7 +1,6 @@
 package net.hollowed.combatamenities;
 
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
+import eu.midnightdust.lib.config.MidnightConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
@@ -43,8 +42,6 @@ import java.util.Set;
 
 public class CombatAmenities implements ModInitializer {
 	public static final String MOD_ID = "combatamenities";
-
-	public static ModConfig CONFIG = new ModConfig();
 
 	public static final Set<String> DURABILITY_ENCHANTMENTS = Set.of(
 			"Enchantment Unbreaking",
@@ -112,8 +109,7 @@ public class CombatAmenities implements ModInitializer {
 		SlotCreativeClientPacket.registerClientPacket();
 
 		// Config
-		AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);
-		CONFIG = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+		MidnightConfig.init(MOD_ID, ModConfig.class);
 
 		LOGGER.info("It is time for backing and slotting");
 	}

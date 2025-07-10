@@ -29,25 +29,26 @@ public abstract class ModMenuEntryMixin extends Screen {
     }
 
     @Inject(method = "render", at = @At("TAIL"))
-    public void render(DrawContext DrawContext, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         ModListEntry selectedEntry = this.selected;
         if (selectedEntry != null) {
             Mod mod = selectedEntry.getMod();
+            int x = this.rightPaneX;
             int imageOffset = 36;
             Text name = Text.literal(mod.getTranslatedName());
             StringVisitable trimmedName = name;
-            int maxNameWidth = this.width - (this.rightPaneX + imageOffset);
+            int maxNameWidth = this.width - (x + imageOffset);
             if (this.textRenderer.getWidth(name) > maxNameWidth) {
                 StringVisitable ellipsis = StringVisitable.plain("...");
                 trimmedName = StringVisitable.concat(this.textRenderer.trimToWidth(name, maxNameWidth - this.textRenderer.getWidth(ellipsis)), ellipsis);
             }
 
             // Custom color logic
-            int nameColor = 0x5c8790;
+            int nameColor = 0xFF5c8790;
 
             if ("combatamenities".equals(mod.getId())) {
-                DrawContext.drawText(this.textRenderer, Language.getInstance().reorder(trimmedName), this.rightPaneX + imageOffset, 49, nameColor, true);
-                DrawContext.drawTexture(RenderPipelines.GUI_TEXTURED, Identifier.of(CombatAmenities.MOD_ID, "ca_small_icon.png"), this.rightPaneX + imageOffset + 82, 45, 0, 0, 16, 16, 16, 16);
+                drawContext.drawText(this.textRenderer, Language.getInstance().reorder(trimmedName), x + imageOffset, 49, nameColor, true);
+                drawContext.drawTexture(RenderPipelines.GUI_TEXTURED, Identifier.of(CombatAmenities.MOD_ID, "ca_small_icon.png"), this.rightPaneX + imageOffset + 82, 45, 0, 0, 16, 16, 16, 16);
             }
         }
     }

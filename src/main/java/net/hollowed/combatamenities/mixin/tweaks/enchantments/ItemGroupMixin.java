@@ -1,6 +1,7 @@
 package net.hollowed.combatamenities.mixin.tweaks.enchantments;
 
 import net.hollowed.combatamenities.CombatAmenities;
+import net.hollowed.combatamenities.config.ModConfig;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -53,7 +54,7 @@ public abstract class ItemGroupMixin {
 
     @Unique
     private static boolean isDisallowedEnchantment(String enchantment) {
-        return (CombatAmenities.CONFIG.removeDurability && CombatAmenities.DURABILITY_ENCHANTMENTS.contains(enchantment))
-                || (CombatAmenities.CONFIG.builtInLoyalty && CombatAmenities.TRIDENT_ENCHANTMENTS.contains(enchantment));
+        return (ModConfig.removeDurability && CombatAmenities.DURABILITY_ENCHANTMENTS.contains(enchantment))
+                || (ModConfig.builtInLoyalty && CombatAmenities.TRIDENT_ENCHANTMENTS.contains(enchantment));
     }
 }

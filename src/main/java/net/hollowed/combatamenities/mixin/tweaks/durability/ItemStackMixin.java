@@ -1,6 +1,7 @@
 package net.hollowed.combatamenities.mixin.tweaks.durability;
 
 import net.hollowed.combatamenities.CombatAmenities;
+import net.hollowed.combatamenities.config.ModConfig;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -26,7 +27,7 @@ public abstract class ItemStackMixin {
     // Intercept the method used to damage items and prevent it from applying durability
     @Inject(method = "getDamage", at = @At("HEAD"), cancellable = true)
     private void removeDurability(CallbackInfoReturnable<Integer> cir) {
-        if (CombatAmenities.CONFIG.removeDurability && !this.getItem().getDefaultStack().getRegistryEntry().isIn(KEEP_DURABILITY_TAG) && this.hasEnchantments()) {
+        if (ModConfig.removeDurability && !this.getItem().getDefaultStack().getRegistryEntry().isIn(KEEP_DURABILITY_TAG) && this.hasEnchantments()) {
             cir.setReturnValue(0);
         }
     }

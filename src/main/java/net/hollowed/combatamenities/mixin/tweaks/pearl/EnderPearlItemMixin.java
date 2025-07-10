@@ -1,6 +1,6 @@
 package net.hollowed.combatamenities.mixin.tweaks.pearl;
 
-import net.hollowed.combatamenities.CombatAmenities;
+import net.hollowed.combatamenities.config.ModConfig;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
@@ -29,7 +29,7 @@ public abstract class EnderPearlItemMixin extends Item {
     }
 
     public UseAction getUseAction(ItemStack stack) {
-        if (CombatAmenities.CONFIG.enderPearlTweaks) {
+        if (ModConfig.enderPearlTweaks) {
             return UseAction.BOW;
         }
         return UseAction.NONE;
@@ -43,14 +43,14 @@ public abstract class EnderPearlItemMixin extends Item {
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void onUse(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         user.setCurrentHand(hand);
-        if (CombatAmenities.CONFIG.enderPearlTweaks) {
+        if (ModConfig.enderPearlTweaks) {
             cir.setReturnValue(ActionResult.CONSUME);
         }
     }
 
     @Override
     public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        if (CombatAmenities.CONFIG.enderPearlTweaks) {
+        if (ModConfig.enderPearlTweaks) {
             if (!(user instanceof PlayerEntity player)) {
                 return false;
             }
@@ -77,7 +77,7 @@ public abstract class EnderPearlItemMixin extends Item {
 
     @Override
     public int getMaxUseTime(ItemStack stack, LivingEntity user) {
-        if (CombatAmenities.CONFIG.enderPearlTweaks) {
+        if (ModConfig.enderPearlTweaks) {
             return 72000; // Default max use time for items that can be charged
         }
         return 0;

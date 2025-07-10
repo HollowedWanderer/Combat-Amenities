@@ -2,6 +2,7 @@ package net.hollowed.combatamenities.mixin.tweaks.enchantments;
 
 import com.google.common.collect.Lists;
 import net.hollowed.combatamenities.CombatAmenities;
+import net.hollowed.combatamenities.config.ModConfig;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.EnchantableComponent;
 import net.minecraft.enchantment.Enchantment;
@@ -85,7 +86,7 @@ public abstract class EnchantmentHelperMixin {
 
     @Unique
     private static boolean isDisallowedEnchantment(String enchantment) {
-        return (CombatAmenities.CONFIG.removeDurability && CombatAmenities.DURABILITY_ENCHANTMENTS.contains(enchantment))
-                || (CombatAmenities.CONFIG.builtInLoyalty && CombatAmenities.TRIDENT_ENCHANTMENTS.contains(enchantment));
+        return (ModConfig.removeDurability && CombatAmenities.DURABILITY_ENCHANTMENTS.contains(enchantment))
+                || (ModConfig.builtInLoyalty && CombatAmenities.TRIDENT_ENCHANTMENTS.contains(enchantment));
     }
 }

@@ -48,7 +48,7 @@ public abstract class ModMenuMixin {
         int iconSize = ModMenuConfig.COMPACT_LIST.getValue() ? 19 : 32;
 
         // Custom color logic
-        int nameColor = 0x5c8790;
+        int nameColor = 0xFF5c8790;
 
         Text name = Text.literal(this.mod.getTranslatedName());
         StringVisitable trimmedName = name;
@@ -61,14 +61,7 @@ public abstract class ModMenuMixin {
 
         if ("combatamenities".equals(modId)) {
             // Modify the text rendering with a new color
-            drawContext.drawText(
-                    this.client.textRenderer,
-                    Language.getInstance().reorder(trimmedName),
-                    x + iconSize + 3,
-                    y + 1,
-                    nameColor,
-                    true
-            );
+            drawContext.drawTextWithShadow(font, Language.getInstance().reorder(trimmedName), x + iconSize + 3, y + 1, nameColor);
 
             // Draw small icon
             drawContext.drawTexture(RenderPipelines.GUI_TEXTURED, Identifier.of(CombatAmenities.MOD_ID, "ca_small_icon.png"), x + iconSize + 85, y - 3, 0, 0, 16, 16, 16, 16);

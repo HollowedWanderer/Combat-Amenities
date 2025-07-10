@@ -1,7 +1,7 @@
 package net.hollowed.combatamenities.networking.slots;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.hollowed.combatamenities.CombatAmenities;
+import net.hollowed.combatamenities.config.ModConfig;
 import net.hollowed.combatamenities.util.json.ItemTransformData;
 import net.hollowed.combatamenities.util.json.ItemTransformResourceReloadListener;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,7 +28,7 @@ public class SoundPacket {
                 }
             }
 
-            player.getWorld().playSoundClient(pos.getX(), pos.getY(), pos.getZ(), sound, SoundCategory.PLAYERS, payload.volume() * ((float) (payload.swap() ? CombatAmenities.CONFIG.backslotSwapSoundVolume : CombatAmenities.CONFIG.backslotAmbientSoundVolume) / 100), payload.pitch(), true);
+            player.getWorld().playSoundClient(pos.getX(), pos.getY(), pos.getZ(), sound, SoundCategory.PLAYERS, payload.volume() * ((float) (payload.swap() ? ModConfig.backslotSwapSoundVolume : ModConfig.backslotAmbientSoundVolume) / 100), payload.pitch(), true);
         }));
     }
 }

@@ -2,7 +2,7 @@ package net.hollowed.combatamenities.renderer;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.hollowed.combatamenities.CombatAmenities;
+import net.hollowed.combatamenities.config.ModConfig;
 import net.hollowed.combatamenities.util.interfaces.PlayerEntityRenderStateAccess;
 import net.hollowed.combatamenities.util.items.ModComponents;
 import net.hollowed.combatamenities.util.json.BeltTransformData;
@@ -55,7 +55,7 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
                 // Retrieve the back slot stack from the correct player's inventory
                 ItemStack backSlotStack = playerEntity.getInventory().getStack(42);
 
-                if (backSlotStack.hasEnchantments() && Math.random() > ((100 - CombatAmenities.CONFIG.enchantmentParticleChance) / 100.0F) && CombatAmenities.CONFIG.backslotParticles && !MinecraftClient.getInstance().isPaused()) {
+                if (backSlotStack.hasEnchantments() && Math.random() > ((100 - ModConfig.enchantmentParticleChance) / 100.0F) && ModConfig.backslotParticles && !MinecraftClient.getInstance().isPaused()) {
                     for (int i = 0; i < 5; i++) { // Increase the number for more particles
                         double offsetX = (Math.random() - 0.5); // Random value between -1 and 1
                         double offsetY = Math.random(); // Random value between 0 and 1.5 for height variation
@@ -71,7 +71,7 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
                 }
 
 				Arm arm = armedEntityRenderState.mainArm;
-				boolean right = arm == Arm.RIGHT && !CombatAmenities.CONFIG.flipBeltslotDisplay || arm == Arm.LEFT && CombatAmenities.CONFIG.flipBeltslotDisplay;
+				boolean right = arm == Arm.RIGHT && !ModConfig.flipBeltslotDisplay || arm == Arm.LEFT && ModConfig.flipBeltslotDisplay;
 
 				Item item = backSlotStack.getItem();
 				Identifier itemId = Registries.ITEM.getId(item); // Retrieve the Identifier of the item
