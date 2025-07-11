@@ -15,7 +15,6 @@ public class BeltSlotInventoryPacketReceiver {
                 return;
             }
 
-            ItemStack hoveredStack = payload.itemStack();
             ItemStack backSlotStack = player.getInventory().getStack(42); // Backslot is slot 41
 
             // Locate the hovered slot in the player's inventory screen
@@ -23,6 +22,9 @@ public class BeltSlotInventoryPacketReceiver {
             if (hoveredSlotIndex < 0 || hoveredSlotIndex >= player.getInventory().size()) {
                 return; // Invalid slot index
             }
+            
+            // Get the stack being swapped into the belt slot
+            ItemStack hoveredStack = player.getInventory().getStack(hoveredSlotIndex);
 
             // Check if the player is in Creative Mode
             boolean isCreative = player.isCreative();
