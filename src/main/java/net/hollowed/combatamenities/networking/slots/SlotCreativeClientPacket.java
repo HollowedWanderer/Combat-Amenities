@@ -10,14 +10,13 @@ public class SlotCreativeClientPacket {
 
     public static void registerClientPacket() {
         ServerPlayNetworking.registerGlobalReceiver(ID, (payload, context) -> {
-            int entityId = payload.entityId();
             int slotId = payload.slotId();
             ItemStack itemStack = payload.itemStack();
 
             context.server().execute(() -> {
-                PlayerEntity entity = (PlayerEntity) context.player().getWorld().getEntityById(entityId);
-                if (entity instanceof PlayerEntity && entity.isCreative()) {
-                    entity.getInventory().setStack(slotId, itemStack);
+                PlayerEntity player = context.player();
+                if (player != null && player.isCreative()) {
+                    player.getInventory().setStack(slotId, itemStack);
                 }
             });
         });

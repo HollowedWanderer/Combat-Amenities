@@ -4,7 +4,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.hollowed.combatamenities.networking.slots.SlotCreativeClientPacketPayload;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
@@ -89,12 +88,10 @@ public abstract class CACreativeInventoryScreenMixin extends HandledScreen<Creat
         if (selectedTab.equals(inventoryGroup)) {
             for (int i = 0; i < this.handler.slots.size(); ++i) {
                 if (i == 46) {  // Modify slot 46
-                    assert MinecraftClient.getInstance().player != null;
-                    ClientPlayNetworking.send(new SlotCreativeClientPacketPayload(MinecraftClient.getInstance().player.getId(), 41, this.handler.slots.get(i).getStack()));
+                    ClientPlayNetworking.send(new SlotCreativeClientPacketPayload(41, this.handler.slots.get(i).getStack()));
                 }
                 if (i == 47) {  // Modify slot 47
-                    assert MinecraftClient.getInstance().player != null;
-                    ClientPlayNetworking.send(new SlotCreativeClientPacketPayload(MinecraftClient.getInstance().player.getId(), 42, this.handler.slots.get(i).getStack()));
+                    ClientPlayNetworking.send(new SlotCreativeClientPacketPayload(42, this.handler.slots.get(i).getStack()));
                 }
             }
         }

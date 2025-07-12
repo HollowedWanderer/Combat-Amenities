@@ -6,6 +6,8 @@ import net.hollowed.combatamenities.util.interfaces.TridentEntityRenderStateAcce
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.TridentEntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -23,7 +25,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TridentEntityRenderer.class)
 @Environment(EnvType.CLIENT)
-public class TridentEntityRendererMixin {
+public abstract class TridentEntityRendererMixin extends EntityRenderer<TridentEntity, TridentEntityRenderState> {
+
+    protected TridentEntityRendererMixin(EntityRendererFactory.Context context) {
+        super(context);
+    }
 
     @Inject(method = "updateRenderState(Lnet/minecraft/entity/projectile/TridentEntity;Lnet/minecraft/client/render/entity/state/TridentEntityRenderState;F)V", at = @At("HEAD"))
     public void updateRenderState(TridentEntity tridentEntity, TridentEntityRenderState tridentEntityRenderState, float f, CallbackInfo ci) {
@@ -65,5 +71,10 @@ public class TridentEntityRendererMixin {
             matrixStack.pop();
             ci.cancel();
         }
+    }
+
+    @Override
+    protected boolean canBeCulled(TridentEntity entity) {
+        return false;
     }
 }
