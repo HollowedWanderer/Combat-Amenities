@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.hollowed.combatamenities.util.interfaces.TridentEntityRenderStateAccess;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -74,7 +75,7 @@ public abstract class TridentEntityRendererMixin extends EntityRenderer<TridentE
     }
 
     @Override
-    protected boolean canBeCulled(TridentEntity entity) {
-        return false;
+    public boolean shouldRender(TridentEntity entity, Frustum frustum, double x, double y, double z) {
+        return true;
     }
 }
