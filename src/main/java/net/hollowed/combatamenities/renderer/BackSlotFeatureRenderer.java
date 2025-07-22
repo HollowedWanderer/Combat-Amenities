@@ -2,7 +2,7 @@ package net.hollowed.combatamenities.renderer;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.hollowed.combatamenities.config.ModConfig;
+import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.util.interfaces.PlayerEntityRenderStateAccess;
 import net.hollowed.combatamenities.util.items.ModComponents;
 import net.hollowed.combatamenities.util.json.BackTransformData;
@@ -55,7 +55,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 				// Retrieve the back slot stack from the correct player's inventory
 				ItemStack backSlotStack = playerEntity.getInventory().getStack(41);
 
-				if (backSlotStack.hasEnchantments() && Math.random() > ((100 - ModConfig.enchantmentParticleChance) / 100.0F) && ModConfig.backslotParticles && !MinecraftClient.getInstance().isPaused()) {
+				if (backSlotStack.hasEnchantments() && Math.random() > ((100 - CAConfig.enchantmentParticleChance) / 100.0F) && CAConfig.backslotParticles && !MinecraftClient.getInstance().isPaused()) {
 					for (int i = 0; i < 5; i++) { // Increase the number for more particles
 						double offsetX = (Math.random() - 0.5); // Random value between -1 and 1
 						double offsetY = Math.random(); // Random value between 0 and 1.5 for height variation
@@ -88,7 +88,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					tertiaryAppleStack.set(DataComponentTypes.ITEM_MODEL, tertiaryModel);
 
 					Arm arm = armedEntityRenderState.mainArm;
-					boolean right = arm == Arm.RIGHT && !ModConfig.flipBackslotDisplay || arm == Arm.LEFT && ModConfig.flipBackslotDisplay;
+					boolean right = arm == Arm.RIGHT && !CAConfig.flipBackslotDisplay || arm == Arm.LEFT && CAConfig.flipBackslotDisplay;
 
 					boolean flip = false;
 
@@ -114,6 +114,13 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
 						matrixStack.translate(0, 0.35, 0);
 
+						if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
+							matrixStack.translate(0, 0, 0.05F);
+						}
+						if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
+							matrixStack.translate(0, 0, 0.1);
+						}
+
 						if (flip) {
 							matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
 						}
@@ -130,16 +137,6 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
 						List<Float> scale = secondaryTransformData.scale();
 						matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
-
-						if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
-							matrixStack.translate(0, 0, 0.05F);
-							if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
-								matrixStack.translate(0, 0, 0.05);
-							}
-						}
-						if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
-							matrixStack.translate(0, 0, 0.1);
-						}
 
 						List<Float> translation = secondaryTransformData.translation();
 						matrixStack.translate(translation.get(0), translation.get(1), flip ? translation.get(2) : -translation.get(2)); // Translation
@@ -202,6 +199,13 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
 					matrixStack.translate(0, 0.35, 0);
 
+					if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
+						matrixStack.translate(0, 0, 0.05F);
+					}
+					if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
+						matrixStack.translate(0, 0, 0.1);
+					}
+
 					if (flip) {
 						matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
 					}
@@ -218,16 +222,6 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
 					List<Float> scale = transformData.scale();
 					matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
-
-					if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
-						matrixStack.translate(0, 0, 0.05F);
-						if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
-							matrixStack.translate(0, 0, 0.05);
-						}
-					}
-					if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
-						matrixStack.translate(0, 0, 0.1);
-					}
 
 					List<Float> translation = transformData.translation();
 					matrixStack.translate(translation.get(0), translation.get(1), flip ? translation.get(2) : -translation.get(2)); // Translation

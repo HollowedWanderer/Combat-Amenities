@@ -1,4 +1,4 @@
-package net.hollowed.combatamenities.util;
+package net.hollowed.combatamenities.index;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import org.lwjgl.glfw.GLFW;
 
-public class ModKeyBindings {
+public class CAKeyBindings {
 
     // Keybinding
     public static KeyBinding backSlotBinding;
@@ -60,15 +60,15 @@ public class ModKeyBindings {
         long windowHandle = MinecraftClient.getInstance().getWindow().getHandle();
         InputUtil.Key boundKey;
         InputUtil.Key boundKey1;
-        if (KeyBindingHelper.getBoundKeyOf(ModKeyBindings.backSlotBinding).getCode() <= 57) {
-            boundKey = ModKeyBindings.backSlotBinding.getDefaultKey();
+        if (KeyBindingHelper.getBoundKeyOf(CAKeyBindings.backSlotBinding).getCode() <= 57) {
+            boundKey = CAKeyBindings.backSlotBinding.getDefaultKey();
         } else {
-            boundKey = KeyBindingHelper.getBoundKeyOf(ModKeyBindings.backSlotBinding);
+            boundKey = KeyBindingHelper.getBoundKeyOf(CAKeyBindings.backSlotBinding);
         }
-        if (KeyBindingHelper.getBoundKeyOf(ModKeyBindings.beltSlotBinding).getCode() <= 57) {
-            boundKey1 = ModKeyBindings.beltSlotBinding.getDefaultKey();
+        if (KeyBindingHelper.getBoundKeyOf(CAKeyBindings.beltSlotBinding).getCode() <= 57) {
+            boundKey1 = CAKeyBindings.beltSlotBinding.getDefaultKey();
         } else {
-            boundKey1 = KeyBindingHelper.getBoundKeyOf(ModKeyBindings.beltSlotBinding);
+            boundKey1 = KeyBindingHelper.getBoundKeyOf(CAKeyBindings.beltSlotBinding);
         }
 
         if (InputUtil.isKeyPressed(windowHandle, boundKey.getCode())) {

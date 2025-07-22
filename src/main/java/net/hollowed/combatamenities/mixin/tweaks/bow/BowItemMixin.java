@@ -1,6 +1,6 @@
 package net.hollowed.combatamenities.mixin.tweaks.bow;
 
-import net.hollowed.combatamenities.config.ModConfig;
+import net.hollowed.combatamenities.config.CAConfig;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.BowItem;
@@ -21,7 +21,7 @@ public abstract class BowItemMixin {
      */
     @Inject(method = "shoot", at = @At("HEAD"), cancellable = true)
     private void addProjectileInaccuracy(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, LivingEntity target, CallbackInfo ci) {
-        if (ModConfig.bowTweaks) {
+        if (CAConfig.bowTweaks) {
             int useTicks = shooter.getItemUseTime();
             if (useTicks > OVERDRAW_THRESHOLD) {
                 float extraInaccuracy = (useTicks - OVERDRAW_THRESHOLD) * 0.15F; // Inaccuracy increases over time

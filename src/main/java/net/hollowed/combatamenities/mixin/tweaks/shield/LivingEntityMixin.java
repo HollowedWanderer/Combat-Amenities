@@ -1,7 +1,7 @@
 package net.hollowed.combatamenities.mixin.tweaks.shield;
 
 import net.hollowed.combatamenities.CombatAmenities;
-import net.hollowed.combatamenities.config.ModConfig;
+import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.util.entities.ModDamageTypes;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.component.DataComponentTypes;
@@ -43,13 +43,13 @@ public abstract class LivingEntityMixin {
         boolean bypassShieldTweaks = source.getAttacker() instanceof LivingEntity living
                 && living.getMainHandStack().streamTags().toList().contains(TagKey.of(RegistryKeys.ITEM, Identifier.of(CombatAmenities.MOD_ID, "bypass_shield_tweaks")));
 
-        if (ModConfig.shieldTweaks && !source.isOf(ModDamageTypes.CLEAVED) && !bypassShieldTweaks) {
+        if (CAConfig.shieldTweaks && !source.isOf(ModDamageTypes.CLEAVED) && !bypassShieldTweaks) {
             Vec3d attackDirection = source.getPosition() != null ? source.getPosition().subtract(self.getPos()).normalize() : Vec3d.ZERO;
             Vec3d lookDirection = self.getRotationVec(1.0F).normalize();
             double angle = attackDirection.dotProduct(lookDirection); // Cosine of the angle between attack and look direction
 
             // If the shield was raised for 10 ticks or fewer (0.5 seconds at 20 ticks per second)
-            if (self.getItemUseTime() <= ModConfig.shieldParryTime && self.getItemUseTime() > 0 && blocksAttacksComponent != null) {
+            if (self.getItemUseTime() <= CAConfig.shieldParryTime && self.getItemUseTime() > 0 && blocksAttacksComponent != null) {
 
                 // If the attack is in front of the player (within ~90 degrees)
                 if (angle > 0.0) {

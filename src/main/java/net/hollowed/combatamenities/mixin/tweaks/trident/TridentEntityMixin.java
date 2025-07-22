@@ -1,6 +1,6 @@
 package net.hollowed.combatamenities.mixin.tweaks.trident;
 
-import net.hollowed.combatamenities.config.ModConfig;
+import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.util.interfaces.TridentOwnerSetter;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
@@ -44,7 +44,7 @@ public abstract class TridentEntityMixin extends PersistentProjectileEntity impl
         ItemStack tridentStack = trident.getItemStack();
 
         // Check if the trident has any enchantments
-        if (EnchantmentHelper.hasEnchantments(tridentStack) && ModConfig.builtInLoyalty) {
+        if (EnchantmentHelper.hasEnchantments(tridentStack) && CAConfig.builtInLoyalty) {
             // Access the data tracker and set loyalty to 3
             DataTracker dataTracker = trident.getDataTracker();
             TrackedData<Byte> LOYALTY = TridentEntityMixin.LOYALTY; // Access the LOYALTY data tracker field
@@ -66,7 +66,7 @@ public abstract class TridentEntityMixin extends PersistentProjectileEntity impl
             }
 
             // Insert it into the player's inventory
-            if (!player.isCreative() && !ModConfig.correctTridentReturn && hasSpace) {
+            if (!player.isCreative() && !CAConfig.correctTridentReturn && hasSpace) {
                 player.getInventory().insertStack(this.asItemStack());
                 cir.setReturnValue(true);
             }

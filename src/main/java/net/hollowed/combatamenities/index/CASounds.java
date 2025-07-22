@@ -1,4 +1,4 @@
-package net.hollowed.combatamenities.util;
+package net.hollowed.combatamenities.index;
 
 import net.hollowed.combatamenities.CombatAmenities;
 import net.minecraft.registry.Registries;
@@ -6,7 +6,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 
-public class ModSounds {
+public class CASounds {
     @SuppressWarnings("unused")
     public static SoundEvent SWORD_UNSHEATH = register("sword_unsheath");
 

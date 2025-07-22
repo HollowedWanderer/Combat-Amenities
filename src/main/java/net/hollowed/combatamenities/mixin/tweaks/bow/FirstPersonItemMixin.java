@@ -1,6 +1,6 @@
 package net.hollowed.combatamenities.mixin.tweaks.bow;
 
-import net.hollowed.combatamenities.config.ModConfig;
+import net.hollowed.combatamenities.config.CAConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -29,20 +29,20 @@ public class FirstPersonItemMixin {
             if (entity.getActiveHand() == Hand.MAIN_HAND) {
                 if (((offhandArm == Arm.LEFT && renderMode == ItemDisplayContext.FIRST_PERSON_LEFT_HAND)
                         || (offhandArm == Arm.RIGHT && renderMode == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND))
-                        && ModConfig.riptideFix) {
+                        && CAConfig.riptideFix) {
                     ci.cancel(); // Prevent the offhand item from rendering
                 }
             } else {
                 if (((offhandArm == Arm.RIGHT && renderMode == ItemDisplayContext.FIRST_PERSON_LEFT_HAND)
                         || (offhandArm == Arm.LEFT && renderMode == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND))
-                        && ModConfig.riptideFix) {
+                        && CAConfig.riptideFix) {
                     ci.cancel(); // Prevent the offhand item from rendering
                 }
             }
         }
 
         // Add wobbling effect for bows when pulled back for too long
-        if (entity instanceof PlayerEntity player && player.getActiveItem().getItem() instanceof BowItem && ModConfig.bowTweaks) {
+        if (entity instanceof PlayerEntity player && player.getActiveItem().getItem() instanceof BowItem && CAConfig.bowTweaks) {
             int useTime = player.getItemUseTime(); // Time bow has been drawn
 
             float tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(true);

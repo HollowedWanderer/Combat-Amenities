@@ -2,7 +2,7 @@ package net.hollowed.combatamenities.mixin.slots.rendering;
 
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.hollowed.combatamenities.config.ModConfig;
+import net.hollowed.combatamenities.config.CAConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
@@ -57,7 +57,7 @@ public class HudRendererMixin {
 
             if (!backSlotStack.isEmpty()) {
                 final int x = getBeltX(drawContext);
-                int y = drawContext.getScaledWindowHeight() - ModConfig.backslotY - 4;
+                int y = drawContext.getScaledWindowHeight() - CAConfig.backslotY - 4;
 
                 RenderSystem.assertOnRenderThread();
                 GlStateManager._enableBlend();
@@ -100,7 +100,7 @@ public class HudRendererMixin {
 
             if (!backSlotStack.isEmpty()) {
                 final int x = getX(drawContext);
-                int y = drawContext.getScaledWindowHeight() - ModConfig.backslotY - 4; // Y position remains the same
+                int y = drawContext.getScaledWindowHeight() - CAConfig.backslotY - 4; // Y position remains the same
 
                 RenderSystem.assertOnRenderThread();
                 GlStateManager._disableBlend();
@@ -162,9 +162,9 @@ public class HudRendererMixin {
         // Calculate positions based on hand preference
         int x;
         if (isLeftHanded) {
-            x = drawContext.getScaledWindowWidth() / 2 - ModConfig.backslotX - 120; // Position on the left of the hotbar
+            x = drawContext.getScaledWindowWidth() / 2 - CAConfig.backslotX - 120; // Position on the left of the hotbar
         } else {
-            x = drawContext.getScaledWindowWidth() / 2 + ModConfig.backslotX + 97; // Position on the right of the hotbar
+            x = drawContext.getScaledWindowWidth() / 2 + CAConfig.backslotX + 97; // Position on the right of the hotbar
         }
         return x;
     }
@@ -176,9 +176,9 @@ public class HudRendererMixin {
         // Calculate positions based on hand preference
         int x;
         if (isLeftHanded) {
-            x = drawContext.getScaledWindowWidth() / 2 - ModConfig.backslotX - 143; // Position on the left of the hotbar
+            x = drawContext.getScaledWindowWidth() / 2 - CAConfig.backslotX - 143; // Position on the left of the hotbar
         } else {
-            x = drawContext.getScaledWindowWidth() / 2 + ModConfig.backslotX + 120; // Position on the right of the hotbar
+            x = drawContext.getScaledWindowWidth() / 2 + CAConfig.backslotX + 120; // Position on the right of the hotbar
         }
         return x;
     }

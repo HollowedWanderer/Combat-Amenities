@@ -1,15 +1,17 @@
-package net.hollowed.combatamenities.particles;
+package net.hollowed.combatamenities.index;
 
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.hollowed.combatamenities.CombatAmenities;
+import net.hollowed.combatamenities.particles.HitMarkerParticle;
+import net.hollowed.combatamenities.particles.RingParticle;
 import net.minecraft.client.particle.SweepAttackParticle;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
-public class ModParticles {
+public class CAParticles {
     public static final SimpleParticleType HIT_MARKER = FabricParticleTypes.simple();
     public static final SimpleParticleType CRIT_ATTACK = FabricParticleTypes.simple();
     public static final SimpleParticleType NORMAL_ATTACK = FabricParticleTypes.simple();

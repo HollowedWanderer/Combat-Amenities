@@ -1,6 +1,6 @@
 package net.hollowed.combatamenities.mixin.tweaks.pearl;
 
-import net.hollowed.combatamenities.config.ModConfig;
+import net.hollowed.combatamenities.config.CAConfig;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
@@ -18,7 +18,7 @@ public abstract class EnderPearlEntityMixin {
 
     @Inject(method = "onCollision", at = @At("HEAD"))
     private void getHealthStart(CallbackInfo ci) {
-        if (ModConfig.enderPearlTweaks) {
+        if (CAConfig.enderPearlTweaks) {
             EnderPearlEntity self = (EnderPearlEntity) (Object) this;
             Entity owner = self.getOwner();
             if (owner instanceof LivingEntity livingEntity) {
@@ -29,7 +29,7 @@ public abstract class EnderPearlEntityMixin {
 
     @Inject(method = "onCollision", at = @At("TAIL"))
     private void getHealthEnd(CallbackInfo ci) {
-        if (ModConfig.enderPearlTweaks) {
+        if (CAConfig.enderPearlTweaks) {
             EnderPearlEntity self = (EnderPearlEntity) (Object) this;
             Entity owner = self.getOwner();
             if (owner instanceof LivingEntity livingEntity) {

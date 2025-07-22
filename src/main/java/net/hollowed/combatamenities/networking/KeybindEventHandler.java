@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.hollowed.combatamenities.networking.slots.back.BackslotPacketPayload;
 import net.hollowed.combatamenities.networking.slots.belt.BeltslotPacketPayload;
-import net.hollowed.combatamenities.util.ModKeyBindings;
+import net.hollowed.combatamenities.index.CAKeyBindings;
 
 public class KeybindEventHandler {
     private static boolean wasBackSlotKeyPressed = false;
@@ -17,8 +17,8 @@ public class KeybindEventHandler {
 
     public static void register() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            boolean isKeyPressed = ModKeyBindings.backSlotBinding.isPressed();
-            boolean isKeyPressed1 = ModKeyBindings.beltSlotBinding.isPressed();
+            boolean isKeyPressed = CAKeyBindings.backSlotBinding.isPressed();
+            boolean isKeyPressed1 = CAKeyBindings.beltSlotBinding.isPressed();
 
             // Check if the key is pressed and if enough time has passed since the last key press
             if (isKeyPressed && !wasBackSlotKeyPressed && client.player != null) {

@@ -1,6 +1,6 @@
 package net.hollowed.combatamenities.mixin.tweaks.fireCharge;
 
-import net.hollowed.combatamenities.config.ModConfig;
+import net.hollowed.combatamenities.config.CAConfig;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.item.FireChargeItem;
@@ -25,7 +25,7 @@ public abstract class FireChargeItemMixin extends Item {
     public ActionResult use(World world, PlayerEntity player, Hand hand) {
         if (!world.isClient) {
 
-            if (ModConfig.throwableFirecharge) {
+            if (CAConfig.throwableFirecharge) {
                 // Get the ItemStack in hand
                 ItemStack stack = player.getStackInHand(hand);
                 player.swingHand(hand, true);

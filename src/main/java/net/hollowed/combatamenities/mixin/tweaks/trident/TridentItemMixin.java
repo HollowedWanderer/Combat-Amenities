@@ -1,6 +1,6 @@
 package net.hollowed.combatamenities.mixin.tweaks.trident;
 
-import net.hollowed.combatamenities.config.ModConfig;
+import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.util.interfaces.TridentOwnerSetter;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,7 +35,7 @@ public class TridentItemMixin {
             ProjectileEntity.ProjectileCreator<TridentEntity> creator, ServerWorld world, ItemStack projectileStack, LivingEntity shooter, float roll, float power, float divergence
     ) {
         ProjectileEntity entity = creator.create(world, shooter, projectileStack);
-        if (entity instanceof TridentOwnerSetter trident && ModConfig.correctTridentReturn) {
+        if (entity instanceof TridentOwnerSetter trident && CAConfig.correctTridentReturn) {
             trident.combat_Amenities$setInt(this.getTheFuckingGodDamnSlot);
         }
 

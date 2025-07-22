@@ -7,7 +7,7 @@ import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.hollowed.combatamenities.config.ModConfig;
+import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.networking.slots.SlotClientPacketPayload;
 import net.hollowed.combatamenities.networking.slots.SlotCreativeClientPacket;
 import net.hollowed.combatamenities.networking.slots.SlotCreativeClientPacketPayload;
@@ -20,8 +20,8 @@ import net.hollowed.combatamenities.networking.slots.belt.BeltSlotInventoryPacke
 import net.hollowed.combatamenities.networking.slots.belt.BeltSlotInventoryPacketReceiver;
 import net.hollowed.combatamenities.networking.slots.belt.BeltSlotServerPacket;
 import net.hollowed.combatamenities.networking.slots.belt.BeltslotPacketPayload;
-import net.hollowed.combatamenities.particles.ModParticles;
-import net.hollowed.combatamenities.util.ModSounds;
+import net.hollowed.combatamenities.index.CAParticles;
+import net.hollowed.combatamenities.index.CASounds;
 import net.hollowed.combatamenities.util.delay.TickDelayScheduler;
 import net.hollowed.combatamenities.util.items.ModComponents;
 import net.hollowed.combatamenities.util.json.BeltTransformResourceReloadListener;
@@ -83,9 +83,9 @@ public class CombatAmenities implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		ModParticles.initialize();
+		CAParticles.initialize();
 		ModComponents.initialize();
-		ModSounds.initialize();
+		CASounds.initialize();
 
 		ServerTickEvents.END_SERVER_TICK.register(server -> TickDelayScheduler.tick());
 
@@ -109,7 +109,7 @@ public class CombatAmenities implements ModInitializer {
 		SlotCreativeClientPacket.registerClientPacket();
 
 		// Config
-		MidnightConfig.init(MOD_ID, ModConfig.class);
+		MidnightConfig.init(MOD_ID, CAConfig.class);
 
 		LOGGER.info("It is time for backing and slotting");
 	}

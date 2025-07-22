@@ -2,7 +2,7 @@ package net.hollowed.combatamenities.config;
 
 import eu.midnightdust.lib.config.MidnightConfig;
 
-public class ModConfig extends MidnightConfig {
+public class CAConfig extends MidnightConfig {
     @Entry public static int backslotX = 0;
     @Entry public static int backslotY = 0;
     @Entry public static boolean backslotParticles = true;

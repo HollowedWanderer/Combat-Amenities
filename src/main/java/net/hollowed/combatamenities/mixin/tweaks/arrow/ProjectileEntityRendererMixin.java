@@ -2,7 +2,7 @@ package net.hollowed.combatamenities.mixin.tweaks.arrow;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.hollowed.combatamenities.config.ModConfig;
+import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.util.interfaces.ArrowEntityRenderStateAccess;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
@@ -34,7 +34,7 @@ public abstract class ProjectileEntityRendererMixin<T extends PersistentProjecti
             at = @At("HEAD"))
     public void updateRenderState(T persistentProjectileEntity, ProjectileEntityRenderState projectileEntityRenderState, float f, CallbackInfo ci) {
 
-        if (ModConfig.itemArrows) {
+        if (CAConfig.itemArrows) {
             if (projectileEntityRenderState instanceof ArrowEntityRenderStateAccess access) {
 
                 ItemStack stack = persistentProjectileEntity.getItemStack();
@@ -64,7 +64,7 @@ public abstract class ProjectileEntityRendererMixin<T extends PersistentProjecti
     public void renderWithItem(
             ProjectileEntityRenderState projectileEntityRenderState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, CallbackInfo ci  // Use Object because the generic types are not accessible directly
     ) {
-        if (ModConfig.itemArrows) {
+        if (CAConfig.itemArrows) {
             if (projectileEntityRenderState instanceof ArrowEntityRenderStateAccess access) {
                 // Push the matrix stack for transformations
                 matrixStack.push();
