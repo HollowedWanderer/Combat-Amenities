@@ -19,7 +19,7 @@
     "tweaks.enchantments.EnchantmentHelperMixin",
     "tweaks.enchantments.EnchantmentMixin",
     "tweaks.enchantments.ItemGroupMixin",
-    "tweaks.fireCharge.FireChargeItemMixin",
+    "tweaks.fire_charge.FireChargeItemMixin",
     "tweaks.pearl.EnderPearlEntityMixin",
     "tweaks.pearl.EnderPearlItemMixin",
     "tweaks.pearl.EntityMixin",
