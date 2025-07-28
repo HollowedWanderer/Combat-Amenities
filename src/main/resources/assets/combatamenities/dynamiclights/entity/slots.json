@@ -1,0 +1,8 @@
+{
+  "match": {
+    "type": "minecraft:player"
+  },
+  "luminance": {
+    "type": "lambdynlights:item_frame"
+  }
+}

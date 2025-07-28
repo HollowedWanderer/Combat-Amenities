@@ -59,7 +59,7 @@ public class BackTransformResourceReloadListener implements SimpleSynchronousRes
                                     Registries.ITEM.forEach(item -> {
                                         Identifier itemId = Registries.ITEM.getId(item);
                                         if (item.getDefaultStack().getRegistryEntry().isIn(tag)) {
-                                            transforms.put(itemId, data);
+                                            transforms.putIfAbsent(itemId, data);
                                         }
                                     });
                                 } else {
