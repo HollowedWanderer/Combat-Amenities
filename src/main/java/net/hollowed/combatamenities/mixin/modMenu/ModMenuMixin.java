@@ -48,7 +48,7 @@ public abstract class ModMenuMixin {
         int iconSize = ModMenuConfig.COMPACT_LIST.getValue() ? 19 : 32;
 
         // Custom color logic
-        int nameColor = 0xFF5c8790;
+        int nameColor = 0xFF33ebcb;
 
         Text name = Text.literal(this.mod.getTranslatedName());
         StringVisitable trimmedName = name;
