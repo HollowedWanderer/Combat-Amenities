@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 
 import static net.minecraft.component.DataComponentTypes.ENCHANTMENTS;
 
+@SuppressWarnings("unused")
 public class EnchantmentListener {
 
     public static boolean hasEnchantment(ItemStack stack, String enchantKey) {

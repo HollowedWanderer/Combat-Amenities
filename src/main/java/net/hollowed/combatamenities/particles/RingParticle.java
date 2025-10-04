@@ -5,6 +5,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.SimpleParticleType;
+import net.minecraft.util.math.random.Random;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class RingParticle extends AnimatedParticle {
@@ -13,20 +15,10 @@ public class RingParticle extends AnimatedParticle {
 		super(world, x, y, z, spriteProvider, 0);
 		this.maxAge = 7;
 		this.scale = 1F;
-		this.setSpriteForAge(spriteProvider);
+		this.updateSprite(spriteProvider);
 	}
 
-	@Override
-	public int getBrightness(float tint) {
-		return 15728880;
-	}
-
-	@Override
-	public ParticleTextureSheet getType() {
-		return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
-	}
-
-	@Environment(EnvType.CLIENT)
+    @Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
@@ -34,8 +26,9 @@ public class RingParticle extends AnimatedParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-			return new RingParticle(clientWorld, d, e, f, this.spriteProvider);
+		@Override
+		public @Nullable Particle createParticle(SimpleParticleType parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, Random random) {
+			return new RingParticle(world, x, y, z, this.spriteProvider);
 		}
 	}
 }

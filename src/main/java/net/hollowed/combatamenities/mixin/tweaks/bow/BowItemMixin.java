@@ -16,9 +16,6 @@ public abstract class BowItemMixin {
     @Unique
     private static final int OVERDRAW_THRESHOLD = 120; // 6 seconds at 20 ticks/second
 
-    /**
-     * Introduces inaccuracy to the projectile when overdrawn.
-     */
     @Inject(method = "shoot", at = @At("HEAD"), cancellable = true)
     private void addProjectileInaccuracy(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, LivingEntity target, CallbackInfo ci) {
         if (CAConfig.bowTweaks) {
@@ -37,7 +34,7 @@ public abstract class BowItemMixin {
                         modifiedDivergence
                 );
 
-                ci.cancel(); // Cancel the original shoot method to apply the custom behavior
+                ci.cancel();
             }
         }
     }

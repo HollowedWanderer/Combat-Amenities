@@ -28,7 +28,7 @@ public class SoundPacket {
                 }
             }
 
-            player.getWorld().playSoundClient(pos.getX(), pos.getY(), pos.getZ(), sound, SoundCategory.PLAYERS, payload.volume() * ((float) (payload.swap() ? CAConfig.backslotSwapSoundVolume : CAConfig.backslotAmbientSoundVolume) / 100), payload.pitch(), true);
+            player.getEntityWorld().playSoundClient(pos.getX(), pos.getY(), pos.getZ(), sound, SoundCategory.PLAYERS, payload.volume() * ((float) (payload.swap() ? CAConfig.backslotSwapSoundVolume : CAConfig.backslotAmbientSoundVolume) / 100), payload.pitch(), true);
         }));
     }
 }

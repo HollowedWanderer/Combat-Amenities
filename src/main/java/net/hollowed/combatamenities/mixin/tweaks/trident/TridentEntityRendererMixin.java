@@ -6,11 +6,12 @@ import net.hollowed.combatamenities.util.interfaces.TridentEntityRenderStateAcce
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.TridentEntityRenderer;
-import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.render.item.ItemRenderState;
+import net.minecraft.client.render.state.CameraRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.projectile.TridentEntity;
@@ -40,16 +41,12 @@ public abstract class TridentEntityRendererMixin extends EntityRenderer<TridentE
     }
 
     @Inject(
-        method = "render(Lnet/minecraft/client/render/entity/state/TridentEntityRenderState;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
+        method = "render(Lnet/minecraft/client/render/entity/state/TridentEntityRenderState;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/command/OrderedRenderCommandQueue;Lnet/minecraft/client/render/state/CameraRenderState;)V",
         at = @At("HEAD"),
         cancellable = true
     )
     public void renderWithItem(
-            TridentEntityRenderState tridentEntityRenderState,
-            MatrixStack matrixStack,
-            VertexConsumerProvider vertexConsumerProvider,
-            int light,
-            CallbackInfo ci
+            TridentEntityRenderState tridentEntityRenderState, MatrixStack matrixStack, OrderedRenderCommandQueue orderedRenderCommandQueue, CameraRenderState cameraRenderState, CallbackInfo ci
     ) {
         if (tridentEntityRenderState instanceof TridentEntityRenderStateAccess access) {
             matrixStack.push();
@@ -66,8 +63,9 @@ public abstract class TridentEntityRendererMixin extends EntityRenderer<TridentE
                 trident.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
             }
 
-            ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
-            itemRenderer.renderItem(trident, ItemDisplayContext.NONE, light, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider, MinecraftClient.getInstance().world, 0);
+            ItemRenderState stackRenderState = new ItemRenderState();
+            MinecraftClient.getInstance().getItemModelManager().update(stackRenderState, trident, ItemDisplayContext.NONE, MinecraftClient.getInstance().world, null, 1);
+            stackRenderState.render(matrixStack, orderedRenderCommandQueue, tridentEntityRenderState.light, OverlayTexture.DEFAULT_UV, tridentEntityRenderState.outlineColor);
 
             matrixStack.pop();
             ci.cancel();

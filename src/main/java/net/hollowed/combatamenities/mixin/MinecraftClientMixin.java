@@ -3,7 +3,6 @@ package net.hollowed.combatamenities.mixin;
 import net.hollowed.combatamenities.networking.KeybindEventHandler;
 import net.hollowed.combatamenities.util.delay.ClientTickDelayScheduler;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.client.world.ClientWorld;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,7 +18,7 @@ public abstract class MinecraftClientMixin {
     }
 
     @Inject(method = "joinWorld", at = @At("TAIL"))
-    public void joinWorld(ClientWorld world, DownloadingTerrainScreen.WorldEntryReason worldEntryReason, CallbackInfo ci) {
+    public void joinWorld(ClientWorld world, CallbackInfo ci) {
         ClientTickDelayScheduler.run = true;
     }
 }

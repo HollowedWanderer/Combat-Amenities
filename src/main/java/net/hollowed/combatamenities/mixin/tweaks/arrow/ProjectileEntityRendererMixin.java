@@ -6,10 +6,11 @@ import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.util.interfaces.ArrowEntityRenderStateAccess;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.ProjectileEntityRenderer;
 import net.minecraft.client.render.entity.state.ProjectileEntityRenderState;
-import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.render.item.ItemRenderState;
+import net.minecraft.client.render.state.CameraRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
@@ -57,20 +58,17 @@ public abstract class ProjectileEntityRendererMixin<T extends PersistentProjecti
     }
 
     @Inject(
-        method = "render(Lnet/minecraft/client/render/entity/state/ProjectileEntityRenderState;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
+        method = "render(Lnet/minecraft/client/render/entity/state/ProjectileEntityRenderState;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/command/OrderedRenderCommandQueue;Lnet/minecraft/client/render/state/CameraRenderState;)V",
         at = @At("HEAD"),
         cancellable = true
     )
     public void renderWithItem(
-            ProjectileEntityRenderState projectileEntityRenderState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, CallbackInfo ci  // Use Object because the generic types are not accessible directly
+            ProjectileEntityRenderState projectileEntityRenderState, MatrixStack matrixStack, OrderedRenderCommandQueue orderedRenderCommandQueue, CameraRenderState cameraRenderState, CallbackInfo ci       // Use Object because the generic types are not accessible directly
     ) {
         if (CAConfig.itemArrows) {
             if (projectileEntityRenderState instanceof ArrowEntityRenderStateAccess access) {
                 // Push the matrix stack for transformations
                 matrixStack.push();
-
-                // Create the item stack (e.g., an arrow item)
-                ItemStack itemStack = access.combat_Amenities$getItemStack();
 
                 float multiplier = 0.25F;
 
@@ -81,18 +79,10 @@ public abstract class ProjectileEntityRendererMixin<T extends PersistentProjecti
                 matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(projectileEntityRenderState.yaw - 90.0F));
                 matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(projectileEntityRenderState.pitch - 45.0F));
 
-                // Render the item using the ItemRenderer
-                ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
-                itemRenderer.renderItem(
-                        itemStack,
-                        ItemDisplayContext.NONE,
-                        light,
-                        OverlayTexture.DEFAULT_UV,
-                        matrixStack,
-                        vertexConsumerProvider,
-                        MinecraftClient.getInstance().world,
-                        0
-                );
+                ItemStack itemStack = access.combat_Amenities$getItemStack();
+                ItemRenderState stackRenderState = new ItemRenderState();
+                MinecraftClient.getInstance().getItemModelManager().update(stackRenderState, itemStack, ItemDisplayContext.NONE, MinecraftClient.getInstance().world, null, 1);
+                stackRenderState.render(matrixStack, orderedRenderCommandQueue, projectileEntityRenderState.light, OverlayTexture.DEFAULT_UV, projectileEntityRenderState.outlineColor);
 
                 // Pop the matrix stack
                 matrixStack.pop();

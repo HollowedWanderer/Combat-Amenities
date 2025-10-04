@@ -11,7 +11,7 @@ import net.minecraft.block.BannerBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.OtherClientPlayerEntity;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
@@ -46,7 +46,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, PlayerEntityRenderState armedEntityRenderState, float limbSwing, float limbSwingAmount) {
+	public void render(MatrixStack matrixStack, OrderedRenderCommandQueue orderedRenderCommandQueue, int i, PlayerEntityRenderState armedEntityRenderState, float f, float g) {
 		if (armedEntityRenderState instanceof PlayerEntityRenderStateAccess access) {
 			// Use the correct player entity from the context
 			PlayerEntity playerEntity = access.combat_Amenities$getPlayerEntity();
@@ -56,11 +56,11 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 				ItemStack backSlotStack = playerEntity.getInventory().getStack(41);
 
 				if (backSlotStack.hasEnchantments() && Math.random() > ((100 - CAConfig.enchantmentParticleChance) / 100.0F) && CAConfig.backslotParticles && !MinecraftClient.getInstance().isPaused()) {
-					for (int i = 0; i < 5; i++) { // Increase the number for more particles
+					for (int j = 0; j < 5; j++) { // Increase the number for more particles
 						double offsetX = (Math.random() - 0.5); // Random value between -1 and 1
 						double offsetY = Math.random(); // Random value between 0 and 1.5 for height variation
 						double offsetZ = (Math.random() - 0.5); // Random value between -1 and 1
-						playerEntity.getWorld().addParticleClient(
+						playerEntity.getEntityWorld().addParticleClient(
 								ParticleTypes.ENCHANT,
 								playerEntity.getX() + offsetX,
 								playerEntity.getY() + offsetY + 0.75, // Add 1.2 to keep particles near the head
@@ -117,7 +117,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
 							matrixStack.translate(0, 0, 0.05F);
 						}
-						if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
+						if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.cape() != null) {
 							matrixStack.translate(0, 0, 0.1);
 						}
 
@@ -155,7 +155,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 							matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2) * -2)); // Rotation X
 						}
 
-						heldItemRenderer.renderItem(playerEntity, secondaryAppleStack, transformationMode, matrixStack, vertexConsumerProvider, light);
+						heldItemRenderer.renderItem(playerEntity, secondaryAppleStack, transformationMode, matrixStack, orderedRenderCommandQueue, i);
 						matrixStack.pop();
 					}
 
@@ -180,7 +180,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.get(1))); // Rotation Y
 						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2))); // Rotation Z
 
-						heldItemRenderer.renderItem(playerEntity, tertiaryAppleStack, transformationMode, matrixStack, vertexConsumerProvider, light);
+						heldItemRenderer.renderItem(playerEntity, tertiaryAppleStack, transformationMode, matrixStack, orderedRenderCommandQueue, i);
 						matrixStack.pop();
 					}
 
@@ -202,7 +202,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
 						matrixStack.translate(0, 0, 0.05F);
 					}
-					if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.capeTexture() != null) {
+					if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.cape() != null) {
 						matrixStack.translate(0, 0, 0.1);
 					}
 
@@ -241,7 +241,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					}
 
 					// Render the item
-					heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, matrixStack, vertexConsumerProvider, light);
+					heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, matrixStack, orderedRenderCommandQueue, i);
 					matrixStack.pop();
 				}
 			}

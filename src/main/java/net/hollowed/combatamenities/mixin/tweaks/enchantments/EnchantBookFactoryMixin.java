@@ -36,7 +36,7 @@ public class EnchantBookFactoryMixin {
 
     @Inject(method = "create", at = @At("HEAD"), cancellable = true)
     private void modifyTradeOffer(Entity entity, Random random, CallbackInfoReturnable<TradeOffer> cir) {
-        Optional<RegistryEntry<Enchantment>> optional = entity.getWorld().getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT).getRandomEntry(this.possibleEnchantments, random);
+        Optional<RegistryEntry<Enchantment>> optional = entity.getEntityWorld().getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT).getRandomEntry(this.possibleEnchantments, random);
         int l;
         ItemStack itemStack;
 
@@ -49,7 +49,7 @@ public class EnchantBookFactoryMixin {
             itemStack = EnchantmentHelper.getEnchantedBookWith(new EnchantmentLevelEntry(registryEntry, k));
 
             if (isDisallowedEnchantment(enchantment.toString())) {
-                itemStack = Items.CHAIN.getDefaultStack();
+                itemStack = Items.IRON_CHAIN.getDefaultStack();
             }
 
             l = 2 + random.nextInt(5 + k * 10) + 3 * k;
@@ -66,7 +66,7 @@ public class EnchantBookFactoryMixin {
             itemStack = new ItemStack(Items.BOOK);
         }
 
-        if (itemStack.getItem() == Items.CHAIN) {
+        if (itemStack.getItem() == Items.IRON_CHAIN) {
             itemStack.setCount(6);
             cir.setReturnValue(new TradeOffer(new TradedItem(Items.EMERALD, 1), itemStack, 12, this.experience, 0.2F));
         } else {

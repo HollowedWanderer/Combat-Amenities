@@ -37,7 +37,7 @@ public class BackSlotInventoryPacketReceiver {
                         player.getInventory().setStack(hoveredSlotIndex, backSlotStack); // Move backslot item to hotbar
                         // If the hovered stack is not empty or the backslot stack is not empty, play a sound
                         if (!hoveredStack.isEmpty() || !backSlotStack.isEmpty()) {
-                            player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 1F, 1F);
+                            player.getEntityWorld().playSound(null, player.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 1F, 1F);
                         }
                     }
                 } else {
@@ -47,7 +47,7 @@ public class BackSlotInventoryPacketReceiver {
                         player.getInventory().setStack(hoveredSlotIndex, backSlotStack); // Move backslot item to general inventory
                         // If the hovered stack is not empty or the backslot stack is not empty, play a sound
                         if (!hoveredStack.isEmpty() || !backSlotStack.isEmpty()) {
-                            player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 1F, 1F);
+                            player.getEntityWorld().playSound(null, player.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 1F, 1F);
                         }
                     }
                 }

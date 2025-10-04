@@ -10,6 +10,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,6 +20,8 @@ import java.util.Collection;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity {
+
+    @Shadow public abstract ServerWorld getEntityWorld();
 
     @Unique
     ItemStack backSlotStack = ItemStack.EMPTY;
@@ -32,7 +35,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void tickMixin(CallbackInfo info) {
-        if (!this.getWorld().isClient()) {
+        if (!this.getEntityWorld().isClient()) {
             ItemStack currentBackSlotStack = this.getInventory().getStack(41);
             ItemStack currentBeltSlotStack = this.getInventory().getStack(42);
 
@@ -43,7 +46,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
                 // Create a new payload with the current back slot stack
                 SlotClientPacketPayload payload = new SlotClientPacketPayload(this.getId(), 41, backSlotStack);
-                Collection<ServerPlayerEntity> players = PlayerLookup.tracking((ServerWorld) this.getWorld(), this.getBlockPos());
+                Collection<ServerPlayerEntity> players = PlayerLookup.tracking(this.getEntityWorld(), this.getBlockPos());
                 players.forEach(player -> ServerPlayNetworking.send(player, payload));
             }
 
@@ -54,7 +57,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
                 // Create a new payload with the current back slot stack
                 SlotClientPacketPayload payload = new SlotClientPacketPayload(this.getId(), 42, beltSlotStack);
-                Collection<ServerPlayerEntity> players = PlayerLookup.tracking((ServerWorld) this.getWorld(), this.getBlockPos());
+                Collection<ServerPlayerEntity> players = PlayerLookup.tracking(this.getEntityWorld(), this.getBlockPos());
                 players.forEach(player -> ServerPlayNetworking.send(player, payload));
             }
         }

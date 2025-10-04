@@ -2,7 +2,6 @@ package net.hollowed.combatamenities.util.json;
 
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.hollowed.combatamenities.CombatAmenities;
 import net.hollowed.combatamenities.util.delay.ClientTickDelayScheduler;
 import net.minecraft.client.MinecraftClient;
@@ -10,6 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -19,14 +19,9 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class ItemTransformResourceReloadListener implements SimpleSynchronousResourceReloadListener {
+public class ItemTransformResourceReloadListener implements SynchronousResourceReloader {
     private static final Map<Identifier, ItemTransformData> transforms = new HashMap<>();
     private static ItemTransformData defaultTransforms;
-
-    @Override
-    public Identifier getFabricId() {
-        return Identifier.of(CombatAmenities.MOD_ID, "item_transforms");
-    }
 
     @Override
     public void reload(ResourceManager manager) {

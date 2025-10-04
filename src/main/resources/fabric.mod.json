@@ -5,9 +5,9 @@
 	"name": "Combat Amenities",
 	"description": "A mod all about tweaking little features related to combat and some visual changes",
 	"authors": [
-		"Hollowed",
-		"Mercury",
-		"Famine"
+		"Hollowed - Main dev and artist",
+		"Mercury - Coding help",
+		"Famine - Epic sword sound"
 	],
 	"contact": {
 		"sources": "https://github.com/HollowedWanderer/Combat-Amenities",
@@ -28,8 +28,8 @@
 		"combatamenities.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.16.14",
-		"minecraft": "~1.21.7",
+		"fabricloader": ">=0.17.2",
+		"minecraft": "~1.21.9",
 		"java": ">=21",
 		"fabric-api": "*",
 		"midnightlib": "*"

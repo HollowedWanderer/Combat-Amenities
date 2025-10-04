@@ -22,7 +22,6 @@ public class EntityEquipment {
     }
 
     public ItemStack put(ExtraSlots slot, ItemStack stack) {
-        stack.getItem().postProcessComponents(stack);
         return Objects.requireNonNullElse(this.map.put(slot, stack), ItemStack.EMPTY);
     }
 
@@ -50,6 +49,7 @@ public class EntityEquipment {
         this.map.putAll(equipment.map);
     }
 
+    @SuppressWarnings("unused")
     public void dropAll(LivingEntity entity) {
 
         for (ItemStack itemStack : this.map.values()) {

@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.networking.slots.SlotClientPacketPayload;
 import net.hollowed.combatamenities.networking.slots.SlotCreativeClientPacket;
@@ -31,6 +31,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import org.joml.Matrix4f;
@@ -51,6 +52,10 @@ public class CombatAmenities implements ModInitializer {
 	public static final Set<String> TRIDENT_ENCHANTMENTS = Set.of(
 			"Enchantment Loyalty"
 	);
+
+	public static Identifier id(String string) {
+		return Identifier.of(MOD_ID, string);
+	}
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -90,9 +95,9 @@ public class CombatAmenities implements ModInitializer {
 		ServerTickEvents.END_SERVER_TICK.register(server -> TickDelayScheduler.tick());
 
 		// Json stuff
-		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new BackTransformResourceReloadListener());
-		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new BeltTransformResourceReloadListener());
-		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new ItemTransformResourceReloadListener());
+		ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(id("back_transforms"), new BackTransformResourceReloadListener());
+		ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(id("belt_transforms"), new BeltTransformResourceReloadListener());
+		ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(id("item_transforms"), new ItemTransformResourceReloadListener());
 
 		PayloadTypeRegistry.playC2S().register(BackslotPacketPayload.ID, BackslotPacketPayload.CODEC);
 		PayloadTypeRegistry.playC2S().register(BeltslotPacketPayload.ID, BeltslotPacketPayload.CODEC);

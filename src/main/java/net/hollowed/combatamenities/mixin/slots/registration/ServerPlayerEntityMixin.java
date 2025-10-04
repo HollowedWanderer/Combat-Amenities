@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
-    @Shadow public abstract ServerWorld getWorld();
+    @Shadow public abstract ServerWorld getEntityWorld();
 
     @Shadow public abstract ItemEntity dropItem(ItemStack stack, boolean dropAtSelf, boolean retainOwnership);
 
@@ -38,7 +38,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
     @Inject(method = "copyFrom", at = @At("TAIL"))
     private void copyReservedSlot(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo ci) {
-        if (this.getWorld().getGameRules().getBoolean(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
+        if (this.getEntityWorld().getGameRules().getBoolean(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
             ServerPlayerEntityMixin oldMixin = (ServerPlayerEntityMixin) (Object) oldPlayer;
             assert oldMixin != null;
             this.reservedSlotInventory.setStack(0, oldMixin.reservedSlotInventory.getStack(0));
@@ -49,12 +49,12 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     @Inject(method = "onDeath", at = @At("HEAD"))
     private void storeReservedSlot(DamageSource source, CallbackInfo ci) {
         ItemStack slot41Item = this.getInventory().getStack(RESERVED_SLOT_INDEX);
-        if (!slot41Item.isEmpty() && this.getWorld().getGameRules().getBoolean(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
+        if (!slot41Item.isEmpty() && this.getEntityWorld().getGameRules().getBoolean(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
             this.getInventory().setStack(RESERVED_SLOT_INDEX, ItemStack.EMPTY);
             reservedSlotInventory.setStack(0, slot41Item.copy());
         }
         ItemStack slot42Item = this.getInventory().getStack(OTHER_RESERVED_SLOT_INDEX);
-        if (!slot42Item.isEmpty() && this.getWorld().getGameRules().getBoolean(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
+        if (!slot42Item.isEmpty() && this.getEntityWorld().getGameRules().getBoolean(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
             this.getInventory().setStack(OTHER_RESERVED_SLOT_INDEX, ItemStack.EMPTY);
             reservedSlotInventory.setStack(1, slot42Item.copy());
         }
@@ -62,10 +62,10 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
     @Inject(method = "onSpawn", at = @At("TAIL"))
     private void restoreReservedSlot(CallbackInfo ci) {
-        if (!reservedSlotInventory.getStack(0).isEmpty() && this.getWorld().getGameRules().getBoolean(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
+        if (!reservedSlotInventory.getStack(0).isEmpty() && this.getEntityWorld().getGameRules().getBoolean(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
             this.getInventory().setStack(RESERVED_SLOT_INDEX, reservedSlotInventory.getStack(0).copy());
         }
-        if (!reservedSlotInventory.getStack(1).isEmpty() && this.getWorld().getGameRules().getBoolean(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
+        if (!reservedSlotInventory.getStack(1).isEmpty() && this.getEntityWorld().getGameRules().getBoolean(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
             this.getInventory().setStack(OTHER_RESERVED_SLOT_INDEX, reservedSlotInventory.getStack(1).copy());
         }
         reservedSlotInventory.clear();
@@ -74,10 +74,10 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     @Inject(method = "tick", at = @At("HEAD"))
     private void tickItems(CallbackInfo ci) {
         if (!this.getInventory().getStack(41).isEmpty()) {
-            this.getInventory().getStack(41).inventoryTick(this.getWorld(), this, null);
+            this.getInventory().getStack(41).inventoryTick(this.getEntityWorld(), this, null);
         }
         if (!this.getInventory().getStack(42).isEmpty()) {
-            this.getInventory().getStack(42).inventoryTick(this.getWorld(), this, null);
+            this.getInventory().getStack(42).inventoryTick(this.getEntityWorld(), this, null);
         }
     }
 }

@@ -5,17 +5,19 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.SimpleParticleType;
+import net.minecraft.util.math.random.Random;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
-public class HitMarkerParticle extends SpriteBillboardParticle {
+public class HitMarkerParticle extends BillboardParticle {
 	private final SpriteProvider spriteProvider;
 
-	HitMarkerParticle(ClientWorld world, double x, double y, double z, double d, SpriteProvider spriteProvider) {
-		super(world, x, y, z, 0.0, 0.0, 0.0);
+	HitMarkerParticle(ClientWorld world, double x, double y, double z, SpriteProvider spriteProvider) {
+		super(world, x, y, z, 0.0, 0.0, 0.0, spriteProvider.getFirst());
 		this.spriteProvider = spriteProvider;
 		this.maxAge = 4;
-		this.scale = 1.0F - (float)d * 0.5F;
-		this.setSpriteForAge(spriteProvider);
+		this.scale /= 2.0F;
+		this.updateSprite(spriteProvider);
 	}
 
 	@Override
@@ -31,13 +33,13 @@ public class HitMarkerParticle extends SpriteBillboardParticle {
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
-			this.setSpriteForAge(this.spriteProvider);
+			this.updateSprite(this.spriteProvider);
 		}
 	}
 
 	@Override
-	public ParticleTextureSheet getType() {
-		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
+	protected RenderType getRenderType() {
+		return RenderType.PARTICLE_ATLAS_OPAQUE;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -48,8 +50,9 @@ public class HitMarkerParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-			return new HitMarkerParticle(clientWorld, d, e, f, g, this.spriteProvider);
+		@Override
+		public @Nullable Particle createParticle(SimpleParticleType parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, Random random) {
+			return new HitMarkerParticle(world, x, y, z, this.spriteProvider);
 		}
 	}
 }

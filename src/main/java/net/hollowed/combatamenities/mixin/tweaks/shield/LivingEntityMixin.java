@@ -44,7 +44,7 @@ public abstract class LivingEntityMixin {
                 && living.getMainHandStack().streamTags().toList().contains(TagKey.of(RegistryKeys.ITEM, Identifier.of(CombatAmenities.MOD_ID, "bypass_shield_tweaks")));
 
         if (CAConfig.shieldTweaks && !source.isOf(ModDamageTypes.CLEAVED) && !bypassShieldTweaks) {
-            Vec3d attackDirection = source.getPosition() != null ? source.getPosition().subtract(self.getPos()).normalize() : Vec3d.ZERO;
+            Vec3d attackDirection = source.getPosition() != null ? source.getPosition().subtract(self.getEntityPos()).normalize() : Vec3d.ZERO;
             Vec3d lookDirection = self.getRotationVec(1.0F).normalize();
             double angle = attackDirection.dotProduct(lookDirection); // Cosine of the angle between attack and look direction
 
@@ -55,7 +55,7 @@ public abstract class LivingEntityMixin {
                 if (angle > 0.0) {
                     // Negate damage and trigger parry effects
                     if (self instanceof PlayerEntity player) {
-                        ServerWorld serverWorld = (ServerWorld) player.getWorld();
+                        ServerWorld serverWorld = (ServerWorld) player.getEntityWorld();
                         serverWorld.playSound(null, player.getBlockPos(), SoundEvents.ITEM_SHIELD_BLOCK.value(), SoundCategory.PLAYERS, 1.0F, 1.0F); // Higher-pitched block sound
                         serverWorld.playSound(null, player.getBlockPos(), SoundEvents.ITEM_MACE_SMASH_AIR, SoundCategory.PLAYERS, 0.3F, 1.5F); // Parry sound
 
@@ -71,7 +71,7 @@ public abstract class LivingEntityMixin {
                         // Apply shield cooldown
                         ItemCooldownManager cooldownManager = player.getItemCooldownManager();
                         if (source.getSource() instanceof LivingEntity attacker) {
-                            Vec3d knockbackDirection = attacker.getPos().subtract(player.getPos()).normalize();
+                            Vec3d knockbackDirection = attacker.getEntityPos().subtract(player.getEntityPos()).normalize();
                             attacker.takeKnockback(knockbackStrength, -knockbackDirection.x, -knockbackDirection.z);
                             // Check if the attacker is using an axe
                             if (attacker.getWeaponDisableBlockingForSeconds() > 0) {
@@ -96,7 +96,7 @@ public abstract class LivingEntityMixin {
 
             if (source.isIn(DamageTypeTags.IS_PROJECTILE) && self.getItemUseTime() > 0 && blocksAttacksComponent != null && angle > 0.0F) {
                 if (self instanceof PlayerEntity player) {
-                    ServerWorld serverWorld = (ServerWorld) player.getWorld();
+                    ServerWorld serverWorld = (ServerWorld) player.getEntityWorld();
                     serverWorld.playSound(null, player.getBlockPos(), SoundEvents.ITEM_SHIELD_BLOCK.value(), SoundCategory.PLAYERS, 1.0F, 1.0F); // Higher-pitched block sound
                     cir.setReturnValue(false);
                 }
@@ -113,7 +113,7 @@ public abstract class LivingEntityMixin {
     private void modifyShieldBlockingEnd(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (shield != null) self.getActiveItem().set(DataComponentTypes.BLOCKS_ATTACKS, shield);
-        ServerWorld serverWorld = (ServerWorld) self.getWorld();
+        ServerWorld serverWorld = (ServerWorld) self.getEntityWorld();
         if (self instanceof PlayerEntity) {
             serverWorld.playSound(null, self.getBlockPos(), SoundEvents.ENTITY_PLAYER_HURT, SoundCategory.PLAYERS, 1.0F, 1.0F);
         }

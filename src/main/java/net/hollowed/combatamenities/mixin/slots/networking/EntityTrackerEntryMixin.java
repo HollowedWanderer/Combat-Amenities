@@ -52,7 +52,7 @@ public class EntityTrackerEntryMixin {
         if (entity instanceof PlayerEntity player) {
             UUID playerId = player.getUuid();
 
-            Vec3d currentPosition = player.getPos();
+            Vec3d currentPosition = player.getEntityPos();
             Vec3d previousPosition = previousPositions.getOrDefault(playerId, currentPosition);
             Vec3d velocity = currentPosition.subtract(previousPosition);
 
@@ -113,8 +113,8 @@ public class EntityTrackerEntryMixin {
 
         if (playerEntity instanceof ServerPlayerEntity serverPlayer) {
             // Play the sound with the calculated volume
-            for (ServerPlayerEntity player : serverPlayer.getWorld().getPlayers()) {
-                ServerPlayNetworking.send(player, new SoundPacketPayload(0, playerEntity.getPos(), false, volume, 1.0F, 0, playerEntity.getInventory().getStack(41)));
+            for (ServerPlayerEntity player : serverPlayer.getEntityWorld().getPlayers()) {
+                ServerPlayNetworking.send(player, new SoundPacketPayload(0, playerEntity.getEntityPos(), false, volume, 1.0F, 0, playerEntity.getInventory().getStack(41)));
             }
         }
     }

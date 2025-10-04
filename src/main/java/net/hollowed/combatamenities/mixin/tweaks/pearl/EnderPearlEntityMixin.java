@@ -35,7 +35,7 @@ public abstract class EnderPearlEntityMixin {
             if (owner instanceof LivingEntity livingEntity) {
                 this.health = this.health - livingEntity.getHealth();
                 if (this.health > 0) {
-                    ((LivingEntity) owner).heal(this.health);
+                    livingEntity.heal(this.health);
                 }
             }
         }

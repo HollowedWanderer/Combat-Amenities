@@ -62,12 +62,12 @@ public class GameRendererMixin {
 	private EntityHitResult iWonderIfThisEntityIsValid(EntityHitResult hitResult, Entity camera, double blockInteractionRange, double entityInteractionRange, float tickDelta) {
 		if (hitResult != null && CAConfig.swingThrough) {
 			Entity hitEntity = hitResult.getEntity();
-			Vec3d cameraPos = camera.getPos();
+			Vec3d cameraPos = camera.getEntityPos();
 			validEntity = hitEntity instanceof LivingEntity &&
 					!hitEntity.isSpectator() &&
 					hitEntity.isAttackable() &&
 					!hitEntity.equals(MinecraftClient.getInstance().player != null ? MinecraftClient.getInstance().player.getVehicle() : null) &&
-					cameraPos.squaredDistanceTo(hitEntity.getPos()) < MathHelper.square(entityInteractionRange);
+					cameraPos.squaredDistanceTo(hitEntity.getEntityPos()) < MathHelper.square(entityInteractionRange);
 		} else {
 			validEntity = false;
 		}

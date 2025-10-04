@@ -25,12 +25,12 @@ public abstract class FireChargeItemMixin extends Item {
 
     @Unique
     public ActionResult use(World world, PlayerEntity player, Hand hand) {
-        if (!world.isClient) {
+        if (!world.isClient()) {
             if (CAConfig.throwableFirecharge) {
                 world.syncWorldEvent(null, 1018, player.getBlockPos(), 0);
                 ItemStack stack = player.getStackInHand(hand);
                 player.swingHand(hand, true);
-                SmallFireballEntity fireball = new SmallFireballEntity(player.getWorld(), player, player.getRotationVec(1.0F).normalize().multiply(2));
+                SmallFireballEntity fireball = new SmallFireballEntity(player.getEntityWorld(), player, player.getRotationVec(1.0F).normalize().multiply(2));
                 fireball.setPosition(fireball.getX(), player.getEyeY(), fireball.getZ());
                 world.spawnEntity(fireball);
                 stack.decrementUnlessCreative(1, player);

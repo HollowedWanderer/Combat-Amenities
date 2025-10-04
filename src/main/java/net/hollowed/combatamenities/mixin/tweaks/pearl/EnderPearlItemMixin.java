@@ -59,7 +59,7 @@ public abstract class EnderPearlItemMixin extends Item {
             float chargeRatio = Math.min(chargeTime / (float) MAX_CHARGE_TIME, 1.0F);
             float velocity = chargeRatio * MAX_VELOCITY;
 
-            if (!world.isClient) {
+            if (!world.isClient()) {
                 ServerWorld serverWorld = (ServerWorld) world;
                 EnderPearlEntity enderPearlEntity = new EnderPearlEntity(world, user, stack);
                 enderPearlEntity.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, velocity, 1.0F);
@@ -68,7 +68,7 @@ public abstract class EnderPearlItemMixin extends Item {
 
             world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ENDER_PEARL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
             player.incrementStat(Stats.USED.getOrCreateStat(this));
-            ((PlayerEntity) user).getItemCooldownManager().set(stack, 100);
+            player.getItemCooldownManager().set(stack, 100);
             stack.decrementUnlessCreative(1, player);
             return false;
         }

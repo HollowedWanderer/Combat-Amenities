@@ -30,10 +30,6 @@ public enum ExtraSlots implements StringIdentifiable {
         return offset + this.entityId;
     }
 
-    public String getName() {
-        return this.name;
-    }
-
     public String asString() {
         return this.name;
     }

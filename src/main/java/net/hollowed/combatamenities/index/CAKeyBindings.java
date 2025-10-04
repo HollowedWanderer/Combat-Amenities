@@ -12,11 +12,14 @@ import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.Window;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import org.lwjgl.glfw.GLFW;
 
 public class CAKeyBindings {
+
+    public static KeyBinding.Category CA = KeyBinding.Category.create(CombatAmenities.id("category.combatamenities.keybinds"));
 
     // Keybinding
     public static KeyBinding backSlotBinding;
@@ -32,13 +35,13 @@ public class CAKeyBindings {
                 "key.combatamenities.backslot",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_R,
-                "category.combatamenities.keybinds"
+                CA
         ));
         beltSlotBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.combatamenities.beltslot",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_V,
-                "category.combatamenities.keybinds"
+                CA
         ));
     }
 
@@ -57,7 +60,7 @@ public class CAKeyBindings {
         }
 
         // Check if the keybinding's key is pressed
-        long windowHandle = MinecraftClient.getInstance().getWindow().getHandle();
+        Window windowHandle = MinecraftClient.getInstance().getWindow();
         InputUtil.Key boundKey;
         InputUtil.Key boundKey1;
         if (KeyBindingHelper.getBoundKeyOf(CAKeyBindings.backSlotBinding).getCode() <= 57) {

@@ -11,7 +11,7 @@ import net.minecraft.block.BannerBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.OtherClientPlayerEntity;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
@@ -46,29 +46,29 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, PlayerEntityRenderState armedEntityRenderState, float limbSwing, float limbSwingAmount) {
+	public void render(MatrixStack matrixStack, OrderedRenderCommandQueue orderedRenderCommandQueue, int i, PlayerEntityRenderState armedEntityRenderState, float f, float g) {
 		if (armedEntityRenderState instanceof PlayerEntityRenderStateAccess access) {
-            // Use the correct player entity from the context
-            PlayerEntity playerEntity = access.combat_Amenities$getPlayerEntity();
+			// Use the correct player entity from the context
+			PlayerEntity playerEntity = access.combat_Amenities$getPlayerEntity();
 
-            if (playerEntity != null) {
-                // Retrieve the back slot stack from the correct player's inventory
-                ItemStack backSlotStack = playerEntity.getInventory().getStack(42);
+			if (playerEntity != null) {
+				// Retrieve the back slot stack from the correct player's inventory
+				ItemStack backSlotStack = playerEntity.getInventory().getStack(42);
 
-                if (backSlotStack.hasEnchantments() && Math.random() > ((100 - CAConfig.enchantmentParticleChance) / 100.0F) && CAConfig.backslotParticles && !MinecraftClient.getInstance().isPaused()) {
-                    for (int i = 0; i < 5; i++) { // Increase the number for more particles
-                        double offsetX = (Math.random() - 0.5); // Random value between -1 and 1
-                        double offsetY = Math.random(); // Random value between 0 and 1.5 for height variation
-                        double offsetZ = (Math.random() - 0.5); // Random value between -1 and 1
-                        playerEntity.getWorld().addParticleClient(
-                                ParticleTypes.ENCHANT,
-                                playerEntity.getX() + offsetX,
-                                playerEntity.getY() + offsetY, // Add 1.2 to keep particles near the head
-                                playerEntity.getZ() + offsetZ,
-                                0, 0, 0
-                        );
-                    }
-                }
+				if (backSlotStack.hasEnchantments() && Math.random() > ((100 - CAConfig.enchantmentParticleChance) / 100.0F) && CAConfig.backslotParticles && !MinecraftClient.getInstance().isPaused()) {
+					for (int j = 0; j < 5; j++) { // Increase the number for more particles
+						double offsetX = (Math.random() - 0.5); // Random value between -1 and 1
+						double offsetY = Math.random(); // Random value between 0 and 1.5 for height variation
+						double offsetZ = (Math.random() - 0.5); // Random value between -1 and 1
+						playerEntity.getEntityWorld().addParticleClient(
+								ParticleTypes.ENCHANT,
+								playerEntity.getX() + offsetX,
+								playerEntity.getY() + offsetY, // Add 1.2 to keep particles near the head
+								playerEntity.getZ() + offsetZ,
+								0, 0, 0
+						);
+					}
+				}
 
 				Arm arm = armedEntityRenderState.mainArm;
 				boolean right = arm == Arm.RIGHT && !CAConfig.flipBeltslotDisplay || arm == Arm.LEFT && CAConfig.flipBeltslotDisplay;
@@ -88,7 +88,7 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 				ItemStack tertiaryAppleStack = Items.APPLE.getDefaultStack();
 				tertiaryAppleStack.set(DataComponentTypes.ITEM_MODEL, tertiaryModel);
 
-                if (!backSlotStack.isEmpty()) {
+				if (!backSlotStack.isEmpty()) {
 					if (!secondaryModel.equals(Identifier.of("null"))) {
 						matrixStack.push();
 						this.getContextModel().body.applyTransform(matrixStack);
@@ -147,7 +147,7 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 							matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2) * -2)); // Rotation X
 						}
 
-						heldItemRenderer.renderItem(playerEntity, secondaryAppleStack, transformationMode, matrixStack, vertexConsumerProvider, light);
+						heldItemRenderer.renderItem(playerEntity, secondaryAppleStack, transformationMode, matrixStack, orderedRenderCommandQueue, i);
 						matrixStack.pop();
 					}
 					if (!tertiaryModel.equals(Identifier.of("null"))) {
@@ -167,11 +167,11 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.get(1))); // Rotation Y
 						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2))); // Rotation Z
 
-						heldItemRenderer.renderItem(playerEntity, tertiaryAppleStack, transformationMode, matrixStack, vertexConsumerProvider, light);
+						heldItemRenderer.renderItem(playerEntity, tertiaryAppleStack, transformationMode, matrixStack, orderedRenderCommandQueue, i);
 						matrixStack.pop();
 					}
 
-                    matrixStack.push();
+					matrixStack.push();
 
 					this.getContextModel().body.applyTransform(matrixStack);
 					float pivot = 0.9F;
@@ -208,32 +208,32 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						applyDynamicMovement(matrixStack, playerEntity, item);
 					}
 
-                    // Apply the transformations from TransformData using List<Float> format
-                    List<Float> scale = transformData.scale();
-                    matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
+					// Apply the transformations from TransformData using List<Float> format
+					List<Float> scale = transformData.scale();
+					matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
 
 					List<Float> translation = transformData.translation();
 					matrixStack.translate(right && (item instanceof BlockItem || transformData.flip()) ? -translation.get(0) : translation.get(0), translation.get(1), translation.get(2)); // Translation
 
-                    List<Float> rotation = transformData.rotation();
-                    matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotation.get(0))); // Rotation X
+					List<Float> rotation = transformData.rotation();
+					matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotation.get(0))); // Rotation X
 					if (right && !(item instanceof BlockItem || transformData.flip())) {
 						matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotation.getFirst() * -2)); // Rotation X
 					}
-                    matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.get(1))); // Rotation Y
+					matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.get(1))); // Rotation Y
 					if (right && !(item instanceof BlockItem && !transformData.flip())) {
 						matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.get(1) * -2)); // Rotation X
 					}
-                    matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2))); // Rotation Z
+					matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2))); // Rotation Z
 					if (right && (item instanceof BlockItem || transformData.flip())) {
 						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2) * -2)); // Rotation X
 					}
 
-                    // Render the item
-                    heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, matrixStack, vertexConsumerProvider, light);
+					// Render the item
+					heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, matrixStack, orderedRenderCommandQueue, i);
 					matrixStack.pop();
-                }
-            }
+				}
+			}
 		}
 	}
 

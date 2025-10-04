@@ -14,8 +14,8 @@ public class ProjectileEntityMixin {
     @Inject(method = "onEntityHit", at = @At("TAIL"))
     public void onEntityHit(EntityHitResult entityHitResult, CallbackInfo ci) {
         ProjectileEntity projectile = (ProjectileEntity) (Object) this;
-        if (!projectile.getWorld().isClient && projectile.isAlive()) {
-            ServerWorld serverWorld = (ServerWorld) projectile.getWorld();
+        if (!projectile.getEntityWorld().isClient() && projectile.isAlive()) {
+            ServerWorld serverWorld = (ServerWorld) projectile.getEntityWorld();
 
             // Force the entity to be re-tracked
             serverWorld.getChunkManager().unloadEntity(projectile);

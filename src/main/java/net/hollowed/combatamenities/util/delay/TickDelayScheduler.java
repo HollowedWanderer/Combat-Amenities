@@ -45,6 +45,7 @@ public class TickDelayScheduler {
      *
      * @param taskId ID of the task.
      */
+    @SuppressWarnings("unused")
     public static void cancel(int taskId) {
         scheduledTasks.remove(taskId);
     }
