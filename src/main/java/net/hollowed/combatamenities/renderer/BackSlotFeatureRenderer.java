@@ -261,7 +261,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			verticalVelocityHistory.poll();
 		}
 		if (playerEntity instanceof AbstractClientPlayerEntity abstractClientPlayerEntity) {
-			double velocityY = playerEntity.getVelocity().y;
+			double velocityY = abstractClientPlayerEntity.getVelocity().y;
 
 			verticalVelocityHistory.offer((float) velocityY);
 
