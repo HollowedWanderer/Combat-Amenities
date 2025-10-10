@@ -22,12 +22,10 @@ public class PlayerCapeModelMixin {
 
     @Shadow @Final private ModelPart cape;
 
-    @Inject(method = "setAngles(Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "setAngles(Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;)V", at = @At("TAIL"))
     private void injectSetAngles(PlayerEntityRenderState playerEntityRenderState, CallbackInfo ci) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player != null) {
-            this.cape.resetTransform();
-
             ItemStack stack = client.player.getInventory().getStack(41);
             BackTransformData transformData = BackTransformResourceReloadListener.getTransform(Registries.ITEM.getId(stack.getItem()), stack.getOrDefault(ModComponents.INTEGER_PROPERTY, -1).toString());
             float sway = 1.0F;
@@ -35,20 +33,7 @@ public class PlayerCapeModelMixin {
                 sway = transformData.sway();
             }
 
-            // Calculate the adjusted cape rotation
-            float adjustedXRotation = sway * (6.0F + playerEntityRenderState.field_53537 / 2.0F + playerEntityRenderState.field_53536)
-                    * 0.017453292F;
-            float zRotation = playerEntityRenderState.field_53538 / 2.0F * 0.017453292F;
-            float yRotation = (180.0F - playerEntityRenderState.field_53538 / 2.0F) * 0.017453292F;
-
-            Quaternionf capeRotation = new Quaternionf()
-                    .rotateY(-3.1415927F)
-                    .rotateX(adjustedXRotation)
-                    .rotateZ(zRotation)
-                    .rotateY(yRotation);
-            this.cape.rotate(capeRotation);
-
-            ci.cancel(); // Cancel further modifications to ensure consistent behavior
+            this.cape.rotate(new Quaternionf().rotateX(this.cape.pitch * sway).rotateY(this.cape.yaw).rotateZ(this.cape.roll));
         }
     }
 }
