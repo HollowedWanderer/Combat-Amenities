@@ -22,7 +22,7 @@ public class PlayerCapeModelMixin {
 
     @Shadow @Final private ModelPart cape;
 
-    @Inject(method = "setAngles(Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;)V", at = @At("TAIL"))
+    @Inject(method = "setAngles(Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;)V", at = @At("HEAD"), cancellable = true)
     private void injectSetAngles(PlayerEntityRenderState playerEntityRenderState, CallbackInfo ci) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player != null) {
@@ -33,7 +33,11 @@ public class PlayerCapeModelMixin {
                 sway = transformData.sway();
             }
 
-            this.cape.rotate(new Quaternionf().rotateX(this.cape.pitch * sway).rotateY(this.cape.yaw).rotateZ(this.cape.roll));
+            if (sway != 1.0F) {
+                this.cape.resetTransform();
+                this.cape.rotate((new Quaternionf()).rotateY(-(float) Math.PI).rotateX(sway * (6.0F + playerEntityRenderState.field_53537 / 2.0F + playerEntityRenderState.field_53536) * ((float) Math.PI / 180F)).rotateZ(playerEntityRenderState.field_53538 / 2.0F * ((float) Math.PI / 180F)).rotateY((180.0F - playerEntityRenderState.field_53538 / 2.0F) * ((float) Math.PI / 180F)));
+                ci.cancel();
+            }
         }
     }
 }

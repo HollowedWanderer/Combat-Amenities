@@ -258,16 +258,16 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
 	// Apply dynamic movement-based transformations
 	private void applyDynamicMovement(MatrixStack matrixStack, PlayerEntity playerEntity, Item item) {
+		int VELOCITY_HISTORY_SIZE = 5;
+		if (verticalVelocityHistory.size() >= VELOCITY_HISTORY_SIZE) {
+			verticalVelocityHistory.poll();
+			verticalVelocityHistory.poll();
+			verticalVelocityHistory.poll();
+		}
 		if (playerEntity instanceof ClientPlayerEntity) {
 			// Get player movement velocity
 			double velocityY = playerEntity.getVelocity().y;
 
-			// Track vertical velocity history
-			// Number of ticks to track vertical velocity
-			int VELOCITY_HISTORY_SIZE = 5;
-			if (verticalVelocityHistory.size() >= VELOCITY_HISTORY_SIZE) {
-				verticalVelocityHistory.poll(); // Remove the oldest velocity
-			}
 			verticalVelocityHistory.offer((float) velocityY); // Add the current velocity
 
 			// Jiggle oscillation effect for landing
@@ -302,12 +302,6 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			// Get player movement velocity
 			double velocityY = playerEntity.getVelocity().y;
 
-			// Track vertical velocity history
-			// Number of ticks to track vertical velocity
-			int VELOCITY_HISTORY_SIZE = 5;
-			if (verticalVelocityHistory.size() >= VELOCITY_HISTORY_SIZE) {
-				verticalVelocityHistory.poll(); // Remove the oldest velocity
-			}
 			verticalVelocityHistory.offer((float) velocityY); // Add the current velocity
 
 			// Jiggle oscillation effect for landing
