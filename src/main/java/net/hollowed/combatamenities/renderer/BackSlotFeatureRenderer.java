@@ -135,9 +135,6 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 							applyDynamicMovement(matrixStack, playerEntity, item);
 						}
 
-						List<Float> scale = secondaryTransformData.scale();
-						matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
-
 						List<Float> translation = secondaryTransformData.translation();
 						matrixStack.translate(translation.get(0), translation.get(1), flip ? translation.get(2) : -translation.get(2)); // Translation
 						if (right && (item instanceof BlockItem || transformData.noFlip())) {
@@ -155,6 +152,9 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 							matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2) * -2)); // Rotation X
 						}
 
+						List<Float> scale = secondaryTransformData.scale();
+						matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
+
 						heldItemRenderer.renderItem(playerEntity, secondaryAppleStack, transformationMode, matrixStack, orderedRenderCommandQueue, i);
 						matrixStack.pop();
 					}
@@ -169,9 +169,6 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
 						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180));
 
-						List<Float> scale = tertiaryTransformData.scale();
-						matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
-
 						List<Float> translation = tertiaryTransformData.translation();
 						matrixStack.translate(translation.get(0), translation.get(1), translation.get(2)); // Translation
 
@@ -179,6 +176,9 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotation.get(0))); // Rotation X
 						matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.get(1))); // Rotation Y
 						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2))); // Rotation Z
+
+						List<Float> scale = tertiaryTransformData.scale();
+						matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
 
 						heldItemRenderer.renderItem(playerEntity, tertiaryAppleStack, transformationMode, matrixStack, orderedRenderCommandQueue, i);
 						matrixStack.pop();
@@ -220,9 +220,6 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						applyDynamicMovement(matrixStack, playerEntity, item);
 					}
 
-					List<Float> scale = transformData.scale();
-					matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
-
 					List<Float> translation = transformData.translation();
 					matrixStack.translate(translation.get(0), translation.get(1), flip ? translation.get(2) : -translation.get(2)); // Translation
 					if (right && (item instanceof BlockItem || transformData.noFlip())) {
@@ -239,6 +236,9 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					if (right && (item instanceof BlockItem || transformData.noFlip())) {
 						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2) * -2)); // Rotation X
 					}
+
+					List<Float> scale = transformData.scale();
+					matrixStack.scale(scale.get(0), scale.get(1), scale.get(2)); // Scale
 
 					// Render the item
 					heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, matrixStack, orderedRenderCommandQueue, i);
