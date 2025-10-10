@@ -29,6 +29,7 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 import org.joml.Quaternionf;
 
 import java.util.LinkedList;
@@ -50,6 +51,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 	public void render(MatrixStack matrixStack, OrderedRenderCommandQueue orderedRenderCommandQueue, int i, PlayerEntityRenderState armedEntityRenderState, float f, float g) {
 		if (armedEntityRenderState instanceof PlayerEntityRenderStateAccess access) {
 			PlayerEntity playerEntity = access.combat_Amenities$getPlayerEntity();
+			this.setVelocityFromPos(playerEntity);
 
 			if (playerEntity != null) {
 				ItemStack backSlotStack = playerEntity.getInventory().getStack(41);
@@ -246,6 +248,9 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 		}
 	}
 
+	private static Vec3d startTickPosition;
+	public static Vec3d playerVelocity = new Vec3d(0, 0, 0);
+
 	private boolean wasOnGroundLastTick = true;
 	private final Queue<Float> verticalVelocityHistory = new LinkedList<>();
 
@@ -260,10 +265,10 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			verticalVelocityHistory.poll();
 			verticalVelocityHistory.poll();
 		}
+		System.out.println();
 		if (playerEntity instanceof AbstractClientPlayerEntity abstractClientPlayerEntity) {
-			double velocityY = abstractClientPlayerEntity.getVelocity().y;
 
-			verticalVelocityHistory.offer((float) velocityY);
+			verticalVelocityHistory.offer((float) playerVelocity.y);
 
 			if (detectLanding(abstractClientPlayerEntity)) {
 				float landingVelocity = Math.abs(verticalVelocityHistory.peek() != null ? verticalVelocityHistory.peek() : 0.0F);
@@ -295,5 +300,15 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			}
 		}
 		return false;
+	}
+
+	private void setVelocityFromPos(PlayerEntity player) {
+		if (startTickPosition == null) {
+			startTickPosition = player.getEntityPos();
+		}
+
+		Vec3d endTickPosition = player.getEntityPos();
+		if (!startTickPosition.equals(endTickPosition)) playerVelocity = endTickPosition.subtract(startTickPosition);
+		startTickPosition = endTickPosition;
 	}
 }

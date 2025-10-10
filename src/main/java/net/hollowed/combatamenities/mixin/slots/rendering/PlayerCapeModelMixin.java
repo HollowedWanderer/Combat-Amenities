@@ -6,6 +6,7 @@ import net.hollowed.combatamenities.util.json.BackTransformResourceReloadListene
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.PlayerCapeModel;
+import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -18,9 +19,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerCapeModel.class)
-public class PlayerCapeModelMixin {
+public abstract class PlayerCapeModelMixin extends PlayerEntityModel {
 
     @Shadow @Final private ModelPart cape;
+
+    public PlayerCapeModelMixin(ModelPart root, boolean thinArms) {
+        super(root, thinArms);
+    }
 
     @Inject(method = "setAngles(Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;)V", at = @At("HEAD"), cancellable = true)
     private void injectSetAngles(PlayerEntityRenderState playerEntityRenderState, CallbackInfo ci) {
@@ -34,7 +39,7 @@ public class PlayerCapeModelMixin {
             }
 
             if (sway != 1.0F) {
-                this.cape.resetTransform();
+                super.setAngles(playerEntityRenderState);
                 this.cape.rotate((new Quaternionf()).rotateY(-(float) Math.PI).rotateX(sway * (6.0F + playerEntityRenderState.field_53537 / 2.0F + playerEntityRenderState.field_53536) * ((float) Math.PI / 180F)).rotateZ(playerEntityRenderState.field_53538 / 2.0F * ((float) Math.PI / 180F)).rotateY((180.0F - playerEntityRenderState.field_53538 / 2.0F) * ((float) Math.PI / 180F)));
                 ci.cancel();
             }
