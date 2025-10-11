@@ -6,7 +6,7 @@ public class CAConfig extends MidnightConfig {
     @Entry public static int backslotX = 0;
     @Entry public static int backslotY = 0;
     @Entry public static boolean backslotParticles = true;
-    @Entry public static int enchantmentParticleChance = 3;
+    @Entry public static float enchantmentParticleChance = 0.5F;
     @Entry public static int backslotAmbientSoundVolume = 100;
     @Entry public static int backslotSwapSoundVolume = 100;
     @Entry public static boolean flipBackslotDisplay = false;

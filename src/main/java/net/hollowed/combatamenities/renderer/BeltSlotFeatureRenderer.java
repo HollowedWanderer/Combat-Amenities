@@ -2,6 +2,7 @@ package net.hollowed.combatamenities.renderer;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.hollowed.combatamenities.CombatAmenities;
 import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.util.interfaces.PlayerEntityRenderStateAccess;
 import net.hollowed.combatamenities.util.items.ModComponents;
@@ -55,21 +56,6 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
 			if (playerEntity != null) {
 				ItemStack backSlotStack = playerEntity.getInventory().getStack(42);
-
-				if (backSlotStack.hasEnchantments() && Math.random() > ((100 - CAConfig.enchantmentParticleChance) / 100.0F) && CAConfig.backslotParticles && !MinecraftClient.getInstance().isPaused()) {
-					for (int j = 0; j < 5; j++) {
-						double offsetX = (Math.random() - 0.5);
-						double offsetY = Math.random();
-						double offsetZ = (Math.random() - 0.5);
-						playerEntity.getEntityWorld().addParticleClient(
-								ParticleTypes.ENCHANT,
-								playerEntity.getX() + offsetX,
-								playerEntity.getY() + offsetY,
-								playerEntity.getZ() + offsetZ,
-								0, 0, 0
-						);
-					}
-				}
 
 				Arm arm = armedEntityRenderState.mainArm;
 				boolean right = arm == Arm.RIGHT && !CAConfig.flipBeltslotDisplay || arm == Arm.LEFT && CAConfig.flipBeltslotDisplay;
@@ -227,6 +213,23 @@ public class BeltSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					matrixStack.scale(scale.get(0), scale.get(1), scale.get(2));
 
 					heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, matrixStack, orderedRenderCommandQueue, i);
+
+					if (backSlotStack.hasEnchantments() && Math.random() > ((100 - CAConfig.enchantmentParticleChance) / 100.0F) && CAConfig.backslotParticles && !MinecraftClient.getInstance().isPaused()) {
+						for (int j = 0; j < 5; j++) {
+							Vec3d vec3d = CombatAmenities.matrixToVec(matrixStack);
+							double offsetX = 0.7 * (Math.random() - 0.5);
+							double offsetY = Math.random();
+							double offsetZ = 0.7 * (Math.random() - 0.5);
+							playerEntity.getEntityWorld().addParticleClient(
+									ParticleTypes.ENCHANT,
+									vec3d.getX() + offsetX,
+									vec3d.getY() + offsetY - 0.5,
+									vec3d.getZ() + offsetZ,
+									0, 0, 0
+							);
+						}
+					}
+
 					matrixStack.pop();
 				}
 			}

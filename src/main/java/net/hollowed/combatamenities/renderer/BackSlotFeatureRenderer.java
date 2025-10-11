@@ -2,6 +2,7 @@ package net.hollowed.combatamenities.renderer;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.hollowed.combatamenities.CombatAmenities;
 import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.util.interfaces.PlayerEntityRenderStateAccess;
 import net.hollowed.combatamenities.util.items.ModComponents;
@@ -55,22 +56,6 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
 			if (playerEntity != null) {
 				ItemStack backSlotStack = playerEntity.getInventory().getStack(41);
-
-				if (backSlotStack.hasEnchantments() && Math.random() > ((100 - CAConfig.enchantmentParticleChance) / 100.0F) && CAConfig.backslotParticles && !MinecraftClient.getInstance().isPaused()) {
-					for (int j = 0; j < 5; j++) {
-						double offsetX = (Math.random() - 0.5);
-						double offsetY = Math.random();
-						double offsetZ = (Math.random() - 0.5);
-						playerEntity.getEntityWorld().addParticleClient(
-								ParticleTypes.ENCHANT,
-								playerEntity.getX() + offsetX,
-								playerEntity.getY() + offsetY + 0.75,
-								playerEntity.getZ() + offsetZ,
-								0, 0, 0
-						);
-					}
-				}
-
 				if (!backSlotStack.isEmpty()) {
 					Item item = backSlotStack.getItem();
 					Identifier itemId = Registries.ITEM.getId(item);
@@ -242,6 +227,23 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 
 					// Render the item
 					heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, matrixStack, orderedRenderCommandQueue, i);
+
+					if (backSlotStack.hasEnchantments() && Math.random() > ((100 - CAConfig.enchantmentParticleChance) / 100.0F) && CAConfig.backslotParticles && !MinecraftClient.getInstance().isPaused()) {
+						for (int j = 0; j < 5; j++) {
+							Vec3d vec3d = CombatAmenities.matrixToVec(matrixStack);
+							double offsetX = 0.7 * (Math.random() - 0.5);
+							double offsetY = Math.random();
+							double offsetZ = 0.7 * (Math.random() - 0.5);
+							playerEntity.getEntityWorld().addParticleClient(
+									ParticleTypes.ENCHANT,
+									vec3d.getX() + offsetX,
+									vec3d.getY() + offsetY - 0.5,
+									vec3d.getZ() + offsetZ,
+									0, 0, 0
+							);
+						}
+					}
+
 					matrixStack.pop();
 				}
 			}
