@@ -267,7 +267,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			verticalVelocityHistory.poll();
 			verticalVelocityHistory.poll();
 		}
-		System.out.println();
+
 		if (playerEntity instanceof AbstractClientPlayerEntity abstractClientPlayerEntity) {
 
 			verticalVelocityHistory.offer((float) playerVelocity.y);
@@ -275,12 +275,12 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			if (detectLanding(abstractClientPlayerEntity)) {
 				float landingVelocity = Math.abs(verticalVelocityHistory.peek() != null ? verticalVelocityHistory.peek() : 0.0F);
 				jiggleIntensity = MathHelper.clamp(landingVelocity * 10.0F, 5.0F, 50.0F);
-				jiggleDecay = 0.9F;
+				jiggleDecay = 0.9F + Math.min(0.1F * (MinecraftClient.getInstance().getCurrentFps() / 140.0F - 1), 0.075F);
 				jiggleTimer = 0.0F;
 			}
 
 			if (jiggleIntensity > 0.1F) {
-				jiggleTimer += 0.4F;
+				jiggleTimer += Math.max(0.4F - 0.25F * (MinecraftClient.getInstance().getCurrentFps() / 140.0F - 1), 0.1F);
 				float oscillation = (float) Math.sin(jiggleTimer) * jiggleIntensity;
 				if (!(item instanceof BlockItem blockItem && blockItem.getBlock() instanceof BannerBlock)) {
 					matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(oscillation));
