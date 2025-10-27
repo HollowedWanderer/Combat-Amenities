@@ -3,7 +3,7 @@ package net.hollowed.combatamenities.util.properties;
 import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.hollowed.combatamenities.util.items.ModComponents;
+import net.hollowed.combatamenities.util.items.CAComponents;
 import net.minecraft.client.render.item.property.bool.BooleanProperty;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
@@ -17,7 +17,7 @@ public record BooleanComponentProperty() implements BooleanProperty {
 
 	@Override
 	public boolean test(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity user, int seed, ItemDisplayContext modelTransformationMode) {
-		return Boolean.TRUE.equals(stack.get(ModComponents.BOOLEAN_PROPERTY));
+		return Boolean.TRUE.equals(stack.get(CAComponents.BOOLEAN_PROPERTY));
 	}
 
 	@Override

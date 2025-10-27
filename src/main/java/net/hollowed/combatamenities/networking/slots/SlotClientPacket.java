@@ -17,7 +17,6 @@ public class SlotClientPacket {
             context.client().execute(() -> {
                 PlayerEntity player = (PlayerEntity) context.player().getEntityWorld().getEntityById(entityId);
                 if (player != null) {
-                    // Set the stack to the correct item or empty stack
                     player.getInventory().setStack(slotId, itemStack);
                 }
             });

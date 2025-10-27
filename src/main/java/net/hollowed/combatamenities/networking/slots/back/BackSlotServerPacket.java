@@ -2,6 +2,7 @@ package net.hollowed.combatamenities.networking.slots.back;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.hollowed.combatamenities.networking.slots.SoundPacketPayload;
+import net.hollowed.combatamenities.util.items.CAComponents;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -32,13 +33,25 @@ public class BackSlotServerPacket {
             }
 
             if (!handStack.isEmpty()) {
+                handStack.set(CAComponents.STRING_PROPERTY, "bob5");
+                if (backStack.getOrDefault(CAComponents.STRING_PROPERTY, "").equals("bob5")) {
+                    backStack.remove(CAComponents.STRING_PROPERTY);
+                }
                 player.setStackInHand(Hand.MAIN_HAND, backStack.copy());
                 player.getInventory().setStack(41, handStack.copy());
             } else {
                 if (backStack.isEmpty()) {
+                    offhandStack.set(CAComponents.STRING_PROPERTY, "bob5");
+                    if (backStack.getOrDefault(CAComponents.STRING_PROPERTY, "").equals("bob5")) {
+                        backStack.remove(CAComponents.STRING_PROPERTY);
+                    }
                     player.setStackInHand(Hand.OFF_HAND, backStack.copy());
                     player.getInventory().setStack(41, offhandStack.copy());
                 } else {
+                    handStack.set(CAComponents.STRING_PROPERTY, "bob5");
+                    if (backStack.getOrDefault(CAComponents.STRING_PROPERTY, "").equals("bob5")) {
+                        backStack.remove(CAComponents.STRING_PROPERTY);
+                    }
                     player.setStackInHand(Hand.MAIN_HAND, backStack.copy());
                     player.getInventory().setStack(41, handStack.copy());
                 }

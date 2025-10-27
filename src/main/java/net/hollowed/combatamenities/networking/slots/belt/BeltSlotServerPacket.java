@@ -2,6 +2,7 @@ package net.hollowed.combatamenities.networking.slots.belt;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.hollowed.combatamenities.networking.slots.SoundPacketPayload;
+import net.hollowed.combatamenities.util.items.CAComponents;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -32,13 +33,16 @@ public class BeltSlotServerPacket {
             }
 
             if (!handStack.isEmpty()) {
+                handStack.set(CAComponents.STRING_PROPERTY, "bob5");
                 player.setStackInHand(Hand.MAIN_HAND, backStack.copy());
                 player.getInventory().setStack(42, handStack.copy());
             } else {
                 if (backStack.isEmpty()) {
+                    offhandStack.set(CAComponents.STRING_PROPERTY, "bob5");
                     player.setStackInHand(Hand.OFF_HAND, backStack.copy());
                     player.getInventory().setStack(42, offhandStack.copy());
                 } else {
+                    handStack.set(CAComponents.STRING_PROPERTY, "bob5");
                     player.setStackInHand(Hand.MAIN_HAND, backStack.copy());
                     player.getInventory().setStack(42, handStack.copy());
                 }

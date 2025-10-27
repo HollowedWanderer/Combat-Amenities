@@ -1,6 +1,6 @@
 package net.hollowed.combatamenities.mixin.slots.rendering;
 
-import net.hollowed.combatamenities.util.items.ModComponents;
+import net.hollowed.combatamenities.util.items.CAComponents;
 import net.hollowed.combatamenities.util.json.BackTransformData;
 import net.hollowed.combatamenities.util.json.BackTransformResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
@@ -32,7 +32,7 @@ public abstract class PlayerCapeModelMixin extends PlayerEntityModel {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player != null) {
             ItemStack stack = client.player.getInventory().getStack(41);
-            BackTransformData transformData = BackTransformResourceReloadListener.getTransform(Registries.ITEM.getId(stack.getItem()), stack.getOrDefault(ModComponents.INTEGER_PROPERTY, -1).toString());
+            BackTransformData transformData = BackTransformResourceReloadListener.getTransform(Registries.ITEM.getId(stack.getItem()), stack.getOrDefault(CAComponents.INTEGER_PROPERTY, -1).toString());
             float sway = 1.0F;
             if (!stack.isEmpty()) {
                 sway = transformData.sway();

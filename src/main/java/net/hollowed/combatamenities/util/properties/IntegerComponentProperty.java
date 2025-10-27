@@ -1,7 +1,7 @@
 package net.hollowed.combatamenities.util.properties;
 
 import com.mojang.serialization.MapCodec;
-import net.hollowed.combatamenities.util.items.ModComponents;
+import net.hollowed.combatamenities.util.items.CAComponents;
 import net.minecraft.client.render.item.property.numeric.NumericProperty;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
@@ -15,7 +15,7 @@ public record IntegerComponentProperty() implements NumericProperty {
 
     @Override
     public float getValue(ItemStack stack, @Nullable ClientWorld world, @Nullable HeldItemContext context, int seed) {
-        return stack.get(ModComponents.INTEGER_PROPERTY) != null ? Objects.requireNonNull(stack.get(ModComponents.INTEGER_PROPERTY)) : 0;
+        return stack.get(CAComponents.INTEGER_PROPERTY) != null ? Objects.requireNonNull(stack.get(CAComponents.INTEGER_PROPERTY)) : 0;
     }
 
     @Override

@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.hollowed.combatamenities.CombatAmenities;
 import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.util.interfaces.PlayerEntityRenderStateAccess;
-import net.hollowed.combatamenities.util.items.ModComponents;
+import net.hollowed.combatamenities.util.items.CAComponents;
 import net.hollowed.combatamenities.util.json.BackTransformData;
 import net.hollowed.combatamenities.util.json.BackTransformResourceReloadListener;
 import net.minecraft.block.BannerBlock;
@@ -59,7 +59,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 				if (!backSlotStack.isEmpty()) {
 					Item item = backSlotStack.getItem();
 					Identifier itemId = Registries.ITEM.getId(item);
-					BackTransformData transformData = BackTransformResourceReloadListener.getTransform(itemId, backSlotStack.getOrDefault(ModComponents.INTEGER_PROPERTY, -1).toString());
+					BackTransformData transformData = BackTransformResourceReloadListener.getTransform(itemId, backSlotStack.getOrDefault(CAComponents.INTEGER_PROPERTY, -1).toString());
 
 					BackTransformData.SecondaryTransformData secondaryTransformData = transformData.secondaryTransforms();
 					BackTransformData.TertiaryTransformData tertiaryTransformData = transformData.tertiaryTransforms();

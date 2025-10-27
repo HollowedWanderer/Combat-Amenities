@@ -23,6 +23,9 @@ public abstract class PlayerInventoryMixin implements Inventory {
 
     @Shadow @Final private DefaultedList<ItemStack> main;
     @Shadow @Final public PlayerEntity player;
+
+    @Shadow public abstract void setStack(int slot, ItemStack stack);
+
     @Unique
     private static final Int2ObjectMap<ExtraSlots> EXTRA_SLOTS = new Int2ObjectArrayMap<>(
             Map.of(
@@ -77,7 +80,7 @@ public abstract class PlayerInventoryMixin implements Inventory {
     }
 
     @Inject(method = "setStack", at = @At("HEAD"))
-    public void setStack(int slot, ItemStack stack, CallbackInfo ci) {
+    public void setCustomStack(int slot, ItemStack stack, CallbackInfo ci) {
         if (this.player instanceof EquipmentInterface access) {
             EntityEquipment equipment = access.combat_Amenities$getEquipment();
             ExtraSlots equipmentSlot = EXTRA_SLOTS.get(slot);

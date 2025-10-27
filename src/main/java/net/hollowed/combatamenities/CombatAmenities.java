@@ -12,18 +12,14 @@ import net.hollowed.combatamenities.networking.slots.SlotClientPacketPayload;
 import net.hollowed.combatamenities.networking.slots.SlotCreativeClientPacket;
 import net.hollowed.combatamenities.networking.slots.SlotCreativeClientPacketPayload;
 import net.hollowed.combatamenities.networking.slots.SoundPacketPayload;
-import net.hollowed.combatamenities.networking.slots.back.BackSlotInventoryPacketPayload;
-import net.hollowed.combatamenities.networking.slots.back.BackSlotInventoryPacketReceiver;
 import net.hollowed.combatamenities.networking.slots.back.BackSlotServerPacket;
 import net.hollowed.combatamenities.networking.slots.back.BackslotPacketPayload;
-import net.hollowed.combatamenities.networking.slots.belt.BeltSlotInventoryPacketPayload;
-import net.hollowed.combatamenities.networking.slots.belt.BeltSlotInventoryPacketReceiver;
 import net.hollowed.combatamenities.networking.slots.belt.BeltSlotServerPacket;
 import net.hollowed.combatamenities.networking.slots.belt.BeltslotPacketPayload;
 import net.hollowed.combatamenities.index.CAParticles;
 import net.hollowed.combatamenities.index.CASounds;
 import net.hollowed.combatamenities.util.delay.TickDelayScheduler;
-import net.hollowed.combatamenities.util.items.ModComponents;
+import net.hollowed.combatamenities.util.items.CAComponents;
 import net.hollowed.combatamenities.util.json.BeltTransformResourceReloadListener;
 import net.hollowed.combatamenities.util.json.BackTransformResourceReloadListener;
 import net.hollowed.combatamenities.util.json.ItemTransformResourceReloadListener;
@@ -89,7 +85,7 @@ public class CombatAmenities implements ModInitializer {
 		// Proceed with mild caution.
 
 		CAParticles.initialize();
-		ModComponents.initialize();
+		CAComponents.initialize();
 		CASounds.initialize();
 
 		ServerTickEvents.END_SERVER_TICK.register(server -> TickDelayScheduler.tick());
@@ -101,14 +97,10 @@ public class CombatAmenities implements ModInitializer {
 
 		PayloadTypeRegistry.playC2S().register(BackslotPacketPayload.ID, BackslotPacketPayload.CODEC);
 		PayloadTypeRegistry.playC2S().register(BeltslotPacketPayload.ID, BeltslotPacketPayload.CODEC);
-		PayloadTypeRegistry.playC2S().register(BackSlotInventoryPacketPayload.ID, BackSlotInventoryPacketPayload.CODEC);
-		PayloadTypeRegistry.playC2S().register(BeltSlotInventoryPacketPayload.ID, BeltSlotInventoryPacketPayload.CODEC);
 		PayloadTypeRegistry.playC2S().register(SlotCreativeClientPacketPayload.ID, SlotCreativeClientPacketPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(SlotClientPacketPayload.ID, SlotClientPacketPayload.CODEC);
 		PayloadTypeRegistry.playS2C().register(SoundPacketPayload.ID, SoundPacketPayload.CODEC);
 
-		BackSlotInventoryPacketReceiver.registerServerPacket();
-		BeltSlotInventoryPacketReceiver.registerServerPacket();
         BackSlotServerPacket.registerServerPacket();
 		BeltSlotServerPacket.registerServerPacket();
 		SlotCreativeClientPacket.registerClientPacket();

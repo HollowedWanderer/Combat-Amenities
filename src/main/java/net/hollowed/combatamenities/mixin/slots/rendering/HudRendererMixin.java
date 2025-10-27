@@ -3,6 +3,7 @@ package net.hollowed.combatamenities.mixin.slots.rendering;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.hollowed.combatamenities.config.CAConfig;
+import net.hollowed.combatamenities.util.items.CAComponents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
@@ -12,159 +13,145 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InGameHud.class)
-public class HudRendererMixin {
+public abstract class HudRendererMixin {
 
+    @Shadow @Final private MinecraftClient client;
     @Unique
     private static final Identifier WIDGETS_TEXTURE = Identifier.of("textures/gui/sprites/hud/hotbar_offhand_left.png");
 
-    // Track the previous item in the back slot for animation
     @Unique
     private static ItemStack lastBackSlotStack = ItemStack.EMPTY;
     @Unique
     private static ItemStack lastBeltSlotStack = ItemStack.EMPTY;
     @Unique
-    private static int animationTicks = 0; // Animation timer
-    @Unique
-    private static final int ANIMATION_DURATION = 28; // Duration of the stretch animation
-    @Unique
-    private static int animationTicks1 = 0; // Animation timer
+    private int animationTicks = 0;
+
+    @Inject(method = "tick()V", at = @At("HEAD"))
+    private void tick(CallbackInfo ci) {
+        if (animationTicks > 0) {
+            animationTicks--;
+        }
+    }
 
     @Inject(method = "renderHotbar", at = @At("TAIL"))
     public void renderHotbar(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-        renderBackSlot(context);
-        renderBeltSlot(context);
+        renderBackSlot(context, tickCounter);
+        renderBeltSlot(context, tickCounter);
     }
 
     @Unique
-    private static void renderBeltSlot(DrawContext drawContext) {
+    private void renderBeltSlot(DrawContext drawContext, RenderTickCounter tickCounter) {
         PlayerEntity playerEntity = MinecraftClient.getInstance().player;
         if (playerEntity != null) {
-            // Get the belt slot item
-            ItemStack backSlotStack = playerEntity.getInventory().getStack(42);
+            ItemStack beltSlotStack = playerEntity.getInventory().getStack(42);
 
-            // Check if the belt slot item has changed
-            if (!ItemStack.areEqual(backSlotStack, lastBeltSlotStack)) {
-                lastBeltSlotStack = backSlotStack.copy();
-                animationTicks1 = ANIMATION_DURATION; // Reset animation timer
+            if (!ItemStack.areEqual(beltSlotStack, lastBeltSlotStack) && animationTicks == 0) {
+                lastBeltSlotStack = beltSlotStack.copy();
+                if (beltSlotStack.getOrDefault(CAComponents.STRING_PROPERTY, "").equals("bob5")) {
+                    animationTicks = 5;
+                }
             }
 
-            if (!backSlotStack.isEmpty()) {
+            if (beltSlotStack.getOrDefault(CAComponents.STRING_PROPERTY, "").equals("bob5")) {
+                beltSlotStack.remove(CAComponents.STRING_PROPERTY);
+            }
+
+            if (!beltSlotStack.isEmpty()) {
                 final int x = getBeltX(drawContext);
                 int y = drawContext.getScaledWindowHeight() - CAConfig.backslotY - 4;
 
                 RenderSystem.assertOnRenderThread();
                 GlStateManager._enableBlend();
 
-                // Adjust position and scale based on animation ticks
-                float scaleY = 1.0f;
-                float scaleX = 1.0f;
-                if (animationTicks1 > 0) {
-                    float progress = (float) animationTicks1 / ANIMATION_DURATION;
-                    scaleX = 0.5f + 0.5f * (1.0f - progress); // Shrink horizontally
-                    scaleY = 1.75f - 0.75f * (1.0f - progress); // Stretch vertically
-                    animationTicks1--; // Decrease animation timer
-                }
-
                 drawContext.drawTexture(
                         RenderPipelines.GUI_TEXTURED,
                         WIDGETS_TEXTURE,
                         x + 1, y - 19,
-                        0, 0, 22, 23, 29, 24 // Texture coordinates and dimensions
+                        0, 0, 22, 23, 29, 24
                 );
 
                 // Render the back slot item
-                renderHotbarItem(drawContext, MinecraftClient.getInstance(), x + 4, y - 15, playerEntity, backSlotStack, scaleX, scaleY);
+                renderItem(drawContext, x + 4, y - 15, tickCounter, playerEntity, beltSlotStack);
             }
         }
     }
 
     @Unique
-    private static void renderBackSlot(DrawContext drawContext) {
+    private void renderBackSlot(DrawContext drawContext, RenderTickCounter tickCounter) {
         PlayerEntity playerEntity = MinecraftClient.getInstance().player;
         if (playerEntity != null) {
-            // Get the backslot item
             ItemStack backSlotStack = playerEntity.getInventory().getStack(41);
 
-            // Check if the back slot item has changed
-            if (!ItemStack.areEqual(backSlotStack, lastBackSlotStack)) {
+            if (!ItemStack.areEqual(backSlotStack, lastBackSlotStack) && animationTicks == 0) {
                 lastBackSlotStack = backSlotStack.copy();
-                animationTicks = ANIMATION_DURATION; // Reset animation timer
+                if (backSlotStack.getOrDefault(CAComponents.STRING_PROPERTY, "").equals("bob5")) {
+                    animationTicks = 5;
+                }
+            }
+
+            if (backSlotStack.getOrDefault(CAComponents.STRING_PROPERTY, "").equals("bob5")) {
+                backSlotStack.remove(CAComponents.STRING_PROPERTY);
             }
 
             if (!backSlotStack.isEmpty()) {
                 final int x = getX(drawContext);
-                int y = drawContext.getScaledWindowHeight() - CAConfig.backslotY - 4; // Y position remains the same
+                int y = drawContext.getScaledWindowHeight() - CAConfig.backslotY - 4;
 
                 RenderSystem.assertOnRenderThread();
                 GlStateManager._disableBlend();
-
-                // Adjust position and scale based on animation ticks
-                float scaleY = 1.0f;
-                float scaleX = 1.0f;
-                if (animationTicks > 0) {
-                    float progress = (float) animationTicks / ANIMATION_DURATION;
-                    scaleX = 0.5f + 0.5f * (1.0f - progress); // Shrink horizontally
-                    scaleY = 1.75f - 0.75f * (1.0f - progress); // Stretch vertically
-                    animationTicks--; // Decrease animation timer
-                }
 
                 drawContext.drawTexture(
                         RenderPipelines.GUI_TEXTURED,
                         WIDGETS_TEXTURE,
                         x + 1, y - 19,
-                        0, 0, 22, 23, 29, 24 // Texture coordinates and dimensions
+                        0, 0, 22, 23, 29, 24
                 );
 
                 // Render the back slot item
-                renderHotbarItem(drawContext, MinecraftClient.getInstance(), x + 4, y - 15, playerEntity, backSlotStack, scaleX, scaleY);
+                renderItem(drawContext, x + 4, y - 15, tickCounter, playerEntity, backSlotStack);
             }
         }
     }
 
     @Unique
-    private static void renderHotbarItem(DrawContext context, MinecraftClient client, int x, int y, PlayerEntity player, ItemStack stack, float scaleX, float scaleY) {
-        if (stack.isEmpty()) return;
+    private void renderItem(DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack) {
+        if (!stack.isEmpty()) {
+            float f = animationTicks - tickCounter.getTickProgress(false);
+            if (f > 0.0F) {
+                float g = 1.0F + f / 5.0F;
+                context.getMatrices().pushMatrix();
+                context.getMatrices().translate(x + 8, y + 12);
+                context.getMatrices().scale(1.0F / g, (g + 1.0F) / 2.0F);
+                context.getMatrices().translate(-(x + 8), -(y + 12));
+            }
 
-        // Push the current transformation matrix
-        context.getMatrices().pushMatrix();
+            context.drawItem(player, stack, x, y, 1);
+            if (f > 0.0F) {
+                context.getMatrices().popMatrix();
+            }
 
-        // Translate to the center of the item slot
-        float scaledX = x + 8; // Center the item
-        float scaledY = y + 10;
-
-        // Apply the scaling effect
-        context.getMatrices().translate(scaledX, scaledY);
-        context.getMatrices().scale(scaleX, scaleY);
-        context.getMatrices().translate(-scaledX, -scaledY);
-
-        // Render the item
-        context.drawItem(player, stack, x, y, 0);
-
-        // Render the item overlay (e.g., stack count)
-        context.drawStackOverlay(client.textRenderer, stack, x, y);
-
-        // Pop the transformation matrix to reset transformations
-        context.getMatrices().popMatrix();
+            context.drawStackOverlay(this.client.textRenderer, stack, x, y);
+        }
     }
-
 
     @Unique
     private static int getX(DrawContext drawContext) {
         boolean isLeftHanded = MinecraftClient.getInstance().options.getMainArm().getValue().equals(Arm.LEFT);
 
-        // Calculate positions based on hand preference
         int x;
         if (isLeftHanded) {
-            x = drawContext.getScaledWindowWidth() / 2 - CAConfig.backslotX - 120; // Position on the left of the hotbar
+            x = drawContext.getScaledWindowWidth() / 2 - CAConfig.backslotX - 120;
         } else {
-            x = drawContext.getScaledWindowWidth() / 2 + CAConfig.backslotX + 97; // Position on the right of the hotbar
+            x = drawContext.getScaledWindowWidth() / 2 + CAConfig.backslotX + 97;
         }
         return x;
     }
@@ -173,12 +160,11 @@ public class HudRendererMixin {
     private static int getBeltX(DrawContext drawContext) {
         boolean isLeftHanded = MinecraftClient.getInstance().options.getMainArm().getValue().equals(Arm.LEFT);
 
-        // Calculate positions based on hand preference
         int x;
         if (isLeftHanded) {
-            x = drawContext.getScaledWindowWidth() / 2 - CAConfig.backslotX - 143; // Position on the left of the hotbar
+            x = drawContext.getScaledWindowWidth() / 2 - CAConfig.backslotX - 143;
         } else {
-            x = drawContext.getScaledWindowWidth() / 2 + CAConfig.backslotX + 120; // Position on the right of the hotbar
+            x = drawContext.getScaledWindowWidth() / 2 + CAConfig.backslotX + 120;
         }
         return x;
     }
