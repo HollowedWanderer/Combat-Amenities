@@ -31,7 +31,6 @@ public abstract class ScreenHandlerMixin {
     @Inject(method = "internalOnSlotClick", at = @At("HEAD"))
     private void internalOnSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
         PlayerInventory playerInventory = player.getInventory();
-        System.out.println(slotIndex);
         if (actionType == SlotActionType.SWAP && (button == 41 || button == 42)) {
             if (button == 41 && slotIndex == 46 || button == 42 && slotIndex == 47) return;
             ItemStack itemStack5 = playerInventory.getStack(button);
