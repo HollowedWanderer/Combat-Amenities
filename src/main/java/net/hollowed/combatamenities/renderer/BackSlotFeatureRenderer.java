@@ -52,9 +52,8 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 	public void render(MatrixStack matrixStack, OrderedRenderCommandQueue orderedRenderCommandQueue, int i, PlayerEntityRenderState armedEntityRenderState, float f, float g) {
 		if (armedEntityRenderState instanceof PlayerEntityRenderStateAccess access) {
 			PlayerEntity playerEntity = access.combat_Amenities$getPlayerEntity();
-			this.setVelocityFromPos(playerEntity);
-
 			if (playerEntity != null) {
+				this.setVelocityFromPos(playerEntity);
 				ItemStack backSlotStack = playerEntity.getInventory().getStack(41);
 				if (!backSlotStack.isEmpty()) {
 					Item item = backSlotStack.getItem();
