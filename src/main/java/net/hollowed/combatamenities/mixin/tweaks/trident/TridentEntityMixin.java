@@ -56,6 +56,7 @@ public abstract class TridentEntityMixin extends PersistentProjectileEntity impl
     public void tryPickup(PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
         // Check if the player is the owner
         if (this.isOwner(player)) {
+
             // Check if the player's inventory is full
             boolean hasSpace = false;
             for (ItemStack stack : player.getInventory().getMainStacks()) {
@@ -65,11 +66,14 @@ public abstract class TridentEntityMixin extends PersistentProjectileEntity impl
                 }
             }
 
+            boolean hasSpaceWithOffhand = hasSpace || player.getOffHandStack().isEmpty();
+
             // Insert it into the player's inventory
             if (!player.isCreative() && !CAConfig.correctTridentReturn && hasSpace) {
                 player.getInventory().insertStack(this.asItemStack());
                 cir.setReturnValue(true);
             }
+
             // If the trident is in no-clip mode and original slot is valid
             if (this.isNoClip() && this.originalSlot != -1) {
                 // Place the trident in the original slot if it's empty
@@ -79,7 +83,7 @@ public abstract class TridentEntityMixin extends PersistentProjectileEntity impl
                 }
             }
 
-            if (!hasSpace && !player.isCreative()) {
+            if (CAConfig.correctTridentReturn ? !hasSpaceWithOffhand : !hasSpace && !player.isCreative()) {
                 cir.setReturnValue(false);
             }
         }
