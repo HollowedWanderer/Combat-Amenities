@@ -9,10 +9,11 @@ import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(ProjectileEntityRenderState.class)
 public class ArrowEntityRenderStateMixin implements ArrowEntityRenderStateAccess {
+
     @Unique
-    private static ItemStack itemStack;
+    private ItemStack itemStack;
     @Unique
-    private static Vec3d look;
+    private Vec3d look;
 
     @Unique
     public void combat_Amenities$setItemStack(ItemStack stack) {
