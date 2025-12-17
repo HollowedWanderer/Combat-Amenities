@@ -1,33 +1,34 @@
 package net.hollowed.combatamenities.networking.slots;
 
 import net.hollowed.combatamenities.CombatAmenities;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-public record SlotClientPacketPayload(int entityId, int slotId, ItemStack itemStack) implements CustomPayload {
+public record SlotClientPacketPayload(int entityId, int slotId, ItemStack itemStack) implements CustomPacketPayload {
 
-    public static final CustomPayload.Id<SlotClientPacketPayload> ID = new CustomPayload.Id<>(Identifier.of(CombatAmenities.MOD_ID, "backslot_client_packet"));
+    public static final CustomPacketPayload.Type<@NotNull SlotClientPacketPayload> ID = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(CombatAmenities.MOD_ID, "backslot_client_packet"));
 
-    public static final PacketCodec<RegistryByteBuf, SlotClientPacketPayload> CODEC = PacketCodec.of(SlotClientPacketPayload::write, SlotClientPacketPayload::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, SlotClientPacketPayload> CODEC = StreamCodec.ofMember(SlotClientPacketPayload::write, SlotClientPacketPayload::new);
 
-    public SlotClientPacketPayload(RegistryByteBuf buf) {
-        this(buf.readInt(), buf.readInt(), buf.readBoolean() ? ItemStack.EMPTY : ItemStack.PACKET_CODEC.decode(buf));
+    public SlotClientPacketPayload(RegistryFriendlyByteBuf buf) {
+        this(buf.readInt(), buf.readInt(), buf.readBoolean() ? ItemStack.EMPTY : ItemStack.STREAM_CODEC.decode(buf));
     }
 
-    public void write(RegistryByteBuf buf) {
+    public void write(RegistryFriendlyByteBuf buf) {
         buf.writeInt(entityId);
         buf.writeInt(slotId);
         buf.writeBoolean(itemStack.isEmpty());
         if (!itemStack.isEmpty()) {
-            ItemStack.PACKET_CODEC.encode(buf, itemStack);
+            ItemStack.STREAM_CODEC.encode(buf, itemStack);
         }
     }
 
     @Override
-    public Id<? extends CustomPayload> getId() {
+    public @NotNull Type<? extends @NotNull CustomPacketPayload> type() {
         return ID;
     }
 }

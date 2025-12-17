@@ -2,12 +2,11 @@ package net.hollowed.combatamenities.util.json;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.item.ItemDisplayContext;
-import net.minecraft.util.Identifier;
-
 import java.util.List;
 
 import java.util.Map;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemDisplayContext;
 
 public record BeltTransformData(
         String item,
@@ -35,7 +34,7 @@ public record BeltTransformData(
                     .forGetter(BeltTransformData::componentTransforms),
             Codec.BOOL.fieldOf("flip").orElse(false).forGetter(BeltTransformData::flip),
             SecondaryTransformData.CODEC.fieldOf("secondary").orElse(new SecondaryTransformData(
-                            Identifier.of("null"),
+                            Identifier.parse("null"),
                             List.of(1.0f, 1.0f, 1.0f),
                             List.of(0.0f, 0.0f, 0.0f),
                             List.of(0.0f, 0.0f, 0.0f),
@@ -43,7 +42,7 @@ public record BeltTransformData(
                     ))
                     .forGetter(BeltTransformData::secondaryTransforms),
             TertiaryTransformData.CODEC.fieldOf("tertiary").orElse(new TertiaryTransformData(
-                            Identifier.of("null"),
+                            Identifier.parse("null"),
                             List.of(1.0f, 1.0f, 1.0f),
                             List.of(0.0f, 0.0f, 0.0f),
                             List.of(0.0f, 0.0f, 0.0f),
@@ -73,7 +72,7 @@ public record BeltTransformData(
                 Codec.FLOAT.fieldOf("sway").orElse(1.0F).forGetter(SubTransformData::sway),
                 Codec.BOOL.fieldOf("flip").orElse(false).forGetter(SubTransformData::flip),
                 SecondaryTransformData.CODEC.fieldOf("secondary").orElse(new SecondaryTransformData(
-                                Identifier.of("null"),
+                                Identifier.parse("null"),
                                 List.of(1.0f, 1.0f, 1.0f),
                                 List.of(0.0f, 0.0f, 0.0f),
                                 List.of(0.0f, 0.0f, 0.0f),
@@ -81,7 +80,7 @@ public record BeltTransformData(
                         ))
                         .forGetter(SubTransformData::secondaryTransforms),
                 TertiaryTransformData.CODEC.fieldOf("tertiary").orElse(new TertiaryTransformData(
-                                Identifier.of("null"),
+                                Identifier.parse("null"),
                                 List.of(1.0f, 1.0f, 1.0f),
                                 List.of(0.0f, 0.0f, 0.0f),
                                 List.of(0.0f, 0.0f, 0.0f),

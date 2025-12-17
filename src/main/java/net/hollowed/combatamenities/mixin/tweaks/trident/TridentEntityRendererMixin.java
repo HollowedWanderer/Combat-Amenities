@@ -1,79 +1,80 @@
 package net.hollowed.combatamenities.mixin.tweaks.trident;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.hollowed.combatamenities.util.interfaces.TridentEntityRenderStateAccess;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.command.OrderedRenderCommandQueue;
-import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.TridentEntityRenderer;
-import net.minecraft.client.render.item.ItemRenderState;
-import net.minecraft.client.render.state.CameraRenderState;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.projectile.TridentEntity;
-import net.minecraft.client.render.entity.state.TridentEntityRenderState;
-import net.minecraft.item.ItemDisplayContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.ThrownTridentRenderer;
+import net.minecraft.client.renderer.entity.state.ThrownTridentRenderState;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.projectile.arrow.ThrownTrident;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(TridentEntityRenderer.class)
+@Mixin(ThrownTridentRenderer.class)
 @Environment(EnvType.CLIENT)
-public abstract class TridentEntityRendererMixin extends EntityRenderer<TridentEntity, TridentEntityRenderState> {
+public abstract class TridentEntityRendererMixin extends EntityRenderer<@NotNull ThrownTrident, @NotNull ThrownTridentRenderState> {
 
-    protected TridentEntityRendererMixin(EntityRendererFactory.Context context) {
+    protected TridentEntityRendererMixin(EntityRendererProvider.Context context) {
         super(context);
     }
 
-    @Inject(method = "updateRenderState(Lnet/minecraft/entity/projectile/TridentEntity;Lnet/minecraft/client/render/entity/state/TridentEntityRenderState;F)V", at = @At("HEAD"))
-    public void updateRenderState(TridentEntity tridentEntity, TridentEntityRenderState tridentEntityRenderState, float f, CallbackInfo ci) {
+    @Inject(method = "extractRenderState(Lnet/minecraft/world/entity/projectile/arrow/ThrownTrident;Lnet/minecraft/client/renderer/entity/state/ThrownTridentRenderState;F)V", at = @At("HEAD"))
+    public void updateRenderState(ThrownTrident tridentEntity, ThrownTridentRenderState tridentEntityRenderState, float f, CallbackInfo ci) {
         if (tridentEntityRenderState instanceof TridentEntityRenderStateAccess access) {
-            access.combat_Amenities$setLook(tridentEntity.getRotationVec(0));
+            access.combat_Amenities$setLook(tridentEntity.getViewVector(0));
         }
     }
 
     @Inject(
-        method = "render(Lnet/minecraft/client/render/entity/state/TridentEntityRenderState;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/command/OrderedRenderCommandQueue;Lnet/minecraft/client/render/state/CameraRenderState;)V",
+        method = "submit(Lnet/minecraft/client/renderer/entity/state/ThrownTridentRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V",
         at = @At("HEAD"),
         cancellable = true
     )
     public void renderWithItem(
-            TridentEntityRenderState tridentEntityRenderState, MatrixStack matrixStack, OrderedRenderCommandQueue orderedRenderCommandQueue, CameraRenderState cameraRenderState, CallbackInfo ci
+            ThrownTridentRenderState tridentEntityRenderState, PoseStack matrixStack, SubmitNodeCollector orderedRenderCommandQueue, CameraRenderState cameraRenderState, CallbackInfo ci
     ) {
         if (tridentEntityRenderState instanceof TridentEntityRenderStateAccess access) {
-            matrixStack.push();
+            matrixStack.pushPose();
 
             float multiplier = 0.85F;
             matrixStack.translate(access.combat_Amenities$getLook().multiply(multiplier, multiplier, -multiplier));
-            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(tridentEntityRenderState.yaw - 90.0F));
-            matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(tridentEntityRenderState.pitch - 45.0F));
+            matrixStack.mulPose(Axis.YP.rotationDegrees(tridentEntityRenderState.yRot - 90.0F));
+            matrixStack.mulPose(Axis.ZP.rotationDegrees(tridentEntityRenderState.xRot - 45.0F));
 
             matrixStack.scale(2F, 2F, 1F);
 
-            ItemStack trident = Items.TRIDENT.getDefaultStack();
-            if (tridentEntityRenderState.enchanted) {
-                trident.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
+            ItemStack trident = Items.TRIDENT.getDefaultInstance();
+            if (tridentEntityRenderState.isFoil) {
+                trident.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
             }
 
-            ItemRenderState stackRenderState = new ItemRenderState();
-            MinecraftClient.getInstance().getItemModelManager().update(stackRenderState, trident, ItemDisplayContext.NONE, MinecraftClient.getInstance().world, null, 1);
-            stackRenderState.render(matrixStack, orderedRenderCommandQueue, tridentEntityRenderState.light, OverlayTexture.DEFAULT_UV, tridentEntityRenderState.outlineColor);
+            ItemStackRenderState stackRenderState = new ItemStackRenderState();
+            Minecraft.getInstance().getItemModelResolver().appendItemLayers(stackRenderState, trident, ItemDisplayContext.NONE, Minecraft.getInstance().level, null, 1);
+            stackRenderState.submit(matrixStack, orderedRenderCommandQueue, tridentEntityRenderState.lightCoords, OverlayTexture.NO_OVERLAY, tridentEntityRenderState.outlineColor);
 
-            matrixStack.pop();
+            matrixStack.popPose();
             ci.cancel();
         }
     }
 
     @Override
-    public boolean shouldRender(TridentEntity entity, Frustum frustum, double x, double y, double z) {
+    public boolean shouldRender(ThrownTrident entity, @NotNull Frustum frustum, double x, double y, double z) {
         return true;
     }
 }

@@ -4,15 +4,15 @@ import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.util.items.CAComponents;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Arm;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,12 +21,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(InGameHud.class)
+@Mixin(Gui.class)
 public abstract class HudRendererMixin {
 
-    @Shadow @Final private MinecraftClient client;
+    @Shadow @Final private Minecraft minecraft;
     @Unique
-    private static final Identifier WIDGETS_TEXTURE = Identifier.of("textures/gui/sprites/hud/hotbar_offhand_left.png");
+    private static final Identifier WIDGETS_TEXTURE = Identifier.parse("textures/gui/sprites/hud/hotbar_offhand_left.png");
 
     @Unique
     private static ItemStack lastBackSlotStack = ItemStack.EMPTY;
@@ -42,19 +42,19 @@ public abstract class HudRendererMixin {
         }
     }
 
-    @Inject(method = "renderHotbar", at = @At("TAIL"))
-    public void renderHotbar(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
+    @Inject(method = "renderItemHotbar", at = @At("TAIL"))
+    public void renderHotbar(GuiGraphics context, DeltaTracker tickCounter, CallbackInfo ci) {
         renderBackSlot(context, tickCounter);
         renderBeltSlot(context, tickCounter);
     }
 
     @Unique
-    private void renderBeltSlot(DrawContext drawContext, RenderTickCounter tickCounter) {
-        PlayerEntity playerEntity = MinecraftClient.getInstance().player;
+    private void renderBeltSlot(GuiGraphics drawContext, DeltaTracker tickCounter) {
+        Player playerEntity = Minecraft.getInstance().player;
         if (playerEntity != null) {
-            ItemStack beltSlotStack = playerEntity.getInventory().getStack(42);
+            ItemStack beltSlotStack = playerEntity.getInventory().getItem(42);
 
-            if (!ItemStack.areEqual(beltSlotStack, lastBeltSlotStack) && animationTicks == 0) {
+            if (!ItemStack.matches(beltSlotStack, lastBeltSlotStack) && animationTicks == 0) {
                 lastBeltSlotStack = beltSlotStack.copy();
                 if (beltSlotStack.getOrDefault(CAComponents.STRING_PROPERTY, "").equals("bob5")) {
                     animationTicks = 5;
@@ -67,12 +67,12 @@ public abstract class HudRendererMixin {
 
             if (!beltSlotStack.isEmpty()) {
                 final int x = getBeltX(drawContext);
-                int y = drawContext.getScaledWindowHeight() - CAConfig.backslotY - 4;
+                int y = drawContext.guiHeight() - CAConfig.backslotY - 4;
 
                 RenderSystem.assertOnRenderThread();
                 GlStateManager._enableBlend();
 
-                drawContext.drawTexture(
+                drawContext.blit(
                         RenderPipelines.GUI_TEXTURED,
                         WIDGETS_TEXTURE,
                         x + 1, y - 19,
@@ -86,12 +86,12 @@ public abstract class HudRendererMixin {
     }
 
     @Unique
-    private void renderBackSlot(DrawContext drawContext, RenderTickCounter tickCounter) {
-        PlayerEntity playerEntity = MinecraftClient.getInstance().player;
+    private void renderBackSlot(GuiGraphics drawContext, DeltaTracker tickCounter) {
+        Player playerEntity = Minecraft.getInstance().player;
         if (playerEntity != null) {
-            ItemStack backSlotStack = playerEntity.getInventory().getStack(41);
+            ItemStack backSlotStack = playerEntity.getInventory().getItem(41);
 
-            if (!ItemStack.areEqual(backSlotStack, lastBackSlotStack) && animationTicks == 0) {
+            if (!ItemStack.matches(backSlotStack, lastBackSlotStack) && animationTicks == 0) {
                 lastBackSlotStack = backSlotStack.copy();
                 if (backSlotStack.getOrDefault(CAComponents.STRING_PROPERTY, "").equals("bob5")) {
                     animationTicks = 5;
@@ -104,12 +104,12 @@ public abstract class HudRendererMixin {
 
             if (!backSlotStack.isEmpty()) {
                 final int x = getX(drawContext);
-                int y = drawContext.getScaledWindowHeight() - CAConfig.backslotY - 4;
+                int y = drawContext.guiHeight() - CAConfig.backslotY - 4;
 
                 RenderSystem.assertOnRenderThread();
                 GlStateManager._disableBlend();
 
-                drawContext.drawTexture(
+                drawContext.blit(
                         RenderPipelines.GUI_TEXTURED,
                         WIDGETS_TEXTURE,
                         x + 1, y - 19,
@@ -123,48 +123,48 @@ public abstract class HudRendererMixin {
     }
 
     @Unique
-    private void renderItem(DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack) {
+    private void renderItem(GuiGraphics context, int x, int y, DeltaTracker tickCounter, Player player, ItemStack stack) {
         if (!stack.isEmpty()) {
-            float f = animationTicks - tickCounter.getTickProgress(false);
+            float f = animationTicks - tickCounter.getGameTimeDeltaPartialTick(false);
             if (f > 0.0F) {
                 float g = 1.0F + f / 5.0F;
-                context.getMatrices().pushMatrix();
-                context.getMatrices().translate(x + 8, y + 12);
-                context.getMatrices().scale(1.0F / g, (g + 1.0F) / 2.0F);
-                context.getMatrices().translate(-(x + 8), -(y + 12));
+                context.pose().pushMatrix();
+                context.pose().translate(x + 8, y + 12);
+                context.pose().scale(1.0F / g, (g + 1.0F) / 2.0F);
+                context.pose().translate(-(x + 8), -(y + 12));
             }
 
-            context.drawItem(player, stack, x, y, 1);
+            context.renderItem(player, stack, x, y, 1);
             if (f > 0.0F) {
-                context.getMatrices().popMatrix();
+                context.pose().popMatrix();
             }
 
-            context.drawStackOverlay(this.client.textRenderer, stack, x, y);
+            context.renderItemDecorations(this.minecraft.font, stack, x, y);
         }
     }
 
     @Unique
-    private static int getX(DrawContext drawContext) {
-        boolean isLeftHanded = MinecraftClient.getInstance().options.getMainArm().getValue().equals(Arm.LEFT);
+    private static int getX(GuiGraphics drawContext) {
+        boolean isLeftHanded = Minecraft.getInstance().options.mainHand().get().equals(HumanoidArm.LEFT);
 
         int x;
         if (isLeftHanded) {
-            x = drawContext.getScaledWindowWidth() / 2 - CAConfig.backslotX - 120;
+            x = drawContext.guiWidth() / 2 - CAConfig.backslotX - 120;
         } else {
-            x = drawContext.getScaledWindowWidth() / 2 + CAConfig.backslotX + 97;
+            x = drawContext.guiWidth() / 2 + CAConfig.backslotX + 97;
         }
         return x;
     }
 
     @Unique
-    private static int getBeltX(DrawContext drawContext) {
-        boolean isLeftHanded = MinecraftClient.getInstance().options.getMainArm().getValue().equals(Arm.LEFT);
+    private static int getBeltX(GuiGraphics drawContext) {
+        boolean isLeftHanded = Minecraft.getInstance().options.mainHand().get().equals(HumanoidArm.LEFT);
 
         int x;
         if (isLeftHanded) {
-            x = drawContext.getScaledWindowWidth() / 2 - CAConfig.backslotX - 143;
+            x = drawContext.guiWidth() / 2 - CAConfig.backslotX - 143;
         } else {
-            x = drawContext.getScaledWindowWidth() / 2 + CAConfig.backslotX + 120;
+            x = drawContext.guiWidth() / 2 + CAConfig.backslotX + 120;
         }
         return x;
     }

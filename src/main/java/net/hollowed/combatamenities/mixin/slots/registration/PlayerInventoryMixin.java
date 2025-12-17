@@ -4,12 +4,13 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.hollowed.combatamenities.util.entities.EntityEquipment;
 import net.hollowed.combatamenities.util.interfaces.EquipmentInterface;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.hollowed.combatamenities.util.entities.ExtraSlots;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.collection.DefaultedList;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,13 +19,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
 
-@Mixin(PlayerInventory.class)
-public abstract class PlayerInventoryMixin implements Inventory {
+@Mixin(Inventory.class)
+public abstract class PlayerInventoryMixin implements Container {
 
-    @Shadow @Final private DefaultedList<ItemStack> main;
-    @Shadow @Final public PlayerEntity player;
+    @Shadow @Final private NonNullList<ItemStack> items;
+    @Shadow @Final public Player player;
 
-    @Shadow public abstract void setStack(int slot, ItemStack stack);
+    @Shadow public abstract void setItem(int slot, @NotNull ItemStack stack);
 
     @Unique
     private static final Int2ObjectMap<ExtraSlots> EXTRA_SLOTS = new Int2ObjectArrayMap<>(
@@ -36,11 +37,11 @@ public abstract class PlayerInventoryMixin implements Inventory {
             )
     );
 
-    @Inject(method = "removeStack(II)Lnet/minecraft/item/ItemStack;", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "removeItem(II)Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
     public void removeStack(int slot, int amount, CallbackInfoReturnable<ItemStack> cir) {
         if (this.player instanceof EquipmentInterface access) {
             EntityEquipment equipment = access.combat_Amenities$getEquipment();
-            if (slot >= this.main.size()) {
+            if (slot >= this.items.size()) {
                 ExtraSlots extraSlot = EXTRA_SLOTS.get(slot);
                 if (extraSlot != null) {
                     ItemStack itemStack = equipment.get(extraSlot);
@@ -52,7 +53,7 @@ public abstract class PlayerInventoryMixin implements Inventory {
         }
     }
 
-    @Inject(method = "removeOne", at = @At("HEAD"))
+    @Inject(method = "removeItem(Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"))
     public void removeOne(ItemStack stack, CallbackInfo ci) {
         if (this.player instanceof EquipmentInterface access) {
             EntityEquipment equipment = access.combat_Amenities$getEquipment();
@@ -66,11 +67,11 @@ public abstract class PlayerInventoryMixin implements Inventory {
         }
     }
 
-    @Inject(method = "removeStack(I)Lnet/minecraft/item/ItemStack;", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "removeItemNoUpdate(I)Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
     public void removeStack(int slot, CallbackInfoReturnable<ItemStack> cir) {
         if (this.player instanceof EquipmentInterface access) {
             EntityEquipment equipment = access.combat_Amenities$getEquipment();
-            if (slot >= this.main.size()) {
+            if (slot >= this.items.size()) {
                 ExtraSlots equipmentSlot = EXTRA_SLOTS.get(slot);
                 if (equipmentSlot != null) {
                     cir.setReturnValue(equipment.put(equipmentSlot, ItemStack.EMPTY));
@@ -79,7 +80,7 @@ public abstract class PlayerInventoryMixin implements Inventory {
         }
     }
 
-    @Inject(method = "setStack", at = @At("HEAD"))
+    @Inject(method = "setItem", at = @At("HEAD"))
     public void setCustomStack(int slot, ItemStack stack, CallbackInfo ci) {
         if (this.player instanceof EquipmentInterface access) {
             EntityEquipment equipment = access.combat_Amenities$getEquipment();
@@ -90,7 +91,7 @@ public abstract class PlayerInventoryMixin implements Inventory {
         }
     }
 
-    @Inject(method = "size", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "getContainerSize", at = @At("RETURN"), cancellable = true)
     public void size(CallbackInfoReturnable<Integer> cir) {
         cir.setReturnValue(cir.getReturnValue() + EXTRA_SLOTS.size());
     }
@@ -107,11 +108,11 @@ public abstract class PlayerInventoryMixin implements Inventory {
         }
     }
 
-    @Inject(method = "getStack", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getItem", at = @At("HEAD"), cancellable = true)
     public void getStack(int slot, CallbackInfoReturnable<ItemStack> cir) {
         if (this.player instanceof EquipmentInterface access) {
             EntityEquipment equipment = access.combat_Amenities$getEquipment();
-            if (slot >= this.main.size()) {
+            if (slot >= this.items.size()) {
                 ExtraSlots equipmentSlot = EXTRA_SLOTS.get(slot);
                 if (equipmentSlot != null) {
                     cir.setReturnValue(equipment.get(equipmentSlot));
@@ -120,7 +121,7 @@ public abstract class PlayerInventoryMixin implements Inventory {
         }
     }
 
-    @Inject(method = "clear", at = @At("HEAD"))
+    @Inject(method = "clearContent", at = @At("HEAD"))
     public void clear(CallbackInfo ci) {
         if (this.player instanceof EquipmentInterface access) {
             EntityEquipment equipment = access.combat_Amenities$getEquipment();

@@ -1,8 +1,8 @@
 package net.hollowed.combatamenities.networking.slots;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import static net.hollowed.combatamenities.networking.slots.SlotClientPacketPayload.ID;
 
@@ -15,9 +15,9 @@ public class SlotClientPacket {
             ItemStack itemStack = payload.itemStack();
 
             context.client().execute(() -> {
-                PlayerEntity player = (PlayerEntity) context.player().getEntityWorld().getEntityById(entityId);
+                Player player = (Player) context.player().level().getEntity(entityId);
                 if (player != null) {
-                    player.getInventory().setStack(slotId, itemStack);
+                    player.getInventory().setItem(slotId, itemStack);
                 }
             });
         });

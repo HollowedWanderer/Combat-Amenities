@@ -1,10 +1,10 @@
 package net.hollowed.combatamenities;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import eu.midnightdust.lib.config.MidnightConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
-import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleBuilder;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.hollowed.combatamenities.config.CAConfig;
@@ -23,13 +23,13 @@ import net.hollowed.combatamenities.util.items.CAComponents;
 import net.hollowed.combatamenities.util.json.BeltTransformResourceReloadListener;
 import net.hollowed.combatamenities.util.json.BackTransformResourceReloadListener;
 import net.hollowed.combatamenities.util.json.ItemTransformResourceReloadListener;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.resource.ResourceType;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameRules;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.world.level.gamerules.GameRule;
+import net.minecraft.world.level.gamerules.GameRuleCategory;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
@@ -50,7 +50,7 @@ public class CombatAmenities implements ModInitializer {
 	);
 
 	public static Identifier id(String string) {
-		return Identifier.of(MOD_ID, string);
+		return Identifier.fromNamespaceAndPath(MOD_ID, string);
 	}
 
 	// This logger is used to write text to the console and the log file.
@@ -59,23 +59,23 @@ public class CombatAmenities implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	@SuppressWarnings("unused")
-	public static Vec3d matrixToVec(MatrixStack matrixStack) {
+	public static Vec3 matrixToVec(PoseStack matrixStack) {
 		// Extract transformation matrix
-		Matrix4f matrix = matrixStack.peek().getPositionMatrix();
+		Matrix4f matrix = matrixStack.last().pose();
 
 		// Convert local position to world space
-		Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
+		Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
 		return transformToWorld(matrix, camera);
 	}
 
-	private static Vec3d transformToWorld(Matrix4f matrix, Camera camera) {
+	private static Vec3 transformToWorld(Matrix4f matrix, Camera camera) {
 		// Convert (0,0,0) in local item space to transformed coordinates
 		Vector4f localPos = new Vector4f(0, 0, 0, 1);
 		matrix.transform(localPos);
 
 		// Convert view space to world space by adding the camera position
-		Vec3d cameraPos = camera.getPos();
-		return new Vec3d(cameraPos.x + localPos.x(), cameraPos.y + localPos.y(), cameraPos.z + localPos.z());
+		Vec3 cameraPos = camera.position();
+		return new Vec3(cameraPos.x + localPos.x(), cameraPos.y + localPos.y(), cameraPos.z + localPos.z());
 	}
 
 	@Override
@@ -91,9 +91,9 @@ public class CombatAmenities implements ModInitializer {
 		ServerTickEvents.END_SERVER_TICK.register(server -> TickDelayScheduler.tick());
 
 		// Json stuff
-		ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(id("back_transforms"), new BackTransformResourceReloadListener());
-		ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(id("belt_transforms"), new BeltTransformResourceReloadListener());
-		ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(id("item_transforms"), new ItemTransformResourceReloadListener());
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(id("back_transforms"), new BackTransformResourceReloadListener());
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(id("belt_transforms"), new BeltTransformResourceReloadListener());
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(id("item_transforms"), new ItemTransformResourceReloadListener());
 
 		PayloadTypeRegistry.playC2S().register(BackslotPacketPayload.ID, BackslotPacketPayload.CODEC);
 		PayloadTypeRegistry.playC2S().register(BeltslotPacketPayload.ID, BeltslotPacketPayload.CODEC);
@@ -111,6 +111,8 @@ public class CombatAmenities implements ModInitializer {
 		LOGGER.info("It is time for backing and slotting");
 	}
 
-	public static final GameRules.Key<GameRules.BooleanRule> KEEP_BACK_SLOT_ITEM =
-			GameRuleRegistry.register("keepBackSlotItem", GameRules.Category.DROPS, GameRuleFactory.createBooleanRule(false));
+	public static final GameRule<Boolean> KEEP_BACK_SLOT_ITEM = GameRuleBuilder
+			.forBoolean(false)
+			.category(GameRuleCategory.PLAYER)
+			.buildAndRegister(id("keep_back_item"));
 }

@@ -1,12 +1,13 @@
 package net.hollowed.combatamenities.util.entities;
 
-import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.StringRepresentable;
+import org.jetbrains.annotations.NotNull;
 
-public enum ExtraSlots implements StringIdentifiable {
+public enum ExtraSlots implements StringRepresentable {
     BACKSLOT(Type.HUMANOID_ARMOR, 0, 0, "backslot"),
     BELTSLOT(Type.HUMANOID_ARMOR, 1, 1, "beltslot");
 
-    public static final StringIdentifiable.EnumCodec<ExtraSlots> CODEC = StringIdentifiable.createCodec(ExtraSlots::values);
+    public static final StringRepresentable.EnumCodec<@NotNull ExtraSlots> CODEC = StringRepresentable.fromEnum(ExtraSlots::values);
     private final Type type;
     private final int entityId;
     private final String name;
@@ -30,7 +31,7 @@ public enum ExtraSlots implements StringIdentifiable {
         return offset + this.entityId;
     }
 
-    public String asString() {
+    public @NotNull String getSerializedName() {
         return this.name;
     }
 

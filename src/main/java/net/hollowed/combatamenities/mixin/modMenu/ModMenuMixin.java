@@ -4,15 +4,16 @@ import com.terraformersmc.modmenu.config.ModMenuConfig;
 import com.terraformersmc.modmenu.gui.widget.entries.ModListEntry;
 import com.terraformersmc.modmenu.util.mod.Mod;
 import net.hollowed.combatamenities.CombatAmenities;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
-import net.minecraft.text.StringVisitable;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Language;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.locale.Language;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,22 +22,22 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ModListEntry.class)
-public abstract class ModMenuMixin extends AlwaysSelectedEntryListWidget.Entry<ModListEntry> {
+public abstract class ModMenuMixin extends ObjectSelectionList.Entry<@NotNull ModListEntry> {
 
     @Shadow @Final public Mod mod;
 
-    @Shadow @Final protected MinecraftClient client;
+    @Shadow @Final protected Minecraft client;
 
     @Shadow public abstract int getXOffset();
 
     @Shadow public abstract int getYOffset();
 
     @Inject(
-            method = "render",
+            method = "renderContent",
             at = @At("TAIL")
     )
     private void modifyModNameColor(
-            DrawContext drawContext, int mouseX, int mouseY, boolean hovered, float delta, CallbackInfo ci
+            GuiGraphics drawContext, int mouseX, int mouseY, boolean hovered, float delta, CallbackInfo ci
     ) {
         int x = this.getX() + this.getXOffset();
         int y = this.getContentY() + this.getYOffset();
@@ -49,27 +50,27 @@ public abstract class ModMenuMixin extends AlwaysSelectedEntryListWidget.Entry<M
         // Custom color logic
         int nameColor = 0xFF33ebcb;
 
-        Text name = Text.literal(this.mod.getTranslatedName());
-        StringVisitable trimmedName = name;
+        Component name = Component.literal(this.mod.getTranslatedName());
+        FormattedText trimmedName = name;
         int maxNameWidth = rowWidth - iconSize - 3;
-        TextRenderer font = this.client.textRenderer;
-        if (font.getWidth(name) > maxNameWidth) {
-            StringVisitable ellipsis = StringVisitable.plain("...");
-            trimmedName = StringVisitable.concat(font.trimToWidth(name, maxNameWidth - font.getWidth(ellipsis)), ellipsis);
+        Font font = this.client.font;
+        if (font.width(name) > maxNameWidth) {
+            FormattedText ellipsis = FormattedText.of("...");
+            trimmedName = FormattedText.composite(font.substrByWidth(name, maxNameWidth - font.width(ellipsis)), ellipsis);
         }
 
         if ("combatamenities".equals(modId)) {
             // Modify the text rendering with a new color
-            drawContext.drawTextWithShadow(font, Language.getInstance().reorder(trimmedName), x + iconSize + 3, y + 1, nameColor);
+            drawContext.drawString(font, Language.getInstance().getVisualOrder(trimmedName), x + iconSize + 3, y + 1, nameColor);
 
             // Draw small icon
-            drawContext.drawTexture(RenderPipelines.GUI_TEXTURED, Identifier.of(CombatAmenities.MOD_ID, "ca_small_icon.png"), x + iconSize + 85, y - 3, 0, 0, 16, 16, 16, 16);
+            drawContext.blit(RenderPipelines.GUI_TEXTURED, Identifier.fromNamespaceAndPath(CombatAmenities.MOD_ID, "ca_small_icon.png"), x + iconSize + 85, y - 3, 0, 0, 16, 16, 16, 16);
 
             // Draw colored line below 2 rows of text
-            drawContext.drawTexture(RenderPipelines.GUI_TEXTURED, Identifier.of(CombatAmenities.MOD_ID, "ca_line.png"), x + iconSize + 3, y + 31, 0, 0, 76, 1, 76, 1);
+            drawContext.blit(RenderPipelines.GUI_TEXTURED, Identifier.fromNamespaceAndPath(CombatAmenities.MOD_ID, "ca_line.png"), x + iconSize + 3, y + 31, 0, 0, 76, 1, 76, 1);
 
             // Draw H signature
-            drawContext.drawTexture(RenderPipelines.GUI_TEXTURED, Identifier.of(CombatAmenities.MOD_ID, "h.png"), rowWidth - 2, y, 0, 0, 16, 16, 16, 16);
+            drawContext.blit(RenderPipelines.GUI_TEXTURED, Identifier.fromNamespaceAndPath(CombatAmenities.MOD_ID, "h.png"), rowWidth - 2, y, 0, 0, 16, 16, 16, 16);
         }
     }
 }

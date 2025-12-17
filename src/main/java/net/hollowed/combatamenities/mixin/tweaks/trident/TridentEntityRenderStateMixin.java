@@ -1,23 +1,23 @@
 package net.hollowed.combatamenities.mixin.tweaks.trident;
 
 import net.hollowed.combatamenities.util.interfaces.TridentEntityRenderStateAccess;
-import net.minecraft.client.render.entity.state.TridentEntityRenderState;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.renderer.entity.state.ThrownTridentRenderState;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(TridentEntityRenderState.class)
+@Mixin(ThrownTridentRenderState.class)
 public class TridentEntityRenderStateMixin implements TridentEntityRenderStateAccess {
     @Unique
-    private static Vec3d look;
+    private static Vec3 look;
 
     @Override
-    public void combat_Amenities$setLook(Vec3d lookDirection) {
+    public void combat_Amenities$setLook(Vec3 lookDirection) {
         look = lookDirection;
     }
 
     @Override
-    public Vec3d combat_Amenities$getLook() {
+    public Vec3 combat_Amenities$getLook() {
         return look;
     }
 }

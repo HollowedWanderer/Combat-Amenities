@@ -1,21 +1,22 @@
 package net.hollowed.combatamenities.networking.slots.belt;
 
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-
 import static net.hollowed.combatamenities.CombatAmenities.MOD_ID;
 
-public record BeltslotPacketPayload(BlockPos blockPos) implements CustomPayload {
-    public static final Identifier BELTSLOT_PACKET_ID = Identifier.of(MOD_ID, "beltslot_packet");
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.NotNull;
 
-    public static final Id<BeltslotPacketPayload> ID = new Id<>(BELTSLOT_PACKET_ID);
-    public static final PacketCodec<RegistryByteBuf, BeltslotPacketPayload> CODEC = PacketCodec.tuple(BlockPos.PACKET_CODEC, BeltslotPacketPayload::blockPos, BeltslotPacketPayload::new);
+public record BeltslotPacketPayload(BlockPos blockPos) implements CustomPacketPayload {
+    public static final Identifier BELTSLOT_PACKET_ID = Identifier.fromNamespaceAndPath(MOD_ID, "beltslot_packet");
+
+    public static final Type<@NotNull BeltslotPacketPayload> ID = new Type<>(BELTSLOT_PACKET_ID);
+    public static final StreamCodec<RegistryFriendlyByteBuf, BeltslotPacketPayload> CODEC = StreamCodec.composite(BlockPos.STREAM_CODEC, BeltslotPacketPayload::blockPos, BeltslotPacketPayload::new);
 
     @Override
-    public Id<? extends CustomPayload> getId() {
+    public @NotNull Type<? extends @NotNull CustomPacketPayload> type() {
         return ID;
     }
 }

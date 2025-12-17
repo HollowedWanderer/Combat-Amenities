@@ -5,9 +5,8 @@ import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
-
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 
 public class EntityEquipment {
     public static final Codec<EntityEquipment> CODEC;
@@ -53,7 +52,7 @@ public class EntityEquipment {
     public void dropAll(LivingEntity entity) {
 
         for (ItemStack itemStack : this.map.values()) {
-            entity.dropItem(itemStack, true, false);
+            entity.drop(itemStack, true, false);
         }
 
         this.clear();

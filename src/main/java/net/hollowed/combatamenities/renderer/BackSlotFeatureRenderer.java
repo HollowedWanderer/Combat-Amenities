@@ -8,71 +8,76 @@ import net.hollowed.combatamenities.util.interfaces.PlayerEntityRenderStateAcces
 import net.hollowed.combatamenities.util.items.CAComponents;
 import net.hollowed.combatamenities.util.json.BackTransformData;
 import net.hollowed.combatamenities.util.json.BackTransformResourceReloadListener;
-import net.minecraft.block.BannerBlock;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.OtherClientPlayerEntity;
-import net.minecraft.client.render.command.OrderedRenderCommandQueue;
-import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
-import net.minecraft.client.render.entity.model.PlayerEntityModel;
-import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
-import net.minecraft.client.render.item.HeldItemRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Arm;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.player.PlayerModel;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.player.RemotePlayer;
+import net.minecraft.client.renderer.ItemInHandRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.BannerBlock;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
-
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
 @Environment(EnvType.CLIENT)
-public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> {
+public class BackSlotFeatureRenderer extends ItemInHandLayer<@NotNull AvatarRenderState, @NotNull PlayerModel> {
 
-	private final HeldItemRenderer heldItemRenderer;
+	private final ItemInHandRenderer heldItemRenderer;
 	private ItemDisplayContext transformationMode = ItemDisplayContext.FIXED;
 
-    public BackSlotFeatureRenderer(FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel> context, HeldItemRenderer heldItemRenderer) {
+    public BackSlotFeatureRenderer(RenderLayerParent<@NotNull AvatarRenderState, @NotNull PlayerModel> context, ItemInHandRenderer heldItemRenderer) {
 		super(context);
 		this.heldItemRenderer = heldItemRenderer;
 	}
 
+
 	@Override
-	public void render(MatrixStack matrixStack, OrderedRenderCommandQueue orderedRenderCommandQueue, int i, PlayerEntityRenderState armedEntityRenderState, float f, float g) {
+	public void submit(@NotNull PoseStack matrixStack, @NotNull SubmitNodeCollector orderedRenderCommandQueue, int i, AvatarRenderState armedEntityRenderState, float f, float g) {
 		if (armedEntityRenderState instanceof PlayerEntityRenderStateAccess access) {
-			PlayerEntity playerEntity = access.combat_Amenities$getPlayerEntity();
+			Player playerEntity = access.combat_Amenities$getPlayerEntity();
 			if (playerEntity != null) {
 				this.setVelocityFromPos(playerEntity);
-				ItemStack backSlotStack = playerEntity.getInventory().getStack(41);
+				ItemStack backSlotStack = playerEntity.getInventory().getItem(41);
 				if (!backSlotStack.isEmpty()) {
 					Item item = backSlotStack.getItem();
-					Identifier itemId = Registries.ITEM.getId(item);
+					Identifier itemId = BuiltInRegistries.ITEM.getKey(item);
 					BackTransformData transformData = BackTransformResourceReloadListener.getTransform(itemId, backSlotStack.getOrDefault(CAComponents.INTEGER_PROPERTY, -1).toString());
 
 					BackTransformData.SecondaryTransformData secondaryTransformData = transformData.secondaryTransforms();
 					BackTransformData.TertiaryTransformData tertiaryTransformData = transformData.tertiaryTransforms();
 
 					Identifier secondaryModel = secondaryTransformData.item();
-					ItemStack secondaryAppleStack = Items.APPLE.getDefaultStack();
-					secondaryAppleStack.set(DataComponentTypes.ITEM_MODEL, secondaryModel);
+					ItemStack secondaryAppleStack = Items.APPLE.getDefaultInstance();
+					secondaryAppleStack.set(DataComponents.ITEM_MODEL, secondaryModel);
 
 					Identifier tertiaryModel = tertiaryTransformData.item();
-					ItemStack tertiaryAppleStack = Items.APPLE.getDefaultStack();
-					tertiaryAppleStack.set(DataComponentTypes.ITEM_MODEL, tertiaryModel);
+					ItemStack tertiaryAppleStack = Items.APPLE.getDefaultInstance();
+					tertiaryAppleStack.set(DataComponents.ITEM_MODEL, tertiaryModel);
 
-					Arm arm = armedEntityRenderState.mainArm;
-					boolean right = arm == Arm.RIGHT && !CAConfig.flipBackslotDisplay || arm == Arm.LEFT && CAConfig.flipBackslotDisplay;
+					HumanoidArm arm = armedEntityRenderState.mainArm;
+					boolean right = arm == HumanoidArm.RIGHT && !CAConfig.flipBackslotDisplay || arm == HumanoidArm.LEFT && CAConfig.flipBackslotDisplay;
 
 					boolean flip = false;
 
@@ -82,40 +87,40 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						}
 					}
 
-					if (!secondaryModel.equals(Identifier.of("null"))) {
-						matrixStack.push();
-						this.getContextModel().body.applyTransform(matrixStack);
+					if (!secondaryModel.equals(Identifier.parse("null"))) {
+						matrixStack.pushPose();
+						this.getParentModel().body.translateAndRotate(matrixStack);
 
 						// pivot point
 						float pivot = 0.0F;
 						matrixStack.translate(0, pivot, 0.125);
 
-						matrixStack.multiply((new Quaternionf())
+						matrixStack.mulPose((new Quaternionf())
 								.rotateY(-3.1415927F)
-								.rotateX(transformData.sway() * -(6.0F + armedEntityRenderState.field_53537 / 2.0F + armedEntityRenderState.field_53536) * 0.017453292F)
-								.rotateZ(-(armedEntityRenderState.field_53538 / 2.0F * 0.017453292F))
-								.rotateY((180.0F - armedEntityRenderState.field_53538 / 2.0F) * 0.017453292F)
+								.rotateX(transformData.sway() * -(6.0F + armedEntityRenderState.capeLean / 2.0F + armedEntityRenderState.capeFlap) * 0.017453292F)
+								.rotateZ(-(armedEntityRenderState.capeLean2 / 2.0F * 0.017453292F))
+								.rotateY((180.0F - armedEntityRenderState.capeLean2 / 2.0F) * 0.017453292F)
 						);
 
 						matrixStack.translate(0, 0.35, 0);
 
-						if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
+						if (playerEntity.getItemBySlot(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
 							matrixStack.translate(0, 0, 0.05F);
 						}
-						if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.cape() != null) {
+						if (armedEntityRenderState.showCape && armedEntityRenderState.skin.cape() != null) {
 							matrixStack.translate(0, 0, 0.1);
 						}
 
 						if (flip) {
-							matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
+							matrixStack.mulPose(Axis.YP.rotationDegrees(180));
 						}
 
 						transformationMode = secondaryTransformData.mode();
 
 						// Dynamic movement
-						if (playerEntity instanceof OtherClientPlayerEntity) {
+						if (playerEntity instanceof RemotePlayer) {
 							applyDynamicMovement(matrixStack, playerEntity, item);
-						} else if (playerEntity instanceof ClientPlayerEntity) {
+						} else if (playerEntity instanceof LocalPlayer) {
 							applyDynamicMovement(matrixStack, playerEntity, item);
 						}
 
@@ -126,81 +131,81 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 						}
 
 						List<Float> rotation = secondaryTransformData.rotation();
-						matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotation.get(0)));
+						matrixStack.mulPose(Axis.XP.rotationDegrees(rotation.get(0)));
 						if (flip) {
-							matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotation.getFirst() * -2));
+							matrixStack.mulPose(Axis.XP.rotationDegrees(rotation.getFirst() * -2));
 						}
-						matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.get(1)));
-						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2)));
+						matrixStack.mulPose(Axis.YP.rotationDegrees(rotation.get(1)));
+						matrixStack.mulPose(Axis.ZP.rotationDegrees(rotation.get(2)));
 						if (right && (item instanceof BlockItem || transformData.noFlip())) {
-							matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2) * -2));
+							matrixStack.mulPose(Axis.ZP.rotationDegrees(rotation.get(2) * -2));
 						}
 
 						List<Float> scale = secondaryTransformData.scale();
 						matrixStack.scale(scale.get(0), scale.get(1), scale.get(2));
 
 						heldItemRenderer.renderItem(playerEntity, secondaryAppleStack, transformationMode, matrixStack, orderedRenderCommandQueue, i);
-						matrixStack.pop();
+						matrixStack.popPose();
 					}
 
-					if (!tertiaryModel.equals(Identifier.of("null"))) {
-						matrixStack.push();
-						this.getContextModel().body.applyTransform(matrixStack);
+					if (!tertiaryModel.equals(Identifier.parse("null"))) {
+						matrixStack.pushPose();
+						this.getParentModel().body.translateAndRotate(matrixStack);
 
 						if (flip) {
-							matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
+							matrixStack.mulPose(Axis.YP.rotationDegrees(180));
 						}
 
-						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180));
+						matrixStack.mulPose(Axis.ZP.rotationDegrees(180));
 
 						List<Float> translation = tertiaryTransformData.translation();
 						matrixStack.translate(translation.get(0), translation.get(1), translation.get(2));
 
 						List<Float> rotation = tertiaryTransformData.rotation();
-						matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotation.get(0)));
-						matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.get(1)));
-						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2)));
+						matrixStack.mulPose(Axis.XP.rotationDegrees(rotation.get(0)));
+						matrixStack.mulPose(Axis.YP.rotationDegrees(rotation.get(1)));
+						matrixStack.mulPose(Axis.ZP.rotationDegrees(rotation.get(2)));
 
 						List<Float> scale = tertiaryTransformData.scale();
 						matrixStack.scale(scale.get(0), scale.get(1), scale.get(2));
 
 						heldItemRenderer.renderItem(playerEntity, tertiaryAppleStack, transformationMode, matrixStack, orderedRenderCommandQueue, i);
-						matrixStack.pop();
+						matrixStack.popPose();
 					}
 
-					matrixStack.push();
-					this.getContextModel().body.applyTransform(matrixStack);
+					matrixStack.pushPose();
+					this.getParentModel().body.translateAndRotate(matrixStack);
 
 					// pivot point
 					float pivot = 0.0F;
 					matrixStack.translate(0, pivot, 0.125);
 
-					matrixStack.multiply((new Quaternionf())
+					matrixStack.mulPose((new Quaternionf())
 							.rotateY(-3.1415927F)
-							.rotateX(transformData.sway() * -(6.0F + armedEntityRenderState.field_53537 / 2.0F + armedEntityRenderState.field_53536) * 0.017453292F)
-							.rotateZ(-(armedEntityRenderState.field_53538 / 2.0F * 0.017453292F))
-							.rotateY((180.0F - armedEntityRenderState.field_53538 / 2.0F) * 0.017453292F)
+							.rotateX(transformData.sway() * -(6.0F + armedEntityRenderState.capeLean / 2.0F + armedEntityRenderState.capeFlap) * 0.017453292F)
+							.rotateZ(-(armedEntityRenderState.capeLean2 / 2.0F * 0.017453292F))
+							.rotateY((180.0F - armedEntityRenderState.capeLean2 / 2.0F) * 0.017453292F)
 					);
 
 					matrixStack.translate(0, 0.35, 0);
 
-					if (playerEntity.getEquippedStack(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
+					if (playerEntity.getItemBySlot(EquipmentSlot.CHEST) != ItemStack.EMPTY) {
 						matrixStack.translate(0, 0, 0.05F);
 					}
-					if (armedEntityRenderState.capeVisible && armedEntityRenderState.skinTextures.cape() != null) {
+					if (armedEntityRenderState.showCape && armedEntityRenderState.skin.cape() != null) {
 						matrixStack.translate(0, 0, 0.1);
 					}
 
 					if (flip) {
-						matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
+						matrixStack.mulPose(Axis.YP.rotationDegrees(180));
 					}
 
 					transformationMode = transformData.mode();
 
 					// Dynamic movement
-					if (playerEntity instanceof OtherClientPlayerEntity) {
+					if (playerEntity instanceof RemotePlayer) {
 						applyDynamicMovement(matrixStack, playerEntity, item);
-					} else if (playerEntity instanceof ClientPlayerEntity) {
+					} else if (playerEntity instanceof LocalPlayer) {
 						applyDynamicMovement(matrixStack, playerEntity, item);
 					}
 
@@ -211,14 +216,14 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					}
 
 					List<Float> rotation = transformData.rotation();
-					matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotation.get(0)));
+					matrixStack.mulPose(Axis.XP.rotationDegrees(rotation.get(0)));
 					if (flip) {
-						matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotation.getFirst() * -2));
+						matrixStack.mulPose(Axis.XP.rotationDegrees(rotation.getFirst() * -2));
 					}
-					matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.get(1)));
-					matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2)));
+					matrixStack.mulPose(Axis.YP.rotationDegrees(rotation.get(1)));
+					matrixStack.mulPose(Axis.ZP.rotationDegrees(rotation.get(2)));
 					if (right && (item instanceof BlockItem || transformData.noFlip())) {
-						matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.get(2) * -2));
+						matrixStack.mulPose(Axis.ZP.rotationDegrees(rotation.get(2) * -2));
 					}
 
 					List<Float> scale = transformData.scale();
@@ -227,30 +232,30 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 					// Render the item
 					heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, matrixStack, orderedRenderCommandQueue, i);
 
-					if (backSlotStack.hasEnchantments() && Math.random() > ((100 - CAConfig.enchantmentParticleChance) / 100.0F) && CAConfig.backslotParticles && !MinecraftClient.getInstance().isPaused()) {
+					if (backSlotStack.isEnchanted() && Math.random() > ((100 - CAConfig.enchantmentParticleChance) / 100.0F) && CAConfig.backslotParticles && !Minecraft.getInstance().isPaused()) {
 						for (int j = 0; j < 5; j++) {
-							Vec3d vec3d = CombatAmenities.matrixToVec(matrixStack);
+							Vec3 vec3d = CombatAmenities.matrixToVec(matrixStack);
 							double offsetX = 0.7 * (Math.random() - 0.5);
 							double offsetY = Math.random();
 							double offsetZ = 0.7 * (Math.random() - 0.5);
-							playerEntity.getEntityWorld().addParticleClient(
+							playerEntity.level().addParticle(
 									ParticleTypes.ENCHANT,
-									vec3d.getX() + offsetX,
-									vec3d.getY() + offsetY - 0.5,
-									vec3d.getZ() + offsetZ,
+									vec3d.x() + offsetX,
+									vec3d.y() + offsetY - 0.5,
+									vec3d.z() + offsetZ,
 									0, 0, 0
 							);
 						}
 					}
 
-					matrixStack.pop();
+					matrixStack.popPose();
 				}
 			}
 		}
 	}
 
-	private static Vec3d startTickPosition;
-	public static Vec3d playerVelocity = new Vec3d(0, 0, 0);
+	private static Vec3 startTickPosition;
+	public static Vec3 playerVelocity = new Vec3(0, 0, 0);
 
 	private boolean wasOnGroundLastTick = true;
 	private final Queue<Float> verticalVelocityHistory = new LinkedList<>();
@@ -259,7 +264,7 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 	private float jiggleDecay = 0.9F;
 	private float jiggleTimer = 0.0F;
 
-	private void applyDynamicMovement(MatrixStack matrixStack, PlayerEntity playerEntity, Item item) {
+	private void applyDynamicMovement(PoseStack matrixStack, Player playerEntity, Item item) {
 		int VELOCITY_HISTORY_SIZE = 5;
 		if (verticalVelocityHistory.size() >= VELOCITY_HISTORY_SIZE) {
 			verticalVelocityHistory.poll();
@@ -267,33 +272,33 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 			verticalVelocityHistory.poll();
 		}
 
-		if (playerEntity instanceof AbstractClientPlayerEntity abstractClientPlayerEntity) {
+		if (playerEntity instanceof AbstractClientPlayer abstractClientPlayerEntity) {
 
 			verticalVelocityHistory.offer((float) playerVelocity.y);
 
 			if (detectLanding(abstractClientPlayerEntity)) {
 				float landingVelocity = Math.abs(verticalVelocityHistory.peek() != null ? verticalVelocityHistory.peek() : 0.0F);
-				jiggleIntensity = MathHelper.clamp(landingVelocity * 10.0F, 5.0F, 50.0F);
-				jiggleDecay = 0.9F + Math.min(0.1F * (MinecraftClient.getInstance().getCurrentFps() / 140.0F - 1), 0.075F);
+				jiggleIntensity = Mth.clamp(landingVelocity * 10.0F, 5.0F, 50.0F);
+				jiggleDecay = 0.9F + Math.min(0.1F * (Minecraft.getInstance().getFps() / 140.0F - 1), 0.075F);
 				jiggleTimer = 0.0F;
 			}
 
 			if (jiggleIntensity > 0.1F) {
-				jiggleTimer += Math.max(0.4F - 0.25F * (MinecraftClient.getInstance().getCurrentFps() / 140.0F - 1), 0.1F);
+				jiggleTimer += Math.max(0.4F - 0.25F * (Minecraft.getInstance().getFps() / 140.0F - 1), 0.1F);
 				float oscillation = (float) Math.sin(jiggleTimer) * jiggleIntensity;
 				if (!(item instanceof BlockItem blockItem && blockItem.getBlock() instanceof BannerBlock)) {
-					matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(oscillation));
+					matrixStack.mulPose(Axis.ZP.rotationDegrees(oscillation));
 				}
 
 				jiggleIntensity *= jiggleDecay;
 			}
 
-			wasOnGroundLastTick = playerEntity.isOnGround();
+			wasOnGroundLastTick = playerEntity.onGround();
 		}
 	}
 
-	private boolean detectLanding(AbstractClientPlayerEntity playerEntity) {
-		if (playerEntity.isOnGround() && !wasOnGroundLastTick) {
+	private boolean detectLanding(AbstractClientPlayer playerEntity) {
+		if (playerEntity.onGround() && !wasOnGroundLastTick) {
 			for (float velocity : verticalVelocityHistory) {
 				if (velocity < 0.0F) {
 					return true;
@@ -303,12 +308,12 @@ public class BackSlotFeatureRenderer extends HeldItemFeatureRenderer<PlayerEntit
 		return false;
 	}
 
-	private void setVelocityFromPos(PlayerEntity player) {
+	private void setVelocityFromPos(Player player) {
 		if (startTickPosition == null) {
-			startTickPosition = player.getEntityPos();
+			startTickPosition = player.position();
 		}
 
-		Vec3d endTickPosition = player.getEntityPos();
+		Vec3 endTickPosition = player.position();
 		if (!startTickPosition.equals(endTickPosition)) playerVelocity = endTickPosition.subtract(startTickPosition);
 		startTickPosition = endTickPosition;
 	}

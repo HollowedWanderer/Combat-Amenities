@@ -1,21 +1,22 @@
 package net.hollowed.combatamenities.networking.slots.back;
 
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-
 import static net.hollowed.combatamenities.CombatAmenities.MOD_ID;
 
-public record BackslotPacketPayload(BlockPos blockPos) implements CustomPayload {
-    public static final Identifier BACKSLOT_PACKET_ID = Identifier.of(MOD_ID, "backslot_packet");
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.NotNull;
 
-    public static final CustomPayload.Id<BackslotPacketPayload> ID = new CustomPayload.Id<>(BACKSLOT_PACKET_ID);
-    public static final PacketCodec<RegistryByteBuf, BackslotPacketPayload> CODEC = PacketCodec.tuple(BlockPos.PACKET_CODEC, BackslotPacketPayload::blockPos, BackslotPacketPayload::new);
+public record BackslotPacketPayload(BlockPos blockPos) implements CustomPacketPayload {
+    public static final Identifier BACKSLOT_PACKET_ID = Identifier.fromNamespaceAndPath(MOD_ID, "backslot_packet");
+
+    public static final CustomPacketPayload.Type<@NotNull BackslotPacketPayload> ID = new CustomPacketPayload.Type<>(BACKSLOT_PACKET_ID);
+    public static final StreamCodec<RegistryFriendlyByteBuf, BackslotPacketPayload> CODEC = StreamCodec.composite(BlockPos.STREAM_CODEC, BackslotPacketPayload::blockPos, BackslotPacketPayload::new);
 
     @Override
-    public Id<? extends CustomPayload> getId() {
+    public @NotNull Type<? extends @NotNull CustomPacketPayload> type() {
         return ID;
     }
 }

@@ -2,7 +2,7 @@ package net.hollowed.combatamenities.util.json;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 
 public record ItemTransformData(
         String item,

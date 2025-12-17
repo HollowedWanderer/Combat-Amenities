@@ -4,18 +4,19 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.hollowed.combatamenities.networking.slots.SlotCreativeClientPacketPayload;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.registry.Registries;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -24,26 +25,26 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Environment(EnvType.CLIENT)
-@Mixin(CreativeInventoryScreen.class)
-public abstract class CACreativeInventoryScreenMixin extends HandledScreen<CreativeInventoryScreen.CreativeScreenHandler> {
+@Mixin(CreativeModeInventoryScreen.class)
+public abstract class CACreativeInventoryScreenMixin extends AbstractContainerScreen<CreativeModeInventoryScreen.@NotNull ItemPickerMenu> {
 
     @Unique
-    private static final Identifier SLOT_TEXTURE = Identifier.of("textures/gui/sprites/container/slot.png");
+    private static final Identifier SLOT_TEXTURE = Identifier.parse("textures/gui/sprites/container/slot.png");
 
-    @Shadow private static ItemGroup selectedTab;
+    @Shadow private static CreativeModeTab selectedTab;
 
-    @Shadow public abstract boolean isInventoryTabSelected();
+    @Shadow public abstract boolean isInventoryOpen();
 
-    public CACreativeInventoryScreenMixin(CreativeInventoryScreen.CreativeScreenHandler handler, PlayerInventory inventory, Text title) {
+    public CACreativeInventoryScreenMixin(CreativeModeInventoryScreen.ItemPickerMenu handler, Inventory inventory, Component title) {
         super(handler, inventory, title);
     }
 
     @SuppressWarnings("all")
-    @Inject(method = "setSelectedTab", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/ingame/CreativeInventoryScreen;deleteItemSlot:Lnet/minecraft/screen/slot/Slot;", shift = At.Shift.BEFORE))
-    private void setSelectedTabMixin(ItemGroup group, CallbackInfo info) {
-        for (int i = 0; i < this.handler.slots.size(); ++i) {
+    @Inject(method = "selectTab", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;destroyItemSlot:Lnet/minecraft/world/inventory/Slot;", shift = At.Shift.BEFORE))
+    private void setSelectedTabMixin(CreativeModeTab group, CallbackInfo info) {
+        for (int i = 0; i < this.menu.slots.size(); ++i) {
             if (i == 46) {  // Modify slot 46
-                Slot slot = this.handler.slots.get(i);
+                Slot slot = this.menu.slots.get(i);
 
                 // Use the accessor to modify the final x and y fields
                 if (slot instanceof SlotAccessor accessor) {
@@ -52,7 +53,7 @@ public abstract class CACreativeInventoryScreenMixin extends HandledScreen<Creat
                 }
             }
             if (i == 47) {  // Modify slot 46
-                Slot slot = this.handler.slots.get(i);
+                Slot slot = this.menu.slots.get(i);
 
                 // Use the accessor to modify the final x and y fields
                 if (slot instanceof SlotAccessor accessor) {
@@ -63,35 +64,35 @@ public abstract class CACreativeInventoryScreenMixin extends HandledScreen<Creat
         }
     }
 
-    @Inject(method = "drawBackground", at = @At("TAIL"))
-    public void render(DrawContext context, float delta, int mouseX, int mouseY, CallbackInfo ci) {
-        if (this.isInventoryTabSelected()) {
-            context.drawTexture(
-                    RenderPipelines.GUI_OPAQUE_TEX_BG,
+    @Inject(method = "renderBg", at = @At("TAIL"))
+    public void render(GuiGraphics context, float delta, int mouseX, int mouseY, CallbackInfo ci) {
+        if (this.isInventoryOpen()) {
+            context.blit(
+                    RenderPipelines.GUI_OPAQUE_TEXTURED_BACKGROUND,
                     SLOT_TEXTURE,
-                    this.x + 126, this.y + 19,
+                    this.leftPos + 126, this.topPos + 19,
                     0, 0, 18, 18, 18, 18 // Texture coordinates and dimensions
             );
-            context.drawTexture(
-                    RenderPipelines.GUI_OPAQUE_TEX_BG,
+            context.blit(
+                    RenderPipelines.GUI_OPAQUE_TEXTURED_BACKGROUND,
                     SLOT_TEXTURE,
-                    this.x + 144, this.y + 19,
+                    this.leftPos + 144, this.topPos + 19,
                     0, 0, 18, 18, 18, 18 // Texture coordinates and dimensions
             );
         }
     }
 
-    @Inject(method = "onMouseClick", at = @At("TAIL"))
-    private void onSlotClickMixin(Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo ci) {
-        ItemGroup inventoryGroup = Registries.ITEM_GROUP.get(ItemGroups.INVENTORY);
+    @Inject(method = "slotClicked", at = @At("TAIL"))
+    private void onSlotClickMixin(Slot slot, int slotId, int button, ClickType actionType, CallbackInfo ci) {
+        CreativeModeTab inventoryGroup = BuiltInRegistries.CREATIVE_MODE_TAB.getValue(CreativeModeTabs.INVENTORY);
 
         if (selectedTab.equals(inventoryGroup)) {
-            for (int i = 0; i < this.handler.slots.size(); ++i) {
+            for (int i = 0; i < this.menu.slots.size(); ++i) {
                 if (i == 46) {  // Modify slot 46
-                    ClientPlayNetworking.send(new SlotCreativeClientPacketPayload(41, this.handler.slots.get(i).getStack()));
+                    ClientPlayNetworking.send(new SlotCreativeClientPacketPayload(41, this.menu.slots.get(i).getItem()));
                 }
                 if (i == 47) {  // Modify slot 47
-                    ClientPlayNetworking.send(new SlotCreativeClientPacketPayload(42, this.handler.slots.get(i).getStack()));
+                    ClientPlayNetworking.send(new SlotCreativeClientPacketPayload(42, this.menu.slots.get(i).getItem()));
                 }
             }
         }

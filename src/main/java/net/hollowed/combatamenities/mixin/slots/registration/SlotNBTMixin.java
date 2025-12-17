@@ -2,12 +2,12 @@ package net.hollowed.combatamenities.mixin.slots.registration;
 
 import net.hollowed.combatamenities.util.entities.EntityEquipment;
 import net.hollowed.combatamenities.util.interfaces.EquipmentInterface;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,19 +20,19 @@ public abstract class SlotNBTMixin extends Entity implements EquipmentInterface 
     @Unique
     protected final EntityEquipment extraEquipment = new EntityEquipment();
 
-    public SlotNBTMixin(EntityType<?> type, World world) {
+    public SlotNBTMixin(EntityType<?> type, Level world) {
         super(type, world);
     }
 
-    @Inject(method = "writeCustomData", at = @At("HEAD"))
-    public void writeNBT(WriteView view, CallbackInfo ci) {
+    @Inject(method = "addAdditionalSaveData", at = @At("HEAD"))
+    public void writeNBT(ValueOutput view, CallbackInfo ci) {
         if (!this.extraEquipment.isEmpty()) {
-            view.put("extraEquipment", EntityEquipment.CODEC, this.extraEquipment);
+            view.store("extraEquipment", EntityEquipment.CODEC, this.extraEquipment);
         }
     }
 
-    @Inject(method = "readCustomData", at = @At("HEAD"))
-    public void readNBT(ReadView view, CallbackInfo ci) {
+    @Inject(method = "readAdditionalSaveData", at = @At("HEAD"))
+    public void readNBT(ValueInput view, CallbackInfo ci) {
         this.extraEquipment.copyFrom(view.read("extraEquipment", EntityEquipment.CODEC).orElseGet(EntityEquipment::new));
     }
 

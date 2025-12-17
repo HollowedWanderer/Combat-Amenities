@@ -1,18 +1,18 @@
 package net.hollowed.combatamenities.util.items;
 
-import net.minecraft.component.type.ItemEnchantmentsComponent;
-import net.minecraft.item.ItemStack;
+import static net.minecraft.core.component.DataComponents.ENCHANTMENTS;
 
-import static net.minecraft.component.DataComponentTypes.ENCHANTMENTS;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 
 @SuppressWarnings("unused")
 public class EnchantmentListener {
 
     public static boolean hasEnchantment(ItemStack stack, String enchantKey) {
-        final var enchantments = stack.getOrDefault(ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT).getEnchantmentEntries();
+        final var enchantments = stack.getOrDefault(ENCHANTMENTS, ItemEnchantments.EMPTY).entrySet();
 
         for (final var entry : enchantments) {
-            String enchant = entry.getKey().getIdAsString();
+            String enchant = entry.getKey().getRegisteredName();
 
             if (enchant.contains(enchantKey)) {
                 return true;

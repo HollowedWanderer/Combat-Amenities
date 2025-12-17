@@ -2,31 +2,31 @@ package net.hollowed.combatamenities.util.items;
 
 import com.mojang.serialization.Codec;
 import net.hollowed.combatamenities.CombatAmenities;
-import net.minecraft.component.ComponentType;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 
 public class CAComponents {
-    public static final ComponentType<Integer> INTEGER_PROPERTY = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of(CombatAmenities.MOD_ID, "integer_property"),
-            ComponentType.<Integer>builder()
-                    .codec(Codec.INT)
+    public static final DataComponentType<Integer> INTEGER_PROPERTY = Registry.register(
+            BuiltInRegistries.DATA_COMPONENT_TYPE,
+            Identifier.fromNamespaceAndPath(CombatAmenities.MOD_ID, "integer_property"),
+            DataComponentType.<Integer>builder()
+                    .persistent(Codec.INT)
                     .build()
     );
-    public static final ComponentType<Boolean> BOOLEAN_PROPERTY = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of(CombatAmenities.MOD_ID, "boolean_property"),
-            ComponentType.<Boolean>builder()
-                    .codec(Codec.BOOL)
+    public static final DataComponentType<Boolean> BOOLEAN_PROPERTY = Registry.register(
+            BuiltInRegistries.DATA_COMPONENT_TYPE,
+            Identifier.fromNamespaceAndPath(CombatAmenities.MOD_ID, "boolean_property"),
+            DataComponentType.<Boolean>builder()
+                    .persistent(Codec.BOOL)
                     .build()
     );
-    public static final ComponentType<String> STRING_PROPERTY = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of(CombatAmenities.MOD_ID, "string_property"),
-            ComponentType.<String>builder()
-                    .codec(Codec.STRING)
+    public static final DataComponentType<String> STRING_PROPERTY = Registry.register(
+            BuiltInRegistries.DATA_COMPONENT_TYPE,
+            Identifier.fromNamespaceAndPath(CombatAmenities.MOD_ID, "string_property"),
+            DataComponentType.<String>builder()
+                    .persistent(Codec.STRING)
                     .build()
     );
 

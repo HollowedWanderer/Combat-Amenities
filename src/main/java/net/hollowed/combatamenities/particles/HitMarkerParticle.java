@@ -2,56 +2,57 @@ package net.hollowed.combatamenities.particles;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.SimpleParticleType;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.util.RandomSource;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
-public class HitMarkerParticle extends BillboardParticle {
-	private final SpriteProvider spriteProvider;
+public class HitMarkerParticle extends SingleQuadParticle {
+	private final SpriteSet spriteProvider;
 
-	HitMarkerParticle(ClientWorld world, double x, double y, double z, SpriteProvider spriteProvider) {
-		super(world, x, y, z, 0.0, 0.0, 0.0, spriteProvider.getFirst());
+	HitMarkerParticle(ClientLevel world, double x, double y, double z, SpriteSet spriteProvider) {
+		super(world, x, y, z, 0.0, 0.0, 0.0, spriteProvider.first());
 		this.spriteProvider = spriteProvider;
-		this.maxAge = 4;
-		this.scale /= 2.0F;
-		this.updateSprite(spriteProvider);
+		this.lifetime = 4;
+		this.quadSize /= 2.0F;
+		this.setSpriteFromAge(spriteProvider);
 	}
 
 	@Override
-	public int getBrightness(float tint) {
+	public int getLightColor(float tint) {
 		return 15728880;
 	}
 
 	@Override
 	public void tick() {
-		this.lastX = this.x;
-		this.lastY = this.y;
-		this.lastZ = this.z;
-		if (this.age++ >= this.maxAge) {
-			this.markDead();
+		this.xo = this.x;
+		this.yo = this.y;
+		this.zo = this.z;
+		if (this.age++ >= this.lifetime) {
+			this.remove();
 		} else {
-			this.updateSprite(this.spriteProvider);
+			this.setSpriteFromAge(this.spriteProvider);
 		}
 	}
 
 	@Override
-	protected RenderType getRenderType() {
-		return RenderType.PARTICLE_ATLAS_OPAQUE;
+	protected @NotNull Layer getLayer() {
+		return Layer.OPAQUE;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Factory implements ParticleFactory<SimpleParticleType> {
-		private final SpriteProvider spriteProvider;
+	public static class Factory implements ParticleProvider<@NotNull SimpleParticleType> {
+		private final SpriteSet spriteProvider;
 
-		public Factory(SpriteProvider spriteProvider) {
+		public Factory(SpriteSet spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
 		@Override
-		public @Nullable Particle createParticle(SimpleParticleType parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, Random random) {
+		public @Nullable Particle createParticle(SimpleParticleType parameters, @NotNull ClientLevel world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, @NotNull RandomSource random) {
 			return new HitMarkerParticle(world, x, y, z, this.spriteProvider);
 		}
 	}

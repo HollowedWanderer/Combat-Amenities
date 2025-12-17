@@ -4,50 +4,51 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.util.interfaces.ArrowEntityRenderStateAccess;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.command.OrderedRenderCommandQueue;
-import net.minecraft.client.render.entity.ProjectileEntityRenderer;
-import net.minecraft.client.render.entity.state.ProjectileEntityRenderState;
-import net.minecraft.client.render.item.ItemRenderState;
-import net.minecraft.client.render.state.CameraRenderState;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.PotionContentsComponent;
-import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.item.*;
-import net.minecraft.util.math.RotationAxis;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.ArrowRenderer;
+import net.minecraft.client.renderer.entity.state.ArrowRenderState;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.Arrow;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import java.util.List;
 import java.util.Optional;
 
-@Mixin(ProjectileEntityRenderer.class)
+@Mixin(ArrowRenderer.class)
 @Environment(EnvType.CLIENT)
-public abstract class ProjectileEntityRendererMixin<T extends PersistentProjectileEntity> {
+public abstract class ProjectileEntityRendererMixin<T extends AbstractArrow> {
 
-    @Inject(method = "updateRenderState(Lnet/minecraft/entity/projectile/PersistentProjectileEntity;Lnet/minecraft/client/render/entity/state/ProjectileEntityRenderState;F)V",
+    @Inject(method = "extractRenderState(Lnet/minecraft/world/entity/projectile/arrow/AbstractArrow;Lnet/minecraft/client/renderer/entity/state/ArrowRenderState;F)V",
             at = @At("HEAD"))
-    public void updateRenderState(T persistentProjectileEntity, ProjectileEntityRenderState projectileEntityRenderState, float f, CallbackInfo ci) {
+    public void updateRenderState(T persistentProjectileEntity, ArrowRenderState projectileEntityRenderState, float f, CallbackInfo ci) {
 
         if (CAConfig.itemArrows) {
             if (projectileEntityRenderState instanceof ArrowEntityRenderStateAccess access) {
 
-                ItemStack stack = persistentProjectileEntity.getItemStack();
-                Vec3d look = new Vec3d(0, 0, 0);
+                ItemStack stack = persistentProjectileEntity.getPickupItemStackOrigin();
+                Vec3 look = new Vec3(0, 0, 0);
 
                 // Default item stack to what the entity provides
-                if (persistentProjectileEntity instanceof ArrowEntity arrowEntity) {
+                if (persistentProjectileEntity instanceof Arrow arrowEntity) {
                     if (arrowEntity.getColor() != -1) {
                         stack = new ItemStack(Items.TIPPED_ARROW);
-                        stack.set(DataComponentTypes.POTION_CONTENTS, new PotionContentsComponent(Optional.empty(), Optional.of(arrowEntity.getColor()), List.of(), Optional.empty()));
+                        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.of(arrowEntity.getColor()), List.of(), Optional.empty()));
                     }
-                    look = arrowEntity.getRotationVec(0);
+                    look = arrowEntity.getViewVector(0);
                 }
 
                 // Pass the dynamically constructed item stack
@@ -58,17 +59,17 @@ public abstract class ProjectileEntityRendererMixin<T extends PersistentProjecti
     }
 
     @Inject(
-        method = "render(Lnet/minecraft/client/render/entity/state/ProjectileEntityRenderState;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/command/OrderedRenderCommandQueue;Lnet/minecraft/client/render/state/CameraRenderState;)V",
+        method = "submit(Lnet/minecraft/client/renderer/entity/state/ArrowRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V",
         at = @At("HEAD"),
         cancellable = true
     )
     public void renderWithItem(
-            ProjectileEntityRenderState projectileEntityRenderState, MatrixStack matrixStack, OrderedRenderCommandQueue orderedRenderCommandQueue, CameraRenderState cameraRenderState, CallbackInfo ci       // Use Object because the generic types are not accessible directly
+            ArrowRenderState projectileEntityRenderState, PoseStack matrixStack, SubmitNodeCollector orderedRenderCommandQueue, CameraRenderState cameraRenderState, CallbackInfo ci       // Use Object because the generic types are not accessible directly
     ) {
         if (CAConfig.itemArrows) {
             if (projectileEntityRenderState instanceof ArrowEntityRenderStateAccess access) {
                 // Push the matrix stack for transformations
-                matrixStack.push();
+                matrixStack.pushPose();
 
                 float multiplier = 0.25F;
 
@@ -76,16 +77,16 @@ public abstract class ProjectileEntityRendererMixin<T extends PersistentProjecti
                 matrixStack.translate(access.combat_Amenities$getLook().multiply(multiplier, multiplier, -multiplier));
 
                 // Apply rotations for the projectile's orientation
-                matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(projectileEntityRenderState.yaw - 90.0F));
-                matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(projectileEntityRenderState.pitch - 45.0F));
+                matrixStack.mulPose(Axis.YP.rotationDegrees(projectileEntityRenderState.yRot - 90.0F));
+                matrixStack.mulPose(Axis.ZP.rotationDegrees(projectileEntityRenderState.xRot - 45.0F));
 
                 ItemStack itemStack = access.combat_Amenities$getItemStack();
-                ItemRenderState stackRenderState = new ItemRenderState();
-                MinecraftClient.getInstance().getItemModelManager().update(stackRenderState, itemStack, ItemDisplayContext.NONE, MinecraftClient.getInstance().world, null, 1);
-                stackRenderState.render(matrixStack, orderedRenderCommandQueue, projectileEntityRenderState.light, OverlayTexture.DEFAULT_UV, projectileEntityRenderState.outlineColor);
+                ItemStackRenderState stackRenderState = new ItemStackRenderState();
+                Minecraft.getInstance().getItemModelResolver().appendItemLayers(stackRenderState, itemStack, ItemDisplayContext.NONE, Minecraft.getInstance().level, null, 1);
+                stackRenderState.submit(matrixStack, orderedRenderCommandQueue, projectileEntityRenderState.lightCoords, OverlayTexture.NO_OVERLAY, projectileEntityRenderState.outlineColor);
 
                 // Pop the matrix stack
-                matrixStack.pop();
+                matrixStack.popPose();
 
                 // Cancel the original rendering
                 ci.cancel();

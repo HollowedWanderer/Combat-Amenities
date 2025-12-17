@@ -1,15 +1,16 @@
 package net.hollowed.combatamenities.mixin.tweaks.fire_charge;
 
 import net.hollowed.combatamenities.config.CAConfig;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.SmallFireballEntity;
-import net.minecraft.item.FireChargeItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball;
+import net.minecraft.world.item.FireChargeItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,30 +20,30 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(FireChargeItem.class)
 public abstract class FireChargeItemMixin extends Item {
 
-    public FireChargeItemMixin(Settings settings) {
+    public FireChargeItemMixin(Properties settings) {
         super(settings);
     }
 
     @Unique
-    public ActionResult use(World world, PlayerEntity player, Hand hand) {
-        if (!world.isClient()) {
+    public @NotNull InteractionResult use(Level world, @NotNull Player player, @NotNull InteractionHand hand) {
+        if (!world.isClientSide()) {
             if (CAConfig.throwableFirecharge) {
-                world.syncWorldEvent(null, 1018, player.getBlockPos(), 0);
-                ItemStack stack = player.getStackInHand(hand);
-                player.swingHand(hand, true);
-                SmallFireballEntity fireball = new SmallFireballEntity(player.getEntityWorld(), player, player.getRotationVec(1.0F).normalize().multiply(2));
-                fireball.setPosition(fireball.getX(), player.getEyeY(), fireball.getZ());
-                world.spawnEntity(fireball);
-                stack.decrementUnlessCreative(1, player);
-                player.getItemCooldownManager().set(stack, 6);
-                return ActionResult.SUCCESS;
+                world.levelEvent(null, 1018, player.blockPosition(), 0);
+                ItemStack stack = player.getItemInHand(hand);
+                player.swing(hand, true);
+                SmallFireball fireball = new SmallFireball(player.level(), player, player.getViewVector(1.0F).normalize().scale(2));
+                fireball.setPos(fireball.getX(), player.getEyeY(), fireball.getZ());
+                world.addFreshEntity(fireball);
+                stack.consume(1, player);
+                player.getCooldowns().addCooldown(stack, 6);
+                return InteractionResult.SUCCESS;
             }
         }
-        return ActionResult.PASS;
+        return InteractionResult.PASS;
     }
 
-    @Inject(method = "useOnBlock", at = @At("HEAD"), cancellable = true)
-    private void useOnBlock(ItemUsageContext context, CallbackInfoReturnable<ActionResult> cir) {
-        cir.setReturnValue(ActionResult.PASS);
+    @Inject(method = "useOn", at = @At("HEAD"), cancellable = true)
+    private void useOnBlock(UseOnContext context, CallbackInfoReturnable<InteractionResult> cir) {
+        cir.setReturnValue(InteractionResult.PASS);
     }
 }

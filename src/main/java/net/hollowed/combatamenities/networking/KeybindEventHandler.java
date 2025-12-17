@@ -17,8 +17,8 @@ public class KeybindEventHandler {
 
     public static void register() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            boolean isKeyPressed = CAKeyBindings.backSlotBinding.isPressed();
-            boolean isKeyPressed1 = CAKeyBindings.beltSlotBinding.isPressed();
+            boolean isKeyPressed = CAKeyBindings.backSlotBinding.isDown();
+            boolean isKeyPressed1 = CAKeyBindings.beltSlotBinding.isDown();
 
             // Check if the key is pressed and if enough time has passed since the last key press
             if (isKeyPressed && !wasBackSlotKeyPressed && client.player != null) {
@@ -27,7 +27,7 @@ public class KeybindEventHandler {
                 // Only trigger if cooldown period has passed
                 if (currentTime - lastKeyPressTime >= COOLDOWN_TIME_MS) {
                     // Send the packet to the server to handle the back slot key press
-                    ClientPlayNetworking.send(new BackslotPacketPayload(client.player.getBlockPos()));
+                    ClientPlayNetworking.send(new BackslotPacketPayload(client.player.blockPosition()));
 
                     // Update last key press time
                     lastKeyPressTime = currentTime;
@@ -41,7 +41,7 @@ public class KeybindEventHandler {
                 // Only trigger if cooldown period has passed
                 if (currentTime - lastKeyPressTime1 >= COOLDOWN_TIME_MS) {
                     // Send the packet to the server to handle the back slot key press
-                    ClientPlayNetworking.send(new BeltslotPacketPayload(client.player.getBlockPos()));
+                    ClientPlayNetworking.send(new BeltslotPacketPayload(client.player.blockPosition()));
 
                     // Update last key press time
                     lastKeyPressTime1 = currentTime;

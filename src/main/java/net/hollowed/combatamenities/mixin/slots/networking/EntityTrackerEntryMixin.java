@@ -3,13 +3,15 @@ package net.hollowed.combatamenities.mixin.slots.networking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.hollowed.combatamenities.networking.slots.SlotClientPacketPayload;
 import net.hollowed.combatamenities.networking.slots.SoundPacketPayload;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
-import net.minecraft.server.network.EntityTrackerEntry;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.server.level.ServerEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,14 +22,14 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
 
-@Mixin(EntityTrackerEntry.class)
+@Mixin(ServerEntity.class)
 public class EntityTrackerEntryMixin {
     @Mutable
     @Final
     @Shadow
     private final Entity entity;
     @Unique
-    private static final HashMap<UUID, Vec3d> previousPositions = new HashMap<>();
+    private static final HashMap<UUID, Vec3> previousPositions = new HashMap<>();
     @Unique
     private final Queue<Float> verticalVelocityHistory = new LinkedList<>();
     @Unique
@@ -37,9 +39,9 @@ public class EntityTrackerEntryMixin {
         this.entity = entity;
     }
 
-    @Inject(method = "startTracking", at = @At(value = "TAIL"))
-    public void startTrackingMixin(ServerPlayerEntity serverPlayer, CallbackInfo info) {
-        if (entity instanceof ServerPlayerEntity player) {
+    @Inject(method = "addPairing", at = @At(value = "TAIL"))
+    public void startTrackingMixin(ServerPlayer serverPlayer, CallbackInfo info) {
+        if (entity instanceof ServerPlayer player) {
             // Send the back slot item from the player to the new server player
             sendBackSlotUpdate(serverPlayer, player);
             // Send the back slot item from the server player to the player itself
@@ -47,18 +49,18 @@ public class EntityTrackerEntryMixin {
         }
     }
 
-    @Inject(method = "tick", at = @At(value = "HEAD"))
+    @Inject(method = "sendChanges", at = @At(value = "HEAD"))
     public void onTick(CallbackInfo info) {
-        if (entity instanceof PlayerEntity player) {
-            UUID playerId = player.getUuid();
+        if (entity instanceof Player player) {
+            UUID playerId = player.getUUID();
 
-            Vec3d currentPosition = player.getEntityPos();
-            Vec3d previousPosition = previousPositions.getOrDefault(playerId, currentPosition);
-            Vec3d velocity = currentPosition.subtract(previousPosition);
+            Vec3 currentPosition = player.position();
+            Vec3 previousPosition = previousPositions.getOrDefault(playerId, currentPosition);
+            Vec3 velocity = currentPosition.subtract(previousPosition);
 
-            Item backStack = player.getInventory().getStack(41).getItem();
+            Item backStack = player.getInventory().getItem(41).getItem();
 
-            if (!(backStack instanceof BlockItem) && player.getInventory().getStack(41) != ItemStack.EMPTY) {
+            if (!(backStack instanceof BlockItem) && player.getInventory().getItem(41) != ItemStack.EMPTY) {
 
                 // Landing detection
                 boolean isLanding = detectLanding(player);
@@ -76,25 +78,25 @@ public class EntityTrackerEntryMixin {
 
             // Update previous position
             previousPositions.put(playerId, currentPosition);
-            wasOnGroundLastTick = player.isOnGround();
+            wasOnGroundLastTick = player.onGround();
         }
     }
 
     @Unique
-    private void sendBackSlotUpdate(ServerPlayerEntity recipient, ServerPlayerEntity sourcePlayer) {
-        ItemStack backSlotItem = sourcePlayer.getInventory().getStack(41);
+    private void sendBackSlotUpdate(ServerPlayer recipient, ServerPlayer sourcePlayer) {
+        ItemStack backSlotItem = sourcePlayer.getInventory().getItem(41);
 
         // Send the back slot item (or an empty item stack if it's empty)
         ServerPlayNetworking.send(recipient,
                 new SlotClientPacketPayload(sourcePlayer.getId(), 41, backSlotItem.isEmpty() ? ItemStack.EMPTY : backSlotItem));
         ServerPlayNetworking.send(recipient,
-                new SlotClientPacketPayload(sourcePlayer.getId(), 42, sourcePlayer.getInventory().getStack(42).isEmpty() ? ItemStack.EMPTY : sourcePlayer.getInventory().getStack(42)));
+                new SlotClientPacketPayload(sourcePlayer.getId(), 42, sourcePlayer.getInventory().getItem(42).isEmpty() ? ItemStack.EMPTY : sourcePlayer.getInventory().getItem(42)));
     }
 
     // Detect landing based on velocity history
     @Unique
-    private boolean detectLanding(PlayerEntity playerEntity) {
-        if (playerEntity.isOnGround() && !wasOnGroundLastTick) {
+    private boolean detectLanding(Player playerEntity) {
+        if (playerEntity.onGround() && !wasOnGroundLastTick) {
             // Check if recent velocities indicate falling
             for (float velocity : verticalVelocityHistory) {
                 if (velocity < -0.1F) { // Threshold for downward motion
@@ -107,14 +109,14 @@ public class EntityTrackerEntryMixin {
 
     // Play landing sound with volume based on vertical velocity
     @Unique
-    private void playLandingSound(PlayerEntity playerEntity, double verticalVelocity) {
+    private void playLandingSound(Player playerEntity, double verticalVelocity) {
         // Calculate volume based on velocity
-        float volume = MathHelper.clamp((float) (-verticalVelocity / 2.0), 0.1F, 1.0F);
+        float volume = Mth.clamp((float) (-verticalVelocity / 2.0), 0.1F, 1.0F);
 
-        if (playerEntity instanceof ServerPlayerEntity serverPlayer) {
+        if (playerEntity instanceof ServerPlayer serverPlayer) {
             // Play the sound with the calculated volume
-            for (ServerPlayerEntity player : serverPlayer.getEntityWorld().getPlayers()) {
-                ServerPlayNetworking.send(player, new SoundPacketPayload(0, playerEntity.getEntityPos(), false, volume, 1.0F, 0, playerEntity.getInventory().getStack(41)));
+            for (ServerPlayer player : serverPlayer.level().players()) {
+                ServerPlayNetworking.send(player, new SoundPacketPayload(0, playerEntity.position(), false, volume, 1.0F, 0, playerEntity.getInventory().getItem(41)));
             }
         }
     }

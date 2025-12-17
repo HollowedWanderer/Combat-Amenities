@@ -2,15 +2,16 @@ package net.hollowed.combatamenities.mixin.tweaks.trident;
 
 import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.util.interfaces.TridentOwnerSetter;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.projectile.TridentEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.TridentItem;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.arrow.ThrownTrident;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TridentItem;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,29 +26,29 @@ public class TridentItemMixin {
     private int getTheFuckingGodDamnSlot = -1;
 
     @Redirect(
-            method = "onStoppedUsing",
+            method = "releaseUsing",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/projectile/ProjectileEntity;spawnWithVelocity(Lnet/minecraft/entity/projectile/ProjectileEntity$ProjectileCreator;Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;FFF)Lnet/minecraft/entity/projectile/ProjectileEntity;"
+                    target = "Lnet/minecraft/world/entity/projectile/Projectile;spawnProjectileFromRotation(Lnet/minecraft/world/entity/projectile/Projectile$ProjectileFactory;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;FFF)Lnet/minecraft/world/entity/projectile/Projectile;"
             )
     )
-    private ProjectileEntity modifyTridentEntity(
-            ProjectileEntity.ProjectileCreator<TridentEntity> creator, ServerWorld world, ItemStack projectileStack, LivingEntity shooter, float roll, float power, float divergence
+    private Projectile modifyTridentEntity(
+            Projectile.ProjectileFactory<@NotNull ThrownTrident> creator, ServerLevel world, ItemStack projectileStack, LivingEntity shooter, float roll, float power, float divergence
     ) {
-        ProjectileEntity entity = creator.create(world, shooter, projectileStack);
+        Projectile entity = creator.create(world, shooter, projectileStack);
         if (entity instanceof TridentOwnerSetter trident && CAConfig.correctTridentReturn) {
             trident.combat_Amenities$setInt(this.getTheFuckingGodDamnSlot);
         }
 
-        return ProjectileEntity.spawnWithVelocity((w, s, u) -> entity, world, projectileStack, shooter, roll, power, divergence);
+        return Projectile.spawnProjectileFromRotation((w, s, u) -> entity, world, projectileStack, shooter, roll, power, divergence);
     }
 
-    @Inject(method = "onStoppedUsing", at = @At("HEAD"))
-    public void stopUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks, CallbackInfoReturnable<Boolean> cir) {
-        if (user instanceof PlayerEntity player) {
-            PlayerInventory inventory = player.getInventory();
-            for (int i = 0; i < inventory.size(); i++) {
-                ItemStack itemStack = inventory.getStack(i);
+    @Inject(method = "releaseUsing", at = @At("HEAD"))
+    public void stopUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks, CallbackInfoReturnable<Boolean> cir) {
+        if (user instanceof Player player) {
+            Inventory inventory = player.getInventory();
+            for (int i = 0; i < inventory.getContainerSize(); i++) {
+                ItemStack itemStack = inventory.getItem(i);
                 if (itemStack.equals(stack)) {
                     this.getTheFuckingGodDamnSlot = i;
                 }

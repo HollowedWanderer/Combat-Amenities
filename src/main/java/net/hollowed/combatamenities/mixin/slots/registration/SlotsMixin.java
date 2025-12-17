@@ -3,33 +3,34 @@ package net.hollowed.combatamenities.mixin.slots.registration;
 import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.util.json.ItemTransformData;
 import net.hollowed.combatamenities.util.json.ItemTransformResourceReloadListener;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.screen.AbstractRecipeScreenHandler;
-import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.RecipeBookMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(PlayerScreenHandler.class)
-public abstract class SlotsMixin extends AbstractRecipeScreenHandler {
+@Mixin(InventoryMenu.class)
+public abstract class SlotsMixin extends RecipeBookMenu {
 
-    protected SlotsMixin(ScreenHandlerType<?> screenHandlerType, int i) {
+    protected SlotsMixin(MenuType<?> screenHandlerType, int i) {
         super(screenHandlerType, i);
     }
 
-    @Inject(method = "<init>(Lnet/minecraft/entity/player/PlayerInventory;ZLnet/minecraft/entity/player/PlayerEntity;)V", at = @At("RETURN"))
-    private void addBackSlot(PlayerInventory inventory, boolean onServer, PlayerEntity owner, CallbackInfo ci) {
+    @Inject(method = "<init>(Lnet/minecraft/world/entity/player/Inventory;ZLnet/minecraft/world/entity/player/Player;)V", at = @At("RETURN"))
+    private void addBackSlot(Inventory inventory, boolean onServer, Player owner, CallbackInfo ci) {
         // Determine slot position based on context
         int xPos = 77;
         int yPos = 8;
@@ -40,56 +41,57 @@ public abstract class SlotsMixin extends AbstractRecipeScreenHandler {
         // Add BackSlot at determined position
         this.addSlot(new Slot(inventory, 41, xPos, yPos) {
             @Override
-            public Identifier getBackgroundSprite() {
-                return Identifier.ofVanilla("backslot_overlay");
+            public Identifier getNoItemIcon() {
+                return Identifier.withDefaultNamespace("backslot_overlay");
             }
 
             @Override
-            public ItemStack takeStack(int amount) {
-                ItemStack stack = super.takeStack(amount);
+            public @NotNull ItemStack remove(int amount) {
+                ItemStack stack = super.remove(amount);
                 if (stack.isEmpty()) {
-                    this.setStack(ItemStack.EMPTY);
+                    this.setByPlayer(ItemStack.EMPTY);
                 }
                 return stack;
             }
 
             @Override
-            public void setStack(ItemStack stack) {
+            public void setByPlayer(@NotNull ItemStack stack) {
                 playSound(owner, stack);
-                super.setStack(stack);
+                super.setByPlayer(stack);
             }
         });
 
         // Add Belt Slot at determined position
         this.addSlot(new Slot(inventory, 42, xPos1, yPos1) {
             @Override
-            public Identifier getBackgroundSprite() {
-                return Identifier.ofVanilla("beltslot_overlay");
+            public Identifier getNoItemIcon() {
+                return Identifier.withDefaultNamespace("beltslot_overlay");
             }
 
             @Override
-            public ItemStack takeStack(int amount) {
-                ItemStack stack = super.takeStack(amount);
+            public @NotNull ItemStack remove(int amount) {
+                ItemStack stack = super.remove(amount);
                 if (stack.isEmpty()) {
-                    this.setStack(ItemStack.EMPTY);
+                    this.setByPlayer(ItemStack.EMPTY);
                 }
                 return stack;
             }
 
             @Override
-            public void setStack(ItemStack stack) {
+            public void setByPlayer(@NotNull ItemStack stack) {
                 playSound(owner, stack);
-                super.setStack(stack);
+                super.setByPlayer(stack);
             }
         });
     }
 
     @Unique
     private void playSound(LivingEntity entity, ItemStack stack) {
-        ItemTransformData data = ItemTransformResourceReloadListener.getTransform(Registries.ITEM.getId(stack.getItem()));
-        SoundEvent sound = Registries.SOUND_EVENT.get(data.sheatheId());
+        ItemTransformData data = ItemTransformResourceReloadListener.getTransform(BuiltInRegistries.ITEM.getKey(stack.getItem()));
+        SoundEvent sound = BuiltInRegistries.SOUND_EVENT.getValue(data.sheatheId());
 
-        entity.getEntityWorld().playSound(entity, entity.getX(), entity.getY(), entity.getZ(), sound, SoundCategory.PLAYERS, CAConfig.backslotSwapSoundVolume / 100F, 1, entity.getRandom().nextLong());
+        assert sound != null;
+        entity.level().playSeededSound(entity, entity.getX(), entity.getY(), entity.getZ(), sound, SoundSource.PLAYERS, CAConfig.backslotSwapSoundVolume / 100F, 1, entity.getRandom().nextLong());
     }
 }
 

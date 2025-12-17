@@ -48,7 +48,6 @@
     "tweaks.arrow.ProjectileEntityRendererMixin",
     "tweaks.arrow.StuckObjectsFeatureRendererMixin",
     "tweaks.bow.FirstPersonItemMixin",
-    "tweaks.grass.GameRendererMixin",
     "tweaks.trident.TridentEntityRendererMixin",
     "tweaks.trident.TridentEntityRenderStateMixin"
   ]
