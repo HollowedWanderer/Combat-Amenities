@@ -2,7 +2,7 @@
   "item": "#minecraft:banners",
   "scale": [1.51, 1.51, 1.51],
   "rotation": [180.0, 0.0, 0.0],
-  "translation": [0.0, 0.425, 0.0],
+  "translation": [0.0, 0.65, 0.0],
   "mode": "FIXED",
   "sway": 1.0
 }
