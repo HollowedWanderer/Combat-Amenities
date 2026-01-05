@@ -15,7 +15,6 @@
     "slots.registration.SlotsMixin",
     "tweaks.arrow.ProjectileEntityMixin",
     "tweaks.bow.BowItemMixin",
-    "tweaks.durability.ItemStackMixin",
     "tweaks.enchantments.EnchantBookFactoryMixin",
     "tweaks.enchantments.EnchantmentHelperMixin",
     "tweaks.enchantments.EnchantmentMixin",

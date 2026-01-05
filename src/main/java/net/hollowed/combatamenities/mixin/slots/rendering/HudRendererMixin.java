@@ -33,12 +33,17 @@ public abstract class HudRendererMixin {
     @Unique
     private static ItemStack lastBeltSlotStack = ItemStack.EMPTY;
     @Unique
-    private int animationTicks = 0;
+    private int backAnimationTicks = 0;
+    @Unique
+    private int beltAnimationTicks = 0;
 
     @Inject(method = "tick()V", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
-        if (animationTicks > 0) {
-            animationTicks--;
+        if (backAnimationTicks > 0) {
+            backAnimationTicks--;
+        }
+        if (beltAnimationTicks > 0) {
+            beltAnimationTicks--;
         }
     }
 
@@ -54,10 +59,10 @@ public abstract class HudRendererMixin {
         if (playerEntity != null) {
             ItemStack beltSlotStack = playerEntity.getInventory().getItem(42);
 
-            if (!ItemStack.matches(beltSlotStack, lastBeltSlotStack) && animationTicks == 0) {
+            if (!ItemStack.matches(beltSlotStack, lastBeltSlotStack) && beltAnimationTicks == 0) {
                 lastBeltSlotStack = beltSlotStack.copy();
                 if (beltSlotStack.getOrDefault(CAComponents.STRING_PROPERTY, "").equals("bob5")) {
-                    animationTicks = 5;
+                    beltAnimationTicks = 5;
                 }
             }
 
@@ -80,7 +85,7 @@ public abstract class HudRendererMixin {
                 );
 
                 // Render the back slot item
-                renderItem(drawContext, x + 4, y - 15, tickCounter, playerEntity, beltSlotStack);
+                renderItem(drawContext, x + 4, y - 15, tickCounter, playerEntity, beltSlotStack, beltAnimationTicks);
             }
         }
     }
@@ -91,10 +96,10 @@ public abstract class HudRendererMixin {
         if (playerEntity != null) {
             ItemStack backSlotStack = playerEntity.getInventory().getItem(41);
 
-            if (!ItemStack.matches(backSlotStack, lastBackSlotStack) && animationTicks == 0) {
+            if (!ItemStack.matches(backSlotStack, lastBackSlotStack) && backAnimationTicks == 0) {
                 lastBackSlotStack = backSlotStack.copy();
                 if (backSlotStack.getOrDefault(CAComponents.STRING_PROPERTY, "").equals("bob5")) {
-                    animationTicks = 5;
+                    backAnimationTicks = 5;
                 }
             }
 
@@ -117,13 +122,13 @@ public abstract class HudRendererMixin {
                 );
 
                 // Render the back slot item
-                renderItem(drawContext, x + 4, y - 15, tickCounter, playerEntity, backSlotStack);
+                renderItem(drawContext, x + 4, y - 15, tickCounter, playerEntity, backSlotStack, backAnimationTicks);
             }
         }
     }
 
     @Unique
-    private void renderItem(GuiGraphics context, int x, int y, DeltaTracker tickCounter, Player player, ItemStack stack) {
+    private void renderItem(GuiGraphics context, int x, int y, DeltaTracker tickCounter, Player player, ItemStack stack, int animationTicks) {
         if (!stack.isEmpty()) {
             float f = animationTicks - tickCounter.getGameTimeDeltaPartialTick(false);
             if (f > 0.0F) {

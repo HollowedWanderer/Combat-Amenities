@@ -8,7 +8,7 @@ import org.lwjgl.glfw.GLFW;
 
 public class CAKeyBindings {
 
-    public static KeyMapping.Category CA = KeyMapping.Category.register(CombatAmenities.id("category.combatamenities.keybinds"));
+    public static KeyMapping.Category CA = KeyMapping.Category.register(CombatAmenities.id("all"));
 
     // Keybinding
     public static KeyMapping backSlotBinding;

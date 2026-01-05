@@ -1,5 +1,5 @@
 {
-  "category.combatamenities.keybinds": "Combat Amenities",
+  "key.category.combatamenities.all": "Combat Amenities",
   "key.combatamenities.backslot": "Backslot Switch",
   "key.combatamenities.beltslot": "Belt Slot Switch",
   "subtitles.combatamenities.sword_unsheath": "Weapon Unsheathes",
@@ -16,9 +16,7 @@
   "combatamenities.midnightconfig.backslotSwapSoundVolume": "Slot Swap Sound Volume (%)",
   "combatamenities.midnightconfig.flipBackslotDisplay": "Flip Back Slot Display",
   "combatamenities.midnightconfig.flipBeltslotDisplay": "Flip Belt Slot Display",
-  "combatamenities.midnightconfig.removeDurability": "Remove Durability",
   "combatamenities.midnightconfig.itemArrows": "Arrows Render as Items",
-  "combatamenities.midnightconfig.swingThrough": "Swing Through Grass",
   "combatamenities.midnightconfig.correctTridentReturn": "Tridents Return to Original Slot",
   "combatamenities.midnightconfig.builtInLoyalty": "Tridents Have Built-in Loyalty (While Enchanted)",
   "combatamenities.midnightconfig.riptideFix": "Hide Offhand Items with Riptide",

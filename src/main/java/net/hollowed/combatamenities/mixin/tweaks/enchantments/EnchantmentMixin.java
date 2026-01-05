@@ -32,7 +32,6 @@ public abstract class EnchantmentMixin {
 
     @Unique
     private static boolean isDisallowedEnchantment(String enchantment) {
-        return (CAConfig.removeDurability && CombatAmenities.DURABILITY_ENCHANTMENTS.contains(enchantment))
-                || (CAConfig.builtInLoyalty && CombatAmenities.TRIDENT_ENCHANTMENTS.contains(enchantment));
+        return (CAConfig.builtInLoyalty && CombatAmenities.TRIDENT_ENCHANTMENTS.contains(enchantment));
     }
 }

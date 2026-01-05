@@ -11,9 +11,7 @@ public class CAConfig extends MidnightConfig {
     @Entry public static int backslotSwapSoundVolume = 100;
     @Entry public static boolean flipBackslotDisplay = false;
     @Entry public static boolean flipBeltslotDisplay = false;
-    @Entry public static boolean removeDurability = true;
     @Entry public static boolean itemArrows = false;
-    @Entry public static boolean swingThrough = true;
     @Entry public static boolean correctTridentReturn = true;
     @Entry public static boolean riptideFix = true;
     @Entry public static boolean builtInLoyalty = true;
