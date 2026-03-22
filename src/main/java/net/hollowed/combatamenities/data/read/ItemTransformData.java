@@ -1,4 +1,4 @@
-package net.hollowed.combatamenities.util.json;
+package net.hollowed.combatamenities.data.read;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

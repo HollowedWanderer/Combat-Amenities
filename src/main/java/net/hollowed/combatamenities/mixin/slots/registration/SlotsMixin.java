@@ -1,8 +1,8 @@
 package net.hollowed.combatamenities.mixin.slots.registration;
 
 import net.hollowed.combatamenities.config.CAConfig;
-import net.hollowed.combatamenities.util.json.ItemTransformData;
-import net.hollowed.combatamenities.util.json.ItemTransformResourceReloadListener;
+import net.hollowed.combatamenities.data.read.ItemTransformData;
+import net.hollowed.combatamenities.data.read.ItemTransformResourceReloadListener;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;

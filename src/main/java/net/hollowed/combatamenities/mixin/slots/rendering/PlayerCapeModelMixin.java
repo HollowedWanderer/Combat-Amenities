@@ -1,8 +1,8 @@
 package net.hollowed.combatamenities.mixin.slots.rendering;
 
 import net.hollowed.combatamenities.util.items.CAComponents;
-import net.hollowed.combatamenities.util.json.BackTransformData;
-import net.hollowed.combatamenities.util.json.BackTransformResourceReloadListener;
+import net.hollowed.combatamenities.data.read.BackTransformData;
+import net.hollowed.combatamenities.data.read.BackTransformResourceReloadListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.player.PlayerCapeModel;

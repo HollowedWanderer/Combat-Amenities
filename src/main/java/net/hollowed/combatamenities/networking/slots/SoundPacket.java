@@ -2,8 +2,8 @@ package net.hollowed.combatamenities.networking.slots;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.hollowed.combatamenities.config.CAConfig;
-import net.hollowed.combatamenities.util.json.ItemTransformData;
-import net.hollowed.combatamenities.util.json.ItemTransformResourceReloadListener;
+import net.hollowed.combatamenities.data.read.ItemTransformData;
+import net.hollowed.combatamenities.data.read.ItemTransformResourceReloadListener;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;

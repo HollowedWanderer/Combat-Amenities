@@ -1,4 +1,4 @@
-package net.hollowed.combatamenities.util.json;
+package net.hollowed.combatamenities.data.read;
 
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;

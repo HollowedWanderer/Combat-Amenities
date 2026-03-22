@@ -1,37 +1,38 @@
-package net.hollowed.combatamenities.util.json;
+package net.hollowed.combatamenities.data.read;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+
 import java.util.Map;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 
-public record BackTransformData(
+public record BeltTransformData(
         String item,
         List<Float> scale,
         List<Float> rotation,
         List<Float> translation,
         ItemDisplayContext mode,
         Float sway,
-        Boolean noFlip,
         Map<String, SubTransformData> componentTransforms, // Map of int -> TransformData
+        Boolean flip,
         SecondaryTransformData secondaryTransforms,
         TertiaryTransformData tertiaryTransforms
 ) {
-    public static final Codec<BackTransformData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.STRING.fieldOf("item").forGetter(BackTransformData::item),
-            Codec.FLOAT.listOf().fieldOf("scale").orElseGet(() -> List.of(1.0f, 1.0f, 1.0f)).forGetter(BackTransformData::scale),
-            Codec.FLOAT.listOf().fieldOf("rotation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(BackTransformData::rotation),
-            Codec.FLOAT.listOf().fieldOf("translation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(BackTransformData::translation),
+    public static final Codec<BeltTransformData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.STRING.fieldOf("item").forGetter(BeltTransformData::item),
+            Codec.FLOAT.listOf().fieldOf("scale").orElseGet(() -> List.of(1.0f, 1.0f, 1.0f)).forGetter(BeltTransformData::scale),
+            Codec.FLOAT.listOf().fieldOf("rotation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(BeltTransformData::rotation),
+            Codec.FLOAT.listOf().fieldOf("translation").orElseGet(() -> List.of(0.0f, 0.0f, 0.0f)).forGetter(BeltTransformData::translation),
             Codec.STRING.fieldOf("mode").orElse("FIXED")
                     .xmap(ItemDisplayContext::valueOf, ItemDisplayContext::name)
-                    .forGetter(BackTransformData::mode),
-            Codec.FLOAT.fieldOf("sway").orElse(1.0F).forGetter(BackTransformData::sway),
-            Codec.BOOL.fieldOf("noFlip").orElse(false).forGetter(BackTransformData::noFlip),
-            Codec.unboundedMap(Codec.STRING, SubTransformData.CODEC)
+                    .forGetter(BeltTransformData::mode),
+            Codec.FLOAT.fieldOf("sway").orElse(1.0F).forGetter(BeltTransformData::sway),
+            Codec.unboundedMap(Codec.STRING, SubTransformData.CODEC) // Map<Integer, SubTransformData>
                     .fieldOf("componentTransforms").orElse(Map.of())
-                    .forGetter(BackTransformData::componentTransforms),
+                    .forGetter(BeltTransformData::componentTransforms),
+            Codec.BOOL.fieldOf("flip").orElse(false).forGetter(BeltTransformData::flip),
             SecondaryTransformData.CODEC.fieldOf("secondary").orElse(new SecondaryTransformData(
                             Identifier.parse("null"),
                             List.of(1.0f, 1.0f, 1.0f),
@@ -39,7 +40,7 @@ public record BackTransformData(
                             List.of(0.0f, 0.0f, 0.0f),
                             ItemDisplayContext.NONE
                     ))
-                    .forGetter(BackTransformData::secondaryTransforms),
+                    .forGetter(BeltTransformData::secondaryTransforms),
             TertiaryTransformData.CODEC.fieldOf("tertiary").orElse(new TertiaryTransformData(
                             Identifier.parse("null"),
                             List.of(1.0f, 1.0f, 1.0f),
@@ -47,8 +48,8 @@ public record BackTransformData(
                             List.of(0.0f, 0.0f, 0.0f),
                             ItemDisplayContext.NONE
                     ))
-                    .forGetter(BackTransformData::tertiaryTransforms)
-    ).apply(instance, BackTransformData::new));
+                    .forGetter(BeltTransformData::tertiaryTransforms)
+    ).apply(instance, BeltTransformData::new));
 
     // Sub-class to store transformations per component value
     public record SubTransformData(
@@ -57,6 +58,7 @@ public record BackTransformData(
             List<Float> translation,
             ItemDisplayContext mode,
             Float sway,
+            Boolean flip,
             SecondaryTransformData secondaryTransforms,
             TertiaryTransformData tertiaryTransforms
     ) {
@@ -68,6 +70,7 @@ public record BackTransformData(
                         .xmap(ItemDisplayContext::valueOf, ItemDisplayContext::name)
                         .forGetter(SubTransformData::mode),
                 Codec.FLOAT.fieldOf("sway").orElse(1.0F).forGetter(SubTransformData::sway),
+                Codec.BOOL.fieldOf("flip").orElse(false).forGetter(SubTransformData::flip),
                 SecondaryTransformData.CODEC.fieldOf("secondary").orElse(new SecondaryTransformData(
                                 Identifier.parse("null"),
                                 List.of(1.0f, 1.0f, 1.0f),

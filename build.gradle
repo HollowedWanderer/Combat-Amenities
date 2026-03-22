@@ -24,6 +24,13 @@ repositories {
 	maven {url = 'https://maven.ladysnake.org/releases'}
 	maven {url = "https://maven.terraformersmc.com/"}
 
+	// Player Animation Library
+	mavenCentral()
+	maven {
+		name = "RedlanceMinecraft"
+		url = "https://repo.redlance.org/public"
+	}
+
 	// MidnightLib
 	exclusiveContent {
 		forRepository {
@@ -58,6 +65,9 @@ dependencies {
 
 	// Mod Menu
 	modApi "com.terraformersmc:modmenu:${modmenu_version}"
+
+	// Player Animation Library
+	modImplementation "com.zigythebird.playeranim:PlayerAnimationLibFabric:$project.pal_version"
 }
 
 processResources {
