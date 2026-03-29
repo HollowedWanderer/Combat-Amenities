@@ -22,10 +22,8 @@ public class EntityMixin {
             ItemStack backSlotItem = player.getInventory().getItem(41);
             ItemStack beltSlotItem = player.getInventory().getItem(42);
 
-            // Check if back slot item exists and is valid
             if ((!backSlotItem.isEmpty() && !(backSlotItem.getItem() instanceof BlockItem)) || (!beltSlotItem.isEmpty() && !(beltSlotItem.getItem() instanceof BlockItem))) {
                 if (player instanceof ServerPlayer serverPlayer) {
-                    // Play the sound with the calculated volume
                     for (ServerPlayer serverPlayerTemp : serverPlayer.level().players()) {
                         ServerPlayNetworking.send(serverPlayerTemp, new SoundPacketPayload(1, player.position(), false, 0.15F, 1.2F, 0, ItemStack.EMPTY));
                     }

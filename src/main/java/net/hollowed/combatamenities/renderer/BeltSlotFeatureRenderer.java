@@ -218,7 +218,7 @@ public class BeltSlotFeatureRenderer extends ItemInHandLayer<@NotNull AvatarRend
 
 					heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, matrixStack, orderedRenderCommandQueue, i);
 
-					if (backSlotStack.isEnchanted() && Math.random() > ((100 - CAConfig.enchantmentParticleChance) / 100.0F) && CAConfig.backslotParticles && !Minecraft.getInstance().isPaused()) {
+					if (backSlotStack.isEnchanted() && Math.random() > ((100 - CAConfig.enchantmentParticleChance) / 100.0F) && CAConfig.beltslotParticles && !Minecraft.getInstance().isPaused()) {
 						for (int j = 0; j < 5; j++) {
 							Vec3 vec3d = CombatAmenities.matrixToVec(matrixStack);
 							double offsetX = 0.7 * (Math.random() - 0.5);

@@ -3,6 +3,8 @@ package net.hollowed.combatamenities.mixin.modMenu;
 import com.terraformersmc.modmenu.gui.ModsScreen;
 import com.terraformersmc.modmenu.gui.widget.entries.ModListEntry;
 import com.terraformersmc.modmenu.util.mod.Mod;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.hollowed.combatamenities.CombatAmenities;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -17,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@Environment(EnvType.CLIENT)
 @Mixin(ModsScreen.class)
 public abstract class ModMenuEntryMixin extends Screen {
 
@@ -43,7 +46,6 @@ public abstract class ModMenuEntryMixin extends Screen {
                 trimmedName = FormattedText.composite(this.font.substrByWidth(name, maxNameWidth - this.font.width(ellipsis)), ellipsis);
             }
 
-            // Custom color logic
             int nameColor = 0xFF33ebcb;
 
             if ("combatamenities".equals(mod.getId())) {

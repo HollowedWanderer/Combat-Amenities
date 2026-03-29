@@ -26,9 +26,9 @@ public abstract class ServerPlayerEntityMixin extends Player {
     @Shadow public abstract ItemEntity drop(@NotNull ItemStack stack, boolean dropAtSelf, boolean retainOwnership);
 
     @Unique
-    private static final int RESERVED_SLOT_INDEX = 41; // Slot to keep on death
+    private static final int RESERVED_SLOT_INDEX = 41;
     @Unique
-    private static final int OTHER_RESERVED_SLOT_INDEX = 42; // Slot to keep on death
+    private static final int OTHER_RESERVED_SLOT_INDEX = 42;
 
     @Unique
     private SimpleContainer reservedSlotInventory = new SimpleContainer(2);

@@ -23,35 +23,32 @@ public class FirstPersonItemMixin {
     @Inject(method = "renderItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
             at = @At("HEAD"), cancellable = true)
     private void hideOffhandItemWhenUsingRiptide(LivingEntity entity, ItemStack stack, ItemDisplayContext renderMode, PoseStack matrices, SubmitNodeCollector orderedRenderCommandQueue, int light, CallbackInfo ci) {
-        // Check if the player is in first person, using Riptide, and if this is the offhand
         if (entity.isAutoSpinAttack()) {
             HumanoidArm offhandArm = entity.getMainArm() == HumanoidArm.RIGHT ? HumanoidArm.LEFT : HumanoidArm.RIGHT;
             if (entity.getUsedItemHand() == InteractionHand.MAIN_HAND) {
                 if (((offhandArm == HumanoidArm.LEFT && renderMode == ItemDisplayContext.FIRST_PERSON_LEFT_HAND)
                         || (offhandArm == HumanoidArm.RIGHT && renderMode == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND))
                         && CAConfig.riptideFix) {
-                    ci.cancel(); // Prevent the offhand item from rendering
+                    ci.cancel();
                 }
             } else {
                 if (((offhandArm == HumanoidArm.RIGHT && renderMode == ItemDisplayContext.FIRST_PERSON_LEFT_HAND)
                         || (offhandArm == HumanoidArm.LEFT && renderMode == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND))
                         && CAConfig.riptideFix) {
-                    ci.cancel(); // Prevent the offhand item from rendering
+                    ci.cancel();
                 }
             }
         }
 
-        // Add wobbling effect for bows when pulled back for too long
         if (entity instanceof Player player && player.getUseItem().getItem() instanceof BowItem && CAConfig.bowTweaks) {
-            int useTime = player.getTicksUsingItem(); // Time bow has been drawn
+            int useTime = player.getTicksUsingItem();
 
             float tickDelta = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
 
-            // Only apply wobble if bow is drawn for more than 120 ticks
             if (useTime > 120) {
-                float wobbleStrength = Math.min((useTime - 120) / 25.0F, 0.25F); // Gradual increase, capped at 0.5F
-                float wobbleAmount = (float) Math.sin(useTime + tickDelta) * 0.1F * wobbleStrength; // Oscillating wobble
-                matrices.translate(0.0F, wobbleAmount, 0.0F); // Apply up and down movement
+                float wobbleStrength = Math.min((useTime - 120) / 25.0F, 0.25F);
+                float wobbleAmount = (float) Math.sin(useTime + tickDelta) * 0.1F * wobbleStrength;
+                matrices.translate(0.0F, wobbleAmount, 0.0F);
             }
         }
     }

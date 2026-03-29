@@ -72,7 +72,7 @@ public abstract class HudRendererMixin {
 
             if (!beltSlotStack.isEmpty()) {
                 final int x = getBeltX(drawContext);
-                int y = drawContext.guiHeight() - CAConfig.backslotY - 4;
+                int y = drawContext.guiHeight() - CAConfig.beltslotY - 4;
 
                 RenderSystem.assertOnRenderThread();
                 GlStateManager._enableBlend();
@@ -84,7 +84,6 @@ public abstract class HudRendererMixin {
                         0, 0, 22, 23, 29, 24
                 );
 
-                // Render the back slot item
                 renderItem(drawContext, x + 4, y - 15, tickCounter, playerEntity, beltSlotStack, beltAnimationTicks);
             }
         }
@@ -121,7 +120,6 @@ public abstract class HudRendererMixin {
                         0, 0, 22, 23, 29, 24
                 );
 
-                // Render the back slot item
                 renderItem(drawContext, x + 4, y - 15, tickCounter, playerEntity, backSlotStack, backAnimationTicks);
             }
         }
@@ -167,9 +165,9 @@ public abstract class HudRendererMixin {
 
         int x;
         if (isLeftHanded) {
-            x = drawContext.guiWidth() / 2 - CAConfig.backslotX - 143;
+            x = drawContext.guiWidth() / 2 - CAConfig.beltslotX - 143;
         } else {
-            x = drawContext.guiWidth() / 2 + CAConfig.backslotX + 120;
+            x = drawContext.guiWidth() / 2 + CAConfig.beltslotX + 120;
         }
         return x;
     }

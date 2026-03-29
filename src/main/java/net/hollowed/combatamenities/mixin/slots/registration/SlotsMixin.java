@@ -31,14 +31,12 @@ public abstract class SlotsMixin extends RecipeBookMenu {
 
     @Inject(method = "<init>(Lnet/minecraft/world/entity/player/Inventory;ZLnet/minecraft/world/entity/player/Player;)V", at = @At("RETURN"))
     private void addBackSlot(Inventory inventory, boolean onServer, Player owner, CallbackInfo ci) {
-        // Determine slot position based on context
         int xPos = 77;
         int yPos = 8;
 
         int xPos1 = 77;
         int yPos1 = 26;
 
-        // Add BackSlot at determined position
         this.addSlot(new Slot(inventory, 41, xPos, yPos) {
             @Override
             public Identifier getNoItemIcon() {
@@ -61,7 +59,6 @@ public abstract class SlotsMixin extends RecipeBookMenu {
             }
         });
 
-        // Add Belt Slot at determined position
         this.addSlot(new Slot(inventory, 42, xPos1, yPos1) {
             @Override
             public Identifier getNoItemIcon() {

@@ -54,7 +54,6 @@ public class BackSlotServerPacket {
                 }
             }
 
-            // Sync the player's inventory back to the client
             player.containerMenu.broadcastChanges();
         })));
     }

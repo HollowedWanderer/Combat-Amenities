@@ -7,22 +7,8 @@
 
   "death.attack.cleaved": "%s was cut in half by %s",
 
-  "combatamenities.midnightconfig.title": "Combat Amenities Config",
-  "combatamenities.midnightconfig.backslotX": "Back Slot HUD X Offset",
-  "combatamenities.midnightconfig.backslotY": "Back Slot HUD Y Offset",
-  "combatamenities.midnightconfig.backslotParticles": "Back Slot Item Particles",
-  "combatamenities.midnightconfig.enchantmentParticleChance": "Back Slot Enchantment Particle Chance (%)",
-  "combatamenities.midnightconfig.backslotAmbientSoundVolume": "Slot Ambient Sound Volume (%)",
-  "combatamenities.midnightconfig.backslotSwapSoundVolume": "Slot Swap Sound Volume (%)",
-  "combatamenities.midnightconfig.flipBackslotDisplay": "Flip Back Slot Display",
-  "combatamenities.midnightconfig.flipBeltslotDisplay": "Flip Belt Slot Display",
-  "combatamenities.midnightconfig.itemArrows": "Arrows Render as Items",
-  "combatamenities.midnightconfig.correctTridentReturn": "Tridents Return to Original Slot",
-  "combatamenities.midnightconfig.builtInLoyalty": "Tridents Have Built-in Loyalty (While Enchanted)",
-  "combatamenities.midnightconfig.riptideFix": "Hide Offhand Items with Riptide",
-  "combatamenities.midnightconfig.throwableFirecharge": "Throwable Fire Charges",
-  "combatamenities.midnightconfig.shieldTweaks": "Shield Tweaks",
-  "combatamenities.midnightconfig.shieldParryTime": "Shield Parry Window (Ticks)",
-  "combatamenities.midnightconfig.enderPearlTweaks": "Ender Pearl Tweaks",
-  "combatamenities.midnightconfig.bowTweaks": "Bow Tweaks"
+  "combatamenities.midnightconfig.category.back": "Back Slot",
+  "combatamenities.midnightconfig.category.belt": "Belt Slot",
+  "combatamenities.midnightconfig.category.slots": "Both Slots",
+  "combatamenities.midnightconfig.category.tweaks": "Tweaks"
 }

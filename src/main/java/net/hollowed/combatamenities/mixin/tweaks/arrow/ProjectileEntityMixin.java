@@ -16,8 +16,6 @@ public class ProjectileEntityMixin {
         Projectile projectile = (Projectile) (Object) this;
         if (!projectile.level().isClientSide() && projectile.isAlive()) {
             ServerLevel serverWorld = (ServerLevel) projectile.level();
-
-            // Force the entity to be re-tracked
             serverWorld.getChunkSource().removeEntity(projectile);
             serverWorld.getChunkSource().addEntity(projectile);
         }

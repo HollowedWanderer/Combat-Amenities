@@ -13,8 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AvatarRenderer.class)
 public class PlayerEntityRendererMixin {
 
-
-
     @Inject(method = "extractRenderState(Lnet/minecraft/world/entity/Avatar;Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;F)V", at = @At("HEAD"))
     public void updateRenderState(Avatar playerLikeEntity, AvatarRenderState playerEntityRenderState, float f, CallbackInfo ci) {
         if (playerEntityRenderState instanceof PlayerEntityRenderStateAccess access && playerLikeEntity instanceof Player entity) {

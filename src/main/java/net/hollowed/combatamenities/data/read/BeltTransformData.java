@@ -15,7 +15,7 @@ public record BeltTransformData(
         List<Float> translation,
         ItemDisplayContext mode,
         Float sway,
-        Map<String, SubTransformData> componentTransforms, // Map of int -> TransformData
+        Map<String, SubTransformData> componentTransforms,
         Boolean flip,
         SecondaryTransformData secondaryTransforms,
         TertiaryTransformData tertiaryTransforms
@@ -29,7 +29,7 @@ public record BeltTransformData(
                     .xmap(ItemDisplayContext::valueOf, ItemDisplayContext::name)
                     .forGetter(BeltTransformData::mode),
             Codec.FLOAT.fieldOf("sway").orElse(1.0F).forGetter(BeltTransformData::sway),
-            Codec.unboundedMap(Codec.STRING, SubTransformData.CODEC) // Map<Integer, SubTransformData>
+            Codec.unboundedMap(Codec.STRING, SubTransformData.CODEC)
                     .fieldOf("componentTransforms").orElse(Map.of())
                     .forGetter(BeltTransformData::componentTransforms),
             Codec.BOOL.fieldOf("flip").orElse(false).forGetter(BeltTransformData::flip),
@@ -51,7 +51,6 @@ public record BeltTransformData(
                     .forGetter(BeltTransformData::tertiaryTransforms)
     ).apply(instance, BeltTransformData::new));
 
-    // Sub-class to store transformations per component value
     public record SubTransformData(
             List<Float> scale,
             List<Float> rotation,

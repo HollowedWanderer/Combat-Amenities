@@ -44,7 +44,6 @@ public class ItemTransformResourceReloadListener implements ResourceManagerReloa
                             if (Objects.equals(data.item(), "default")) {
                                 defaultTransforms = data;
                             } else if (data.item().startsWith("#")) {
-                                // Remove the '#' prefix
                                 String tagString = data.item().substring(1);
                                 Identifier tagId = Identifier.parse(tagString);
 

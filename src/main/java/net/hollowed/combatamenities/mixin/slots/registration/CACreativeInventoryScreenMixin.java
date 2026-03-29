@@ -43,22 +43,20 @@ public abstract class CACreativeInventoryScreenMixin extends AbstractContainerSc
     @Inject(method = "selectTab", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;destroyItemSlot:Lnet/minecraft/world/inventory/Slot;", shift = At.Shift.BEFORE))
     private void setSelectedTabMixin(CreativeModeTab group, CallbackInfo info) {
         for (int i = 0; i < this.menu.slots.size(); ++i) {
-            if (i == 46) {  // Modify slot 46
+            if (i == 46) {
                 Slot slot = this.menu.slots.get(i);
 
-                // Use the accessor to modify the final x and y fields
                 if (slot instanceof SlotAccessor accessor) {
-                    accessor.setX(127);  // Update X position
-                    accessor.setY(20);   // Update Y position
+                    accessor.setX(127);
+                    accessor.setY(20);
                 }
             }
-            if (i == 47) {  // Modify slot 46
+            if (i == 47) {
                 Slot slot = this.menu.slots.get(i);
 
-                // Use the accessor to modify the final x and y fields
                 if (slot instanceof SlotAccessor accessor) {
-                    accessor.setX(145);  // Update X position
-                    accessor.setY(20);   // Update Y position
+                    accessor.setX(145);
+                    accessor.setY(20);
                 }
             }
         }
@@ -71,13 +69,13 @@ public abstract class CACreativeInventoryScreenMixin extends AbstractContainerSc
                     RenderPipelines.GUI_OPAQUE_TEXTURED_BACKGROUND,
                     SLOT_TEXTURE,
                     this.leftPos + 126, this.topPos + 19,
-                    0, 0, 18, 18, 18, 18 // Texture coordinates and dimensions
+                    0, 0, 18, 18, 18, 18
             );
             context.blit(
                     RenderPipelines.GUI_OPAQUE_TEXTURED_BACKGROUND,
                     SLOT_TEXTURE,
                     this.leftPos + 144, this.topPos + 19,
-                    0, 0, 18, 18, 18, 18 // Texture coordinates and dimensions
+                    0, 0, 18, 18, 18, 18
             );
         }
     }
@@ -88,10 +86,10 @@ public abstract class CACreativeInventoryScreenMixin extends AbstractContainerSc
 
         if (selectedTab.equals(inventoryGroup)) {
             for (int i = 0; i < this.menu.slots.size(); ++i) {
-                if (i == 46) {  // Modify slot 46
+                if (i == 46) {
                     ClientPlayNetworking.send(new SlotCreativeClientPacketPayload(41, this.menu.slots.get(i).getItem()));
                 }
-                if (i == 47) {  // Modify slot 47
+                if (i == 47) {
                     ClientPlayNetworking.send(new SlotCreativeClientPacketPayload(42, this.menu.slots.get(i).getItem()));
                 }
             }

@@ -10,7 +10,6 @@ public class CAKeyBindings {
 
     public static KeyMapping.Category CA = KeyMapping.Category.register(CombatAmenities.id("all"));
 
-    // Keybinding
     public static KeyMapping backSlotBinding;
     public static KeyMapping beltSlotBinding;
 

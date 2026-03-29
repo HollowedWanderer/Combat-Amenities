@@ -27,7 +27,6 @@ public class CAParticles {
     }
 
     public static void initializeClient() {
-        // For this example, we will use the end rod particle behaviour.
         ParticleFactoryRegistry.getInstance().register(HIT_MARKER, HitMarkerParticle.Factory::new);
         ParticleFactoryRegistry.getInstance().register(CRIT_ATTACK, AttackSweepParticle.Provider::new);
         ParticleFactoryRegistry.getInstance().register(NORMAL_ATTACK, AttackSweepParticle.Provider::new);

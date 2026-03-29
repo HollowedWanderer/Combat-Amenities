@@ -45,7 +45,6 @@ public class BeltTransformResourceReloadListener implements ResourceManagerReloa
                             if (data.item().equals("default")) {
                                 defaultTransforms = data;
                             } else if (data.item().startsWith("#")) {
-                                // Remove the '#' prefix
                                 String tagString = data.item().substring(1);
                                 Identifier tagId = Identifier.parse(tagString);
 
@@ -73,20 +72,19 @@ public class BeltTransformResourceReloadListener implements ResourceManagerReloa
         BeltTransformData baseTransform = transforms.getOrDefault(itemId, defaultTransforms);
 
         if (baseTransform != null) {
-            // Check if a specific component transformation exists
             if (baseTransform.componentTransforms().containsKey(component)) {
                 BeltTransformData.SubTransformData subTransform = baseTransform.componentTransforms().get(component);
                 BeltTransformData.SecondaryTransformData secondary = subTransform.secondaryTransforms();
                 BeltTransformData.TertiaryTransformData tertiary = subTransform.tertiaryTransforms();
 
                 return new BeltTransformData(
-                        itemId.toString(), // Preserve itemId
+                        itemId.toString(),
                         subTransform.scale(),
                         subTransform.rotation(),
                         subTransform.translation(),
                         subTransform.mode(),
                         subTransform.sway(),
-                        Map.of(), // Subcomponents don't need to be passed
+                        Map.of(),
                         subTransform.flip(),
                         new BeltTransformData.SecondaryTransformData(
                                 secondary.item(),
@@ -108,29 +106,28 @@ public class BeltTransformResourceReloadListener implements ResourceManagerReloa
             return baseTransform;
         }
 
-        // Fallback to a fully default transform if no data is available
         return new BeltTransformData(
                 itemId.toString(),
-                List.of(1.0f, 1.0f, 1.0f), // Default scale
-                List.of(0.0f, 0.0f, 0.0f), // Default rotation
-                List.of(0.0f, 0.0f, 0.0f), // Default translation
-                ItemDisplayContext.FIXED, // Default mode
-                1.0F, // Default sway
-                Map.of(), // Empty component transforms
+                List.of(1.0f, 1.0f, 1.0f),
+                List.of(0.0f, 0.0f, 0.0f),
+                List.of(0.0f, 0.0f, 0.0f),
+                ItemDisplayContext.FIXED,
+                1.0F,
+                Map.of(),
                 false,
                 new BeltTransformData.SecondaryTransformData(
                         Identifier.parse("null"),
-                        List.of(1.0f, 1.0f, 1.0f), // Default scale
-                        List.of(0.0f, 0.0f, 0.0f), // Default rotation
-                        List.of(0.0f, 0.0f, 0.0f), // Default translation
-                        ItemDisplayContext.FIXED // Default mode
+                        List.of(1.0f, 1.0f, 1.0f),
+                        List.of(0.0f, 0.0f, 0.0f),
+                        List.of(0.0f, 0.0f, 0.0f),
+                        ItemDisplayContext.FIXED
                 ),
                 new BeltTransformData.TertiaryTransformData(
                         Identifier.parse("null"),
-                        List.of(1.0f, 1.0f, 1.0f), // Default scale
-                        List.of(0.0f, 0.0f, 0.0f), // Default rotation
-                        List.of(0.0f, 0.0f, 0.0f), // Default translation
-                        ItemDisplayContext.FIXED // Default mode
+                        List.of(1.0f, 1.0f, 1.0f),
+                        List.of(0.0f, 0.0f, 0.0f),
+                        List.of(0.0f, 0.0f, 0.0f),
+                        ItemDisplayContext.FIXED
                 )
         );
     }

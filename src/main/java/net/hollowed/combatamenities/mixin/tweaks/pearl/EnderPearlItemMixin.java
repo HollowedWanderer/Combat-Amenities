@@ -37,9 +37,9 @@ public abstract class EnderPearlItemMixin extends Item {
     }
 
     @Unique
-    private static final int MAX_CHARGE_TIME = 20; // Maximum charge time in ticks (1 second)
+    private static final int MAX_CHARGE_TIME = 20;
     @Unique
-    private static final float MAX_VELOCITY = 1.5F; // Maximum velocity
+    private static final float MAX_VELOCITY = 1.5F;
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void onUse(Level world, Player user, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
@@ -79,7 +79,7 @@ public abstract class EnderPearlItemMixin extends Item {
     @Override
     public int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity user) {
         if (CAConfig.enderPearlTweaks) {
-            return 72000; // Default max use time for items that can be charged
+            return 72000;
         }
         return 0;
     }

@@ -3,6 +3,8 @@ package net.hollowed.combatamenities.mixin.modMenu;
 import com.terraformersmc.modmenu.config.ModMenuConfig;
 import com.terraformersmc.modmenu.gui.widget.entries.ModListEntry;
 import com.terraformersmc.modmenu.util.mod.Mod;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.hollowed.combatamenities.CombatAmenities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -21,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@Environment(EnvType.CLIENT)
 @Mixin(ModListEntry.class)
 public abstract class ModMenuMixin extends ObjectSelectionList.Entry<@NotNull ModListEntry> {
 
@@ -43,11 +46,9 @@ public abstract class ModMenuMixin extends ObjectSelectionList.Entry<@NotNull Mo
         int y = this.getContentY() + this.getYOffset();
         int rowWidth = this.getContentWidth();
 
-        // Get the mod ID
         String modId = this.mod.getId();
         int iconSize = ModMenuConfig.COMPACT_LIST.getValue() ? 19 : 32;
 
-        // Custom color logic
         int nameColor = 0xFF33ebcb;
 
         Component name = Component.literal(this.mod.getTranslatedName());
@@ -60,16 +61,9 @@ public abstract class ModMenuMixin extends ObjectSelectionList.Entry<@NotNull Mo
         }
 
         if ("combatamenities".equals(modId)) {
-            // Modify the text rendering with a new color
             drawContext.drawString(font, Language.getInstance().getVisualOrder(trimmedName), x + iconSize + 3, y + 1, nameColor);
-
-            // Draw small icon
             drawContext.blit(RenderPipelines.GUI_TEXTURED, Identifier.fromNamespaceAndPath(CombatAmenities.MOD_ID, "ca_small_icon.png"), x + iconSize + 85, y - 3, 0, 0, 16, 16, 16, 16);
-
-            // Draw colored line below 2 rows of text
             drawContext.blit(RenderPipelines.GUI_TEXTURED, Identifier.fromNamespaceAndPath(CombatAmenities.MOD_ID, "ca_line.png"), x + iconSize + 3, y + 31, 0, 0, 76, 1, 76, 1);
-
-            // Draw H signature
             drawContext.blit(RenderPipelines.GUI_TEXTURED, Identifier.fromNamespaceAndPath(CombatAmenities.MOD_ID, "h.png"), rowWidth - 2, y, 0, 0, 16, 16, 16, 16);
         }
     }

@@ -32,7 +32,6 @@ public abstract class StuckObjectsFeatureRendererMixin {
     )
     public void render(PoseStack matrixStack, SubmitNodeCollector queue, int light, float f, float directionX, float directionY, int color, CallbackInfo ci) {
         if ((StuckInBodyLayer<?, ?>) (Object) this instanceof ArrowLayer<?> && CAConfig.itemArrows && this.modelState instanceof ArrowRenderState state) {
-            // Push the matrix stack for transformations
             matrixStack.pushPose();
 
             float g = Mth.sqrt(f * f + directionY * directionY);
@@ -45,10 +44,7 @@ public abstract class StuckObjectsFeatureRendererMixin {
             Minecraft.getInstance().getItemModelResolver().appendItemLayers(stackRenderState, Items.ARROW.getDefaultInstance(), ItemDisplayContext.NONE, Minecraft.getInstance().level, null, 1);
             stackRenderState.submit(matrixStack, queue, light, OverlayTexture.NO_OVERLAY, state.outlineColor);
 
-            // Pop the matrix stack
             matrixStack.popPose();
-
-            // Cancel the original rendering
             ci.cancel();
         }
     }

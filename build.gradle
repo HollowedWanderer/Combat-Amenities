@@ -67,7 +67,7 @@ dependencies {
 	modApi "com.terraformersmc:modmenu:${modmenu_version}"
 
 	// Player Animation Library
-	modImplementation "com.zigythebird.playeranim:PlayerAnimationLibFabric:$project.pal_version"
+	// modImplementation "com.zigythebird.playeranim:PlayerAnimationLibFabric:$project.pal_version"
 }
 
 processResources {

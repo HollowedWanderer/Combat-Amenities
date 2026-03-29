@@ -42,7 +42,6 @@ public abstract class ProjectileEntityRendererMixin<T extends AbstractArrow> {
                 ItemStack stack = persistentProjectileEntity.getPickupItemStackOrigin();
                 Vec3 look = new Vec3(0, 0, 0);
 
-                // Default item stack to what the entity provides
                 if (persistentProjectileEntity instanceof Arrow arrowEntity) {
                     if (arrowEntity.getColor() != -1) {
                         stack = new ItemStack(Items.TIPPED_ARROW);
@@ -51,7 +50,6 @@ public abstract class ProjectileEntityRendererMixin<T extends AbstractArrow> {
                     look = arrowEntity.getViewVector(0);
                 }
 
-                // Pass the dynamically constructed item stack
                 access.combat_Amenities$setItemStack(stack);
                 access.combat_Amenities$setLook(look);
             }
@@ -68,15 +66,12 @@ public abstract class ProjectileEntityRendererMixin<T extends AbstractArrow> {
     ) {
         if (CAConfig.itemArrows) {
             if (projectileEntityRenderState instanceof ArrowEntityRenderStateAccess access) {
-                // Push the matrix stack for transformations
                 matrixStack.pushPose();
 
                 float multiplier = 0.25F;
 
-                // Apply translation
                 matrixStack.translate(access.combat_Amenities$getLook().multiply(multiplier, multiplier, -multiplier));
 
-                // Apply rotations for the projectile's orientation
                 matrixStack.mulPose(Axis.YP.rotationDegrees(projectileEntityRenderState.yRot - 90.0F));
                 matrixStack.mulPose(Axis.ZP.rotationDegrees(projectileEntityRenderState.xRot - 45.0F));
 
@@ -85,10 +80,7 @@ public abstract class ProjectileEntityRendererMixin<T extends AbstractArrow> {
                 Minecraft.getInstance().getItemModelResolver().appendItemLayers(stackRenderState, itemStack, ItemDisplayContext.NONE, Minecraft.getInstance().level, null, 1);
                 stackRenderState.submit(matrixStack, orderedRenderCommandQueue, projectileEntityRenderState.lightCoords, OverlayTexture.NO_OVERLAY, projectileEntityRenderState.outlineColor);
 
-                // Pop the matrix stack
                 matrixStack.popPose();
-
-                // Cancel the original rendering
                 ci.cancel();
             }
         }

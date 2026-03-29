@@ -40,23 +40,17 @@ public abstract class ServerPlayerEntityMixin extends Player {
             ItemStack currentBackSlotStack = this.getInventory().getItem(41);
             ItemStack currentBeltSlotStack = this.getInventory().getItem(42);
 
-            // Check if the current back slot stack is different from the saved one
             if (!ItemStack.isSameItem(backSlotStack, currentBackSlotStack)) {
-                // Update the back slot stack to the current one
                 backSlotStack = currentBackSlotStack.copy();
 
-                // Create a new payload with the current back slot stack
                 SlotClientPacketPayload payload = new SlotClientPacketPayload(this.getId(), 41, backSlotStack);
                 Collection<ServerPlayer> players = PlayerLookup.tracking(this.level(), this.blockPosition());
                 players.forEach(player -> ServerPlayNetworking.send(player, payload));
             }
 
-            // Check if the current back slot stack is different from the saved one
             if (!ItemStack.isSameItem(beltSlotStack, currentBeltSlotStack)) {
-                // Update the back slot stack to the current one
                 beltSlotStack = currentBeltSlotStack.copy();
 
-                // Create a new payload with the current back slot stack
                 SlotClientPacketPayload payload = new SlotClientPacketPayload(this.getId(), 42, beltSlotStack);
                 Collection<ServerPlayer> players = PlayerLookup.tracking(this.level(), this.blockPosition());
                 players.forEach(player -> ServerPlayNetworking.send(player, payload));

@@ -46,39 +46,31 @@ public abstract class LivingEntityMixin {
         if (CAConfig.shieldTweaks && !source.is(ModDamageTypes.CLEAVED) && !bypassShieldTweaks) {
             Vec3 attackDirection = source.getSourcePosition() != null ? source.getSourcePosition().subtract(self.position()).normalize() : Vec3.ZERO;
             Vec3 lookDirection = self.getViewVector(1.0F).normalize();
-            double angle = attackDirection.dot(lookDirection); // Cosine of the angle between attack and look direction
+            double angle = attackDirection.dot(lookDirection);
 
-            // If the shield was raised for 10 ticks or fewer (0.5 seconds at 20 ticks per second)
             if (self.getTicksUsingItem() <= CAConfig.shieldParryTime && self.getTicksUsingItem() > 0 && blocksAttacksComponent != null) {
-
-                // If the attack is in front of the player (within ~90 degrees)
                 if (angle > 0.0) {
-                    // Negate damage and trigger parry effects
                     if (self instanceof Player player) {
                         ServerLevel serverWorld = (ServerLevel) player.level();
-                        serverWorld.playSound(null, player.blockPosition(), SoundEvents.SHIELD_BLOCK.value(), SoundSource.PLAYERS, 1.0F, 1.0F); // Higher-pitched block sound
-                        serverWorld.playSound(null, player.blockPosition(), SoundEvents.MACE_SMASH_AIR, SoundSource.PLAYERS, 0.3F, 1.5F); // Parry sound
+                        serverWorld.playSound(null, player.blockPosition(), SoundEvents.SHIELD_BLOCK.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                        serverWorld.playSound(null, player.blockPosition(), SoundEvents.MACE_SMASH_AIR, SoundSource.PLAYERS, 0.3F, 1.5F);
 
-                        // Grant "Not Today, Thank You!" advancement
                         AdvancementHolder advancement = serverWorld.getServer().getAdvancements().get(Identifier.withDefaultNamespace("story/deflect_arrow"));
                         if (advancement != null && player instanceof ServerPlayer serverPlayer && source.is(DamageTypeTags.IS_PROJECTILE)) {
                             serverPlayer.getAdvancements().award(advancement, "deflected_projectile");
                         }
 
-                        // Knock back nearby entities
-                        double knockbackStrength = 1; // Adjust as needed
+                        double knockbackStrength = 1;
 
-                        // Apply shield cooldown
                         ItemCooldowns cooldownManager = player.getCooldowns();
                         if (source.getDirectEntity() instanceof LivingEntity attacker) {
                             Vec3 knockbackDirection = attacker.position().subtract(player.position()).normalize();
                             attacker.knockback(knockbackStrength, -knockbackDirection.x, -knockbackDirection.z);
-                            // Check if the attacker is using an axe
                             if (attacker.getSecondsToDisableBlocking() > 0) {
-                                cooldownManager.addCooldown(self.getUseItem(), 40); // 2 seconds cooldown for axe hit
+                                cooldownManager.addCooldown(self.getUseItem(), 40);
                                 self.releaseUsingItem();
                             } else {
-                                cooldownManager.addCooldown(self.getUseItem(), 10); // 0.5 seconds cooldown for regular parry
+                                cooldownManager.addCooldown(self.getUseItem(), 10);
                                 self.releaseUsingItem();
                             }
                         } else if (source.getDirectEntity() instanceof Projectile entity) {
@@ -88,7 +80,6 @@ public abstract class LivingEntityMixin {
                         }
                     }
 
-                    // Cancel the damage
                     cir.setReturnValue(false);
                     return;
                 }
@@ -97,14 +88,23 @@ public abstract class LivingEntityMixin {
             if (source.is(DamageTypeTags.IS_PROJECTILE) && self.getTicksUsingItem() > 0 && blocksAttacksComponent != null && angle > 0.0F) {
                 if (self instanceof Player player) {
                     ServerLevel serverWorld = (ServerLevel) player.level();
-                    serverWorld.playSound(null, player.blockPosition(), SoundEvents.SHIELD_BLOCK.value(), SoundSource.PLAYERS, 1.0F, 1.0F); // Higher-pitched block sound
+                    serverWorld.playSound(null, player.blockPosition(), SoundEvents.SHIELD_BLOCK.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
                     cir.setReturnValue(false);
                 }
             }
 
             if (blocksAttacksComponent != null && self.getUseItem().getItem() instanceof ShieldItem) {
                 shield = self.getUseItem().get(DataComponents.BLOCKS_ATTACKS);
-                self.getUseItem().set(DataComponents.BLOCKS_ATTACKS, new BlocksAttacks(0.25F, 1.0F, List.of(new BlocksAttacks.DamageReduction(90.0F, Optional.empty(), 0.0F, 0.5F)), new BlocksAttacks.ItemDamageFunction(3.0F, 1.0F, 1.0F), Optional.of(DamageTypeTags.BYPASSES_SHIELD), Optional.of(SoundEvents.SHIELD_BLOCK), Optional.of(SoundEvents.SHIELD_BREAK)));
+                self.getUseItem().set(DataComponents.BLOCKS_ATTACKS,
+                        new BlocksAttacks(
+                                0.25F,
+                                1.0F,
+                                List.of(new BlocksAttacks.DamageReduction(90.0F, Optional.empty(), 0.0F, 0.5F)),
+                                new BlocksAttacks.ItemDamageFunction(3.0F, 1.0F, 1.0F),
+                                Optional.of(DamageTypeTags.BYPASSES_SHIELD),
+                                Optional.of(SoundEvents.SHIELD_BLOCK),
+                                Optional.of(SoundEvents.SHIELD_BREAK))
+                );
             }
         }
     }

@@ -15,7 +15,7 @@ public record BackTransformData(
         ItemDisplayContext mode,
         Float sway,
         Boolean noFlip,
-        Map<String, SubTransformData> componentTransforms, // Map of int -> TransformData
+        Map<String, SubTransformData> componentTransforms,
         SecondaryTransformData secondaryTransforms,
         TertiaryTransformData tertiaryTransforms
 ) {
@@ -50,7 +50,6 @@ public record BackTransformData(
                     .forGetter(BackTransformData::tertiaryTransforms)
     ).apply(instance, BackTransformData::new));
 
-    // Sub-class to store transformations per component value
     public record SubTransformData(
             List<Float> scale,
             List<Float> rotation,

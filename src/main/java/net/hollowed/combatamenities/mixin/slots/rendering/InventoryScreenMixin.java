@@ -32,13 +32,13 @@ public abstract class InventoryScreenMixin extends AbstractRecipeBookScreen<@Not
                 RenderPipelines.GUI_OPAQUE_TEXTURED_BACKGROUND,
                 SLOT_TEXTURE,
                 this.leftPos + 76, this.topPos + 7,
-                0, 0, 18, 18, 18, 18 // Texture coordinates and dimensions
+                0, 0, 18, 18, 18, 18
         );
         context.blit(
                 RenderPipelines.GUI_OPAQUE_TEXTURED_BACKGROUND,
                 SLOT_TEXTURE,
                 this.leftPos + 76, this.topPos + 25,
-                0, 0, 18, 18, 18, 18 // Texture coordinates and dimensions
+                0, 0, 18, 18, 18, 18
         );
     }
 }

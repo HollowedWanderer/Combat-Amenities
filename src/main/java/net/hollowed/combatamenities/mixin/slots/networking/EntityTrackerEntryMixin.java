@@ -42,9 +42,7 @@ public class EntityTrackerEntryMixin {
     @Inject(method = "addPairing", at = @At(value = "TAIL"))
     public void startTrackingMixin(ServerPlayer serverPlayer, CallbackInfo info) {
         if (entity instanceof ServerPlayer player) {
-            // Send the back slot item from the player to the new server player
             sendBackSlotUpdate(serverPlayer, player);
-            // Send the back slot item from the server player to the player itself
             sendBackSlotUpdate(player, player);
         }
     }
@@ -61,22 +59,17 @@ public class EntityTrackerEntryMixin {
             Item backStack = player.getInventory().getItem(41).getItem();
 
             if (!(backStack instanceof BlockItem) && player.getInventory().getItem(41) != ItemStack.EMPTY) {
-
-                // Landing detection
-                boolean isLanding = detectLanding(player);
-
-                if (isLanding) {
-                    playLandingSound(player, velocity.y); // Pass the vertical velocity to adjust volume
+                if (detectLanding(player)) {
+                    playLandingSound(player, velocity.y);
                 }
             }
 
             int VELOCITY_HISTORY_SIZE = 5;
             if (verticalVelocityHistory.size() >= VELOCITY_HISTORY_SIZE) {
-                verticalVelocityHistory.poll(); // Remove the oldest velocity
+                verticalVelocityHistory.poll();
             }
-            verticalVelocityHistory.offer((float) velocity.y); // Add the current velocity
 
-            // Update previous position
+            verticalVelocityHistory.offer((float) velocity.y);
             previousPositions.put(playerId, currentPosition);
             wasOnGroundLastTick = player.onGround();
         }
@@ -85,21 +78,19 @@ public class EntityTrackerEntryMixin {
     @Unique
     private void sendBackSlotUpdate(ServerPlayer recipient, ServerPlayer sourcePlayer) {
         ItemStack backSlotItem = sourcePlayer.getInventory().getItem(41);
+        ItemStack beltSlotItem = sourcePlayer.getInventory().getItem(42);
 
-        // Send the back slot item (or an empty item stack if it's empty)
         ServerPlayNetworking.send(recipient,
                 new SlotClientPacketPayload(sourcePlayer.getId(), 41, backSlotItem.isEmpty() ? ItemStack.EMPTY : backSlotItem));
         ServerPlayNetworking.send(recipient,
-                new SlotClientPacketPayload(sourcePlayer.getId(), 42, sourcePlayer.getInventory().getItem(42).isEmpty() ? ItemStack.EMPTY : sourcePlayer.getInventory().getItem(42)));
+                new SlotClientPacketPayload(sourcePlayer.getId(), 42, beltSlotItem.isEmpty() ? ItemStack.EMPTY : beltSlotItem));
     }
 
-    // Detect landing based on velocity history
     @Unique
     private boolean detectLanding(Player playerEntity) {
         if (playerEntity.onGround() && !wasOnGroundLastTick) {
-            // Check if recent velocities indicate falling
             for (float velocity : verticalVelocityHistory) {
-                if (velocity < -0.1F) { // Threshold for downward motion
+                if (velocity < -0.1F) {
                     return true;
                 }
             }
@@ -107,14 +98,11 @@ public class EntityTrackerEntryMixin {
         return false;
     }
 
-    // Play landing sound with volume based on vertical velocity
     @Unique
     private void playLandingSound(Player playerEntity, double verticalVelocity) {
-        // Calculate volume based on velocity
         float volume = Mth.clamp((float) (-verticalVelocity / 2.0), 0.1F, 1.0F);
 
         if (playerEntity instanceof ServerPlayer serverPlayer) {
-            // Play the sound with the calculated volume
             for (ServerPlayer player : serverPlayer.level().players()) {
                 ServerPlayNetworking.send(player, new SoundPacketPayload(0, playerEntity.position(), false, volume, 1.0F, 0, playerEntity.getInventory().getItem(41)));
             }
