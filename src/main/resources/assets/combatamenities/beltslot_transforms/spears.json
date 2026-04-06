@@ -1,7 +1,7 @@
 {
   "item": "#minecraft:spears",
   "scale": [1.85, 1.85, 0.925],
-  "rotation": [180.0, 0.0, 0.0],
+  "rotation": [0.0, 0.0, 22.5],
   "translation": [-0.1, -0.1, 0.0],
   "mode": "NONE",
   "sway": 0.4

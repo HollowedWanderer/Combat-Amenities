@@ -1,6 +1,6 @@
 package net.hollowed.combatamenities.data.gen;
 
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricCodecDataProvider;
 import net.hollowed.combatamenities.data.read.BeltTransformData;
 import net.minecraft.core.HolderLookup;
@@ -13,7 +13,7 @@ import java.util.function.BiConsumer;
 
 @SuppressWarnings("unused")
 public abstract class BeltTransformProvider extends FabricCodecDataProvider<BeltTransformData> {
-    protected BeltTransformProvider(FabricDataOutput dataOutput, CompletableFuture<HolderLookup.Provider> registriesFuture) {
+    protected BeltTransformProvider(FabricPackOutput dataOutput, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(dataOutput, registriesFuture, PackOutput.Target.RESOURCE_PACK, "beltslot_transforms", BeltTransformData.CODEC);
     }
 

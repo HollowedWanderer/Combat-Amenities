@@ -5,7 +5,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -23,19 +23,20 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> {
 
     @Shadow @Final protected T menu;
 
-    @Shadow protected abstract void slotClicked(Slot slot, int slotId, int button, ClickType actionType);
+    @Shadow
+    protected abstract void slotClicked(Slot slot, int slotId, int buttonNum, ContainerInput containerInput);
 
     @Inject(method = "checkHotbarMouseClicked(Lnet/minecraft/client/input/MouseButtonEvent;)V", at = @At("HEAD"), cancellable = true)
     private void swapBackOrBeltSlotMouse(MouseButtonEvent click, CallbackInfo ci) {
         if (this.hoveredSlot != null && this.menu.getCarried().isEmpty()) {
             if (CAKeyBindings.backSlotBinding.matchesMouse(click)) {
-                this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, 41, ClickType.SWAP);
+                this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, 41, ContainerInput.SWAP);
                 ci.cancel();
                 return;
             }
 
             if (CAKeyBindings.beltSlotBinding.matchesMouse(click)) {
-                this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, 42, ClickType.SWAP);
+                this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, 42, ContainerInput.SWAP);
                 ci.cancel();
             }
         }
@@ -45,13 +46,13 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> {
     private void swapBackOrBeltSlot(KeyEvent keyInput, CallbackInfoReturnable<Boolean> cir) {
         if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null) {
             if (CAKeyBindings.backSlotBinding.matches(keyInput)) {
-                this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, 41, ClickType.SWAP);
+                this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, 41, ContainerInput.SWAP);
                 cir.setReturnValue(true);
                 return;
             }
 
             if (CAKeyBindings.beltSlotBinding.matches(keyInput)) {
-                this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, 42, ClickType.SWAP);
+                this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, 42, ContainerInput.SWAP);
                 cir.setReturnValue(true);
             }
         }

@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.hollowed.combatamenities.networking.slots.SlotCreativeClientPacketPayload;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -12,7 +12,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -62,16 +62,16 @@ public abstract class CACreativeInventoryScreenMixin extends AbstractContainerSc
         }
     }
 
-    @Inject(method = "renderBg", at = @At("TAIL"))
-    public void render(GuiGraphics context, float delta, int mouseX, int mouseY, CallbackInfo ci) {
+    @Inject(method = "extractBackground", at = @At("TAIL"))
+    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
         if (this.isInventoryOpen()) {
-            context.blit(
+            graphics.blit(
                     RenderPipelines.GUI_OPAQUE_TEXTURED_BACKGROUND,
                     SLOT_TEXTURE,
                     this.leftPos + 126, this.topPos + 19,
                     0, 0, 18, 18, 18, 18
             );
-            context.blit(
+            graphics.blit(
                     RenderPipelines.GUI_OPAQUE_TEXTURED_BACKGROUND,
                     SLOT_TEXTURE,
                     this.leftPos + 144, this.topPos + 19,
@@ -81,7 +81,7 @@ public abstract class CACreativeInventoryScreenMixin extends AbstractContainerSc
     }
 
     @Inject(method = "slotClicked", at = @At("TAIL"))
-    private void onSlotClickMixin(Slot slot, int slotId, int button, ClickType actionType, CallbackInfo ci) {
+    private void onSlotClickMixin(Slot slot, int slotId, int buttonNum, ContainerInput containerInput, CallbackInfo ci) {
         CreativeModeTab inventoryGroup = BuiltInRegistries.CREATIVE_MODE_TAB.getValue(CreativeModeTabs.INVENTORY);
 
         if (selectedTab.equals(inventoryGroup)) {

@@ -1,8 +1,8 @@
 package net.hollowed.combatamenities.util.interfaces;
 
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.Entity;
 
 public interface TridentEntityRenderStateAccess {
-    void combat_Amenities$setLook(Vec3 look);
-    Vec3 combat_Amenities$getLook();
+    void combat_Amenities$setEntity(Entity look);
+    Entity combat_Amenities$getEntity();
 }

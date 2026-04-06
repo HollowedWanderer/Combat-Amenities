@@ -35,14 +35,8 @@ import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Set;
-
 public class CombatAmenities implements ModInitializer {
 	public static final String MOD_ID = "combatamenities";
-
-	public static final Set<String> TRIDENT_ENCHANTMENTS = Set.of(
-			"Enchantment Loyalty"
-	);
 
 	public static Identifier id(String string) {
 		return Identifier.fromNamespaceAndPath(MOD_ID, string);
@@ -66,18 +60,18 @@ public class CombatAmenities implements ModInitializer {
 		CAComponents.initialize();
 		CASounds.initialize();
 
-		ServerTickEvents.END_SERVER_TICK.register(server -> TickDelayScheduler.tick());
+		ServerTickEvents.END_SERVER_TICK.register(_ -> TickDelayScheduler.tick());
 
 		// Json stuff
-		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(id("back_transforms"), new BackTransformResourceReloadListener());
-		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(id("belt_transforms"), new BeltTransformResourceReloadListener());
-		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(id("item_transforms"), new ItemTransformResourceReloadListener());
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(id("back_transforms"), new BackTransformResourceReloadListener());
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(id("belt_transforms"), new BeltTransformResourceReloadListener());
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(id("item_transforms"), new ItemTransformResourceReloadListener());
 
-		PayloadTypeRegistry.playC2S().register(BackslotPacketPayload.ID, BackslotPacketPayload.CODEC);
-		PayloadTypeRegistry.playC2S().register(BeltslotPacketPayload.ID, BeltslotPacketPayload.CODEC);
-		PayloadTypeRegistry.playC2S().register(SlotCreativeClientPacketPayload.ID, SlotCreativeClientPacketPayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(SlotClientPacketPayload.ID, SlotClientPacketPayload.CODEC);
-		PayloadTypeRegistry.playS2C().register(SoundPacketPayload.ID, SoundPacketPayload.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(BackslotPacketPayload.ID, BackslotPacketPayload.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(BeltslotPacketPayload.ID, BeltslotPacketPayload.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(SlotCreativeClientPacketPayload.ID, SlotCreativeClientPacketPayload.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(SlotClientPacketPayload.ID, SlotClientPacketPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(SoundPacketPayload.ID, SoundPacketPayload.CODEC);
 
         BackSlotServerPacket.registerServerPacket();
 		BeltSlotServerPacket.registerServerPacket();

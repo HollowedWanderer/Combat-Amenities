@@ -51,8 +51,6 @@ public class CAConfig extends MidnightConfig {
     public static boolean correctTridentReturn = true;
     @Entry(category = TWEAKS, name = "Fix Riptide First Person Rendering") @Client
     public static boolean riptideFix = true;
-    @Entry(category = TWEAKS, name = "Built In Loyalty") @Server
-    public static boolean builtInLoyalty = true;
     @Entry(category = TWEAKS, name = "Throwable Fire Charges") @Server
     public static boolean throwableFirecharge = true;
     @Entry(category = TWEAKS, name = "Shield Tweaks") @Server

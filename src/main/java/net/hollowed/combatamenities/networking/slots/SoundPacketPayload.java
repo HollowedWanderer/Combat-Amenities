@@ -16,12 +16,12 @@ public record SoundPacketPayload(int soundId, Vec3 pos, boolean swap, float volu
     public static final StreamCodec<RegistryFriendlyByteBuf, SoundPacketPayload> CODEC = StreamCodec.ofMember(SoundPacketPayload::write, SoundPacketPayload::new);
 
     public SoundPacketPayload(RegistryFriendlyByteBuf buf) {
-        this(buf.readInt(), buf.readVec3(), buf.readBoolean(), buf.readFloat(), buf.readFloat(), buf.readInt(), buf.readBoolean() ? ItemStack.EMPTY : ItemStack.STREAM_CODEC.decode(buf));
+        this(buf.readInt(), new Vec3(buf.readVector3f()), buf.readBoolean(), buf.readFloat(), buf.readFloat(), buf.readInt(), buf.readBoolean() ? ItemStack.EMPTY : ItemStack.STREAM_CODEC.decode(buf));
     }
 
     public void write(RegistryFriendlyByteBuf buf) {
         buf.writeInt(soundId);
-        buf.writeVec3(pos);
+        buf.writeVector3f(pos.toVector3f());
         buf.writeBoolean(swap);
         buf.writeFloat(volume);
         buf.writeFloat(pitch);

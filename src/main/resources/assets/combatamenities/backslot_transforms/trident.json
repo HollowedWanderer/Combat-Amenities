@@ -1,8 +1,9 @@
 {
   "item": "minecraft:trident",
-  "scale": [2.0, 2.0, 1.0],
-  "rotation": [0.0, 0.0, 180.0],
-  "translation": [0.0, 0.0, 0.0],
-  "mode": "NONE",
-  "sway": 0.5
+  "scale": [1.0, 1.0, 1.0],
+  "rotation": [0.0, 90.0, 180.0],
+  "translation": [0.2, -0.45, 0.3],
+  "mode": "FIRST_PERSON_RIGHT_HAND",
+  "sway": 0.5,
+  "noFlip": true
 }

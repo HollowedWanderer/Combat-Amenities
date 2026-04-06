@@ -58,7 +58,7 @@ public abstract class EnderPearlItemMixin extends Item {
 
             int chargeTime = this.getUseDuration(stack, user) - remainingUseTicks;
             float chargeRatio = Math.min(chargeTime / (float) MAX_CHARGE_TIME, 1.0F);
-            float velocity = chargeRatio * MAX_VELOCITY;
+            float velocity = chargeRatio * MAX_VELOCITY + 0.5F;
 
             if (!world.isClientSide()) {
                 ServerLevel serverWorld = (ServerLevel) world;

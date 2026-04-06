@@ -1,6 +1,6 @@
 package net.hollowed.combatamenities.index;
 
-import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.hollowed.combatamenities.CombatAmenities;
 import net.hollowed.combatamenities.particles.HitMarkerParticle;
@@ -27,10 +27,10 @@ public class CAParticles {
     }
 
     public static void initializeClient() {
-        ParticleFactoryRegistry.getInstance().register(HIT_MARKER, HitMarkerParticle.Factory::new);
-        ParticleFactoryRegistry.getInstance().register(CRIT_ATTACK, AttackSweepParticle.Provider::new);
-        ParticleFactoryRegistry.getInstance().register(NORMAL_ATTACK, AttackSweepParticle.Provider::new);
-        ParticleFactoryRegistry.getInstance().register(LEFT_NORMAL_ATTACK, AttackSweepParticle.Provider::new);
-        ParticleFactoryRegistry.getInstance().register(RING, RingParticle.Factory::new);
+        ParticleProviderRegistry.getInstance().register(HIT_MARKER, HitMarkerParticle.Factory::new);
+        ParticleProviderRegistry.getInstance().register(CRIT_ATTACK, AttackSweepParticle.Provider::new);
+        ParticleProviderRegistry.getInstance().register(NORMAL_ATTACK, AttackSweepParticle.Provider::new);
+        ParticleProviderRegistry.getInstance().register(LEFT_NORMAL_ATTACK, AttackSweepParticle.Provider::new);
+        ParticleProviderRegistry.getInstance().register(RING, RingParticle.Factory::new);
     }
 }

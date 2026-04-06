@@ -1,6 +1,6 @@
 package net.hollowed.combatamenities.data.gen;
 
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricCodecDataProvider;
 import net.hollowed.combatamenities.data.read.ItemTransformData;
 import net.minecraft.core.HolderLookup;
@@ -13,7 +13,7 @@ import java.util.function.BiConsumer;
 
 @SuppressWarnings("unused")
 public abstract class ItemTransformProvider extends FabricCodecDataProvider<ItemTransformData> {
-    protected ItemTransformProvider(FabricDataOutput dataOutput, CompletableFuture<HolderLookup.Provider> registriesFuture) {
+    protected ItemTransformProvider(FabricPackOutput dataOutput, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(dataOutput, registriesFuture, PackOutput.Target.RESOURCE_PACK, "item_transforms", ItemTransformData.CODEC);
     }
 

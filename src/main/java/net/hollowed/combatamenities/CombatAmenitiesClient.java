@@ -23,7 +23,7 @@ public class CombatAmenitiesClient implements ClientModInitializer {
         SoundPacket.registerClientPacket();
         CAParticles.initializeClient();
 
-        ClientTickEvents.END_CLIENT_TICK.register(server -> ClientTickDelayScheduler.tick());
+        ClientTickEvents.END_CLIENT_TICK.register(_ -> ClientTickDelayScheduler.tick());
 
 //        PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(ANIMATION_LAYER_ID, 1000,
 //                player -> new PlayerAnimationController(player,

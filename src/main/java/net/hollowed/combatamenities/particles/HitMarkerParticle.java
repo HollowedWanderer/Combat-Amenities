@@ -8,6 +8,7 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 @Environment(EnvType.CLIENT)
 public class HitMarkerParticle extends SingleQuadParticle {
@@ -19,11 +20,6 @@ public class HitMarkerParticle extends SingleQuadParticle {
 		this.lifetime = 4;
 		this.quadSize /= 2.0F;
 		this.setSpriteFromAge(spriteProvider);
-	}
-
-	@Override
-	public int getLightColor(float tint) {
-		return 15728880;
 	}
 
 	@Override
@@ -52,7 +48,7 @@ public class HitMarkerParticle extends SingleQuadParticle {
 		}
 
 		@Override
-		public @Nullable Particle createParticle(SimpleParticleType parameters, @NotNull ClientLevel world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, @NotNull RandomSource random) {
+		public @Nullable Particle createParticle(@NonNull SimpleParticleType parameters, @NotNull ClientLevel world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, @NotNull RandomSource random) {
 			return new HitMarkerParticle(world, x, y, z, this.spriteProvider);
 		}
 	}

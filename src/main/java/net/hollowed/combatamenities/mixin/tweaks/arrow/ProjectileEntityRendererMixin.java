@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.ArrowRenderer;
 import net.minecraft.client.renderer.entity.state.ArrowRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
-import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
@@ -57,30 +56,30 @@ public abstract class ProjectileEntityRendererMixin<T extends AbstractArrow> {
     }
 
     @Inject(
-        method = "submit(Lnet/minecraft/client/renderer/entity/state/ArrowRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V",
+        method = "submit(Lnet/minecraft/client/renderer/entity/state/ArrowRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
         at = @At("HEAD"),
         cancellable = true
     )
     public void renderWithItem(
-            ArrowRenderState projectileEntityRenderState, PoseStack matrixStack, SubmitNodeCollector orderedRenderCommandQueue, CameraRenderState cameraRenderState, CallbackInfo ci       // Use Object because the generic types are not accessible directly
+            ArrowRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, net.minecraft.client.renderer.state.level.CameraRenderState camera, CallbackInfo ci
     ) {
         if (CAConfig.itemArrows) {
-            if (projectileEntityRenderState instanceof ArrowEntityRenderStateAccess access) {
-                matrixStack.pushPose();
+            if (state instanceof ArrowEntityRenderStateAccess access) {
+                poseStack.pushPose();
 
                 float multiplier = 0.25F;
 
-                matrixStack.translate(access.combat_Amenities$getLook().multiply(multiplier, multiplier, -multiplier));
+                poseStack.translate(access.combat_Amenities$getLook().multiply(multiplier, multiplier, -multiplier));
 
-                matrixStack.mulPose(Axis.YP.rotationDegrees(projectileEntityRenderState.yRot - 90.0F));
-                matrixStack.mulPose(Axis.ZP.rotationDegrees(projectileEntityRenderState.xRot - 45.0F));
+                poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot - 90.0F));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(state.xRot - 45.0F));
 
                 ItemStack itemStack = access.combat_Amenities$getItemStack();
                 ItemStackRenderState stackRenderState = new ItemStackRenderState();
                 Minecraft.getInstance().getItemModelResolver().appendItemLayers(stackRenderState, itemStack, ItemDisplayContext.NONE, Minecraft.getInstance().level, null, 1);
-                stackRenderState.submit(matrixStack, orderedRenderCommandQueue, projectileEntityRenderState.lightCoords, OverlayTexture.NO_OVERLAY, projectileEntityRenderState.outlineColor);
+                stackRenderState.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
 
-                matrixStack.popPose();
+                poseStack.popPose();
                 ci.cancel();
             }
         }

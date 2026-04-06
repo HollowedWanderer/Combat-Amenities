@@ -12,7 +12,6 @@ public class KeybindEventHandler {
     private static long lastKeyPressTime = 0;
     private static long lastKeyPressTime1 = 0;
 
-
     private static final long COOLDOWN_TIME_MS = 100;
 
     public static void register() {

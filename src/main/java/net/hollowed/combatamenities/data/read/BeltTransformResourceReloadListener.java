@@ -52,7 +52,7 @@ public class BeltTransformResourceReloadListener implements ResourceManagerReloa
 
                                 BuiltInRegistries.ITEM.forEach(item -> {
                                     Identifier itemId = BuiltInRegistries.ITEM.getKey(item);
-                                    if (item.getDefaultInstance().getItemHolder().is(tag)) {
+                                    if (item.getDefaultInstance().is(tag)) {
                                         transforms.putIfAbsent(itemId, data);
                                     }
                                 });

@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "net.hollowed.combatamenities.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "mixins": [
     "MinecraftClientMixin",
     "MinecraftServerMixin",
@@ -15,10 +15,6 @@
     "slots.registration.SlotsMixin",
     "tweaks.arrow.ProjectileEntityMixin",
     "tweaks.bow.BowItemMixin",
-    "tweaks.enchantments.EnchantBookFactoryMixin",
-    "tweaks.enchantments.EnchantmentHelperMixin",
-    "tweaks.enchantments.EnchantmentMixin",
-    "tweaks.enchantments.ItemGroupMixin",
     "tweaks.fire_charge.FireChargeItemMixin",
     "tweaks.pearl.EnderPearlEntityMixin",
     "tweaks.pearl.EnderPearlItemMixin",
@@ -33,8 +29,6 @@
   "client": [
     "items.properties.BooleanPropertyMixin",
     "items.properties.NumericPropertyMixin",
-    "modMenu.ModMenuEntryMixin",
-    "modMenu.ModMenuMixin",
     "slots.registration.CACreativeInventoryScreenMixin",
     "slots.registration.HandledScreenMixin",
     "slots.rendering.HudRendererMixin",

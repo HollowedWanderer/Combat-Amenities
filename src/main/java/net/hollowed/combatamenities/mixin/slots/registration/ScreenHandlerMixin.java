@@ -11,7 +11,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -29,17 +29,17 @@ public abstract class ScreenHandlerMixin {
     @Shadow @Final public NonNullList<Slot> slots;
 
     @Inject(method = "doClick", at = @At("HEAD"))
-    private void internalOnSlotClick(int slotIndex, int button, ClickType actionType, Player player, CallbackInfo ci) {
+    private void internalOnSlotClick(int slotIndex, int buttonNum, ContainerInput containerInput, Player player, CallbackInfo ci) {
         Inventory playerInventory = player.getInventory();
-        if (actionType == ClickType.SWAP && (button == 41 || button == 42)) {
-            if (button == 41 && slotIndex == 46 || button == 42 && slotIndex == 47) return;
-            ItemStack itemStack5 = playerInventory.getItem(button);
+        if (containerInput == ContainerInput.SWAP && (buttonNum == 41 || buttonNum == 42)) {
+            if (buttonNum == 41 && slotIndex == 46 || buttonNum == 42 && slotIndex == 47) return;
+            ItemStack itemStack5 = playerInventory.getItem(buttonNum);
             Slot slot = this.slots.get(slotIndex);
             ItemStack itemStack = slot.getItem();
             if (!itemStack5.isEmpty() || !itemStack.isEmpty()) {
                 if (itemStack5.isEmpty()) {
                     if (slot.mayPickup(player)) {
-                        playerInventory.setItem(button, itemStack);
+                        playerInventory.setItem(buttonNum, itemStack);
                         slot.setByPlayer(ItemStack.EMPTY);
                         slot.onTake(player, itemStack);
 
@@ -51,7 +51,7 @@ public abstract class ScreenHandlerMixin {
                         if (itemStack5.getCount() > p) {
                             slot.setByPlayer(itemStack5.split(p));
                         } else {
-                            playerInventory.setItem(button, ItemStack.EMPTY);
+                            playerInventory.setItem(buttonNum, ItemStack.EMPTY);
                             slot.setByPlayer(itemStack5);
 
                             playSound(player, itemStack5, 2);
@@ -66,7 +66,7 @@ public abstract class ScreenHandlerMixin {
                             player.drop(itemStack, true);
                         }
                     } else {
-                        playerInventory.setItem(button, itemStack);
+                        playerInventory.setItem(buttonNum, itemStack);
                         slot.setByPlayer(itemStack5);
                         slot.onTake(player, itemStack);
 

@@ -7,7 +7,7 @@ import net.hollowed.combatamenities.util.items.CAComponents;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.HumanoidArm;
@@ -47,14 +47,14 @@ public abstract class HudRendererMixin {
         }
     }
 
-    @Inject(method = "renderItemHotbar", at = @At("TAIL"))
-    public void renderHotbar(GuiGraphics context, DeltaTracker tickCounter, CallbackInfo ci) {
-        renderBackSlot(context, tickCounter);
-        renderBeltSlot(context, tickCounter);
+    @Inject(method = "extractItemHotbar", at = @At("TAIL"))
+    public void renderHotbar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        renderBackSlot(graphics, deltaTracker);
+        renderBeltSlot(graphics, deltaTracker);
     }
 
     @Unique
-    private void renderBeltSlot(GuiGraphics drawContext, DeltaTracker tickCounter) {
+    private void renderBeltSlot(GuiGraphicsExtractor drawContext, DeltaTracker tickCounter) {
         Player playerEntity = Minecraft.getInstance().player;
         if (playerEntity != null) {
             ItemStack beltSlotStack = playerEntity.getInventory().getItem(42);
@@ -90,7 +90,7 @@ public abstract class HudRendererMixin {
     }
 
     @Unique
-    private void renderBackSlot(GuiGraphics drawContext, DeltaTracker tickCounter) {
+    private void renderBackSlot(GuiGraphicsExtractor drawContext, DeltaTracker tickCounter) {
         Player playerEntity = Minecraft.getInstance().player;
         if (playerEntity != null) {
             ItemStack backSlotStack = playerEntity.getInventory().getItem(41);
@@ -126,7 +126,7 @@ public abstract class HudRendererMixin {
     }
 
     @Unique
-    private void renderItem(GuiGraphics context, int x, int y, DeltaTracker tickCounter, Player player, ItemStack stack, int animationTicks) {
+    private void renderItem(GuiGraphicsExtractor context, int x, int y, DeltaTracker tickCounter, Player player, ItemStack stack, int animationTicks) {
         if (!stack.isEmpty()) {
             float f = animationTicks - tickCounter.getGameTimeDeltaPartialTick(false);
             if (f > 0.0F) {
@@ -137,17 +137,17 @@ public abstract class HudRendererMixin {
                 context.pose().translate(-(x + 8), -(y + 12));
             }
 
-            context.renderItem(player, stack, x, y, 1);
+            context.item(player, stack, x, y, 1);
             if (f > 0.0F) {
                 context.pose().popMatrix();
             }
 
-            context.renderItemDecorations(this.minecraft.font, stack, x, y);
+            context.itemDecorations(this.minecraft.font, stack, x, y);
         }
     }
 
     @Unique
-    private static int getX(GuiGraphics drawContext) {
+    private static int getX(GuiGraphicsExtractor drawContext) {
         boolean isLeftHanded = Minecraft.getInstance().options.mainHand().get().equals(HumanoidArm.LEFT);
 
         int x;
@@ -160,7 +160,7 @@ public abstract class HudRendererMixin {
     }
 
     @Unique
-    private static int getBeltX(GuiGraphics drawContext) {
+    private static int getBeltX(GuiGraphicsExtractor drawContext) {
         boolean isLeftHanded = Minecraft.getInstance().options.mainHand().get().equals(HumanoidArm.LEFT);
 
         int x;

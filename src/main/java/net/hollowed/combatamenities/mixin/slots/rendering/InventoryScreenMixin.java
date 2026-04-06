@@ -1,6 +1,6 @@
 package net.hollowed.combatamenities.mixin.slots.rendering;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
@@ -26,15 +26,15 @@ public abstract class InventoryScreenMixin extends AbstractRecipeBookScreen<@Not
         super(handler, recipeBook, inventory, title);
     }
 
-    @Inject(method = "renderBg", at = @At("TAIL"))
-    public void render(GuiGraphics context, float delta, int mouseX, int mouseY, CallbackInfo ci) {
-        context.blit(
+    @Inject(method = "extractBackground", at = @At("TAIL"))
+    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
+        graphics.blit(
                 RenderPipelines.GUI_OPAQUE_TEXTURED_BACKGROUND,
                 SLOT_TEXTURE,
                 this.leftPos + 76, this.topPos + 7,
                 0, 0, 18, 18, 18, 18
         );
-        context.blit(
+        graphics.blit(
                 RenderPipelines.GUI_OPAQUE_TEXTURED_BACKGROUND,
                 SLOT_TEXTURE,
                 this.leftPos + 76, this.topPos + 25,
