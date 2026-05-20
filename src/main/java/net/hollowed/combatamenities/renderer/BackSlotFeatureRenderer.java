@@ -37,6 +37,8 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import org.jspecify.annotations.NonNull;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -53,7 +55,7 @@ public class BackSlotFeatureRenderer extends ItemInHandLayer<@NotNull AvatarRend
 	}
 
 	@Override
-	public void submit(@NotNull PoseStack matrixStack, @NotNull SubmitNodeCollector orderedRenderCommandQueue, int i, AvatarRenderState armedEntityRenderState, float f, float g) {
+	public void submit(@NotNull PoseStack matrixStack, @NotNull SubmitNodeCollector orderedRenderCommandQueue, int i, @NonNull AvatarRenderState armedEntityRenderState, float f, float g) {
 		if (armedEntityRenderState instanceof PlayerEntityRenderStateAccess access) {
 			Player playerEntity = access.combat_Amenities$getPlayerEntity();
 			if (playerEntity != null) {
@@ -253,8 +255,8 @@ public class BackSlotFeatureRenderer extends ItemInHandLayer<@NotNull AvatarRend
 		}
 	}
 
-	private static Vec3 startTickPosition;
-	public static Vec3 playerVelocity = new Vec3(0, 0, 0);
+	private Vec3 startTickPosition;
+	public Vec3 playerVelocity = new Vec3(0, 0, 0);
 
 	private boolean wasOnGroundLastTick = true;
 	private final Queue<Float> verticalVelocityHistory = new LinkedList<>();

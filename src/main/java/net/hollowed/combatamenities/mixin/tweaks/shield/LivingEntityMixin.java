@@ -44,9 +44,17 @@ public abstract class LivingEntityMixin {
                 && living.getMainHandItem().tags().toList().contains(TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(CombatAmenities.MOD_ID, "bypass_shield_tweaks")));
 
         if (CAConfig.shieldTweaks && !source.is(ModDamageTypes.CLEAVED) && !bypassShieldTweaks) {
-            Vec3 attackDirection = source.getSourcePosition() != null ? source.getSourcePosition().subtract(self.position()).normalize() : Vec3.ZERO;
-            Vec3 lookDirection = self.getViewVector(1.0F).normalize();
-            double angle = attackDirection.dot(lookDirection);
+
+            Vec3 sourcePosition = source.getSourcePosition();
+            double angle;
+            if (sourcePosition != null) {
+                Vec3 viewVector = self.calculateViewVector(0.0F, self.getYHeadRot());
+                Vec3 vectorTo = sourcePosition.subtract(self.position());
+                vectorTo = (new Vec3(vectorTo.x, 0.0F, vectorTo.z)).normalize();
+                angle = Math.acos(vectorTo.dot(viewVector));
+            } else {
+                angle = (float)Math.PI;
+            }
 
             if (self.getTicksUsingItem() <= CAConfig.shieldParryTime && self.getTicksUsingItem() > 0 && blocksAttacksComponent != null) {
                 if (angle > 0.0) {
@@ -85,12 +93,15 @@ public abstract class LivingEntityMixin {
                 }
             }
 
-            if (source.is(DamageTypeTags.IS_PROJECTILE) && self.getTicksUsingItem() > 0 && blocksAttacksComponent != null && angle > 0.0F) {
-                if (self instanceof Player player) {
-                    ServerLevel serverWorld = (ServerLevel) player.level();
-                    serverWorld.playSound(null, player.blockPosition(), SoundEvents.SHIELD_BLOCK.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
+            if (
+                    source.is(DamageTypeTags.IS_PROJECTILE)
+                            && self.isUsingItem()
+                            && blocksAttacksComponent != null
+                            && !(angle > (double)(((float)Math.PI / 180F) * blocksAttacksComponent.damageReductions().getFirst().horizontalBlockingAngle()))
+            ) {
+                    ServerLevel serverWorld = (ServerLevel) self.level();
+                    serverWorld.playSound(null, self.blockPosition(), SoundEvents.SHIELD_BLOCK.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
                     cir.setReturnValue(false);
-                }
             }
 
             if (blocksAttacksComponent != null && self.getUseItem().getItem() instanceof ShieldItem) {
