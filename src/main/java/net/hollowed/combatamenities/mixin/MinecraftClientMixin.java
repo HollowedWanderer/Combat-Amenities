@@ -18,7 +18,7 @@ public abstract class MinecraftClientMixin {
     }
 
     @Inject(method = "setLevel", at = @At("TAIL"))
-    public void joinWorld(ClientLevel world, CallbackInfo ci) {
+    public void joinWorld(ClientLevel level, CallbackInfo ci) {
         ClientTickDelayScheduler.run = true;
     }
 }

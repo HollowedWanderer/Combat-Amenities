@@ -3,8 +3,6 @@
   "package": "net.hollowed.combatamenities.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "MinecraftClientMixin",
-    "MinecraftServerMixin",
     "slots.networking.EntityTrackerEntryMixin",
     "slots.networking.ServerPlayerEntityMixin",
     "slots.registration.PlayerInventoryMixin",
@@ -20,6 +18,7 @@
     "tweaks.pearl.EnderPearlItemMixin",
     "tweaks.pearl.EntityMixin",
     "tweaks.shield.LivingEntityMixin",
+    "tweaks.shield.ShieldItemMixin",
     "tweaks.trident.TridentEntityMixin",
     "tweaks.trident.TridentItemMixin"
   ],
@@ -27,6 +26,7 @@
     "defaultRequire": 1
   },
   "client": [
+    "MinecraftClientMixin",
     "items.properties.BooleanPropertyMixin",
     "items.properties.NumericPropertyMixin",
     "slots.registration.CACreativeInventoryScreenMixin",

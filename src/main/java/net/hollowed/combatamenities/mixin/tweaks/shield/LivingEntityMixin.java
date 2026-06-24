@@ -37,7 +37,7 @@ public abstract class LivingEntityMixin {
     private BlocksAttacks shield;
 
     @Inject(method = "hurtServer", at = @At("HEAD"), cancellable = true)
-    private void modifyShieldBlocking(ServerLevel world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    private void modifyShieldBlocking(ServerLevel level, DamageSource source, float damage, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
         BlocksAttacks blocksAttacksComponent = self.getUseItem().get(DataComponents.BLOCKS_ATTACKS);
         boolean bypassShieldTweaks = source.getEntity() instanceof LivingEntity living
@@ -68,17 +68,17 @@ public abstract class LivingEntityMixin {
                             serverPlayer.getAdvancements().award(advancement, "deflected_projectile");
                         }
 
-                        double knockbackStrength = 1;
+                        float knockbackStrength = 1F;
 
                         ItemCooldowns cooldownManager = player.getCooldowns();
                         if (source.getDirectEntity() instanceof LivingEntity attacker) {
-                            Vec3 knockbackDirection = attacker.position().subtract(player.position()).normalize();
-                            attacker.knockback(knockbackStrength, -knockbackDirection.x, -knockbackDirection.z);
+                            attacker.push(player.getLookAngle().normalize().multiply(knockbackStrength, 0.25, knockbackStrength).add(0, 0.5, 0));
+                            attacker.hurtMarked = true;
+                            attacker.needsSync = true;
                             if (attacker.getSecondsToDisableBlocking() > 0) {
                                 cooldownManager.addCooldown(self.getUseItem(), 40);
                                 self.releaseUsingItem();
                             } else {
-                                cooldownManager.addCooldown(self.getUseItem(), 10);
                                 self.releaseUsingItem();
                             }
                         } else if (source.getDirectEntity() instanceof Projectile entity) {
@@ -120,7 +120,7 @@ public abstract class LivingEntityMixin {
     }
 
     @Inject(method = "hurtServer", at = @At("TAIL"))
-    private void modifyShieldBlockingEnd(ServerLevel world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    private void modifyShieldBlockingEnd(ServerLevel level, DamageSource source, float damage, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (shield != null) self.getUseItem().set(DataComponents.BLOCKS_ATTACKS, shield);
         ServerLevel serverWorld = (ServerLevel) self.level();

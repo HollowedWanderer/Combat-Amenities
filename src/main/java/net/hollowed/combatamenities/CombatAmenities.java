@@ -46,7 +46,7 @@ public class CombatAmenities implements ModInitializer {
 
 	public static Vec3 matrixToVec(PoseStack matrixStack) {
 		Matrix4f matrix = matrixStack.last().pose();
-		Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+		Camera camera = Minecraft.getInstance().gameRenderer.mainCamera();
 		Vector4f localPos = new Vector4f(0, 0, 0, 1);
 		matrix.transform(localPos);
 		Vec3 cameraPos = camera.position();

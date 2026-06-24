@@ -6,8 +6,8 @@ import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.util.items.CAComponents;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.HumanoidArm;
@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 public abstract class HudRendererMixin {
 
     @Shadow @Final private Minecraft minecraft;
@@ -75,7 +75,7 @@ public abstract class HudRendererMixin {
                 int y = drawContext.guiHeight() - CAConfig.beltslotY - 4;
 
                 RenderSystem.assertOnRenderThread();
-                GlStateManager._enableBlend();
+                GlStateManager._enableBlend(0);
 
                 drawContext.blit(
                         RenderPipelines.GUI_TEXTURED,
@@ -111,7 +111,7 @@ public abstract class HudRendererMixin {
                 int y = drawContext.guiHeight() - CAConfig.backslotY - 4;
 
                 RenderSystem.assertOnRenderThread();
-                GlStateManager._disableBlend();
+                GlStateManager._disableBlend(0);
 
                 drawContext.blit(
                         RenderPipelines.GUI_TEXTURED,
