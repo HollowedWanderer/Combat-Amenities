@@ -1,5 +1,6 @@
 package net.hollowed.combatamenities.mixin.tweaks.shield;
 
+import net.hollowed.combatamenities.config.CAConfig;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -18,7 +19,7 @@ public class ShieldItemMixin extends Item {
 
     @Override
     public boolean releaseUsing(@NonNull ItemStack itemStack, @NonNull Level level, @NonNull LivingEntity entity, int remainingTime) {
-        if (entity instanceof ServerPlayer serverPlayer && !serverPlayer.getCooldowns().isOnCooldown(itemStack)) {
+        if (CAConfig.shieldTweaks && entity instanceof ServerPlayer serverPlayer && !serverPlayer.getCooldowns().isOnCooldown(itemStack)) {
             serverPlayer.getCooldowns().addCooldown(itemStack, 10);
         }
         return true;
