@@ -165,7 +165,7 @@ public class BeltSlotFeatureRenderer extends ItemInHandLayer<@NotNull AvatarRend
 					matrixStack.pushPose();
 
 					this.getParentModel().body.translateAndRotate(matrixStack);
-					float pivot = 0.9F;
+					float pivot = 0.8F;
 					float pivotSide = right ? 0.275F : -0.275F;
 					float pivotFront = 0.1F;
 

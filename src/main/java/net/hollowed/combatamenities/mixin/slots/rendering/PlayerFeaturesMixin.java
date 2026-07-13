@@ -24,7 +24,7 @@ public abstract class PlayerFeaturesMixin extends LivingEntityRenderer<@NotNull 
     }
 
     @Inject(method = "<init>", at = @At("CTOR_HEAD"))
-    private void addCustomFeature(EntityRendererProvider.Context ctx, boolean slim, CallbackInfo ci) {
+    private void addCustomFeature(EntityRendererProvider.Context context, boolean slimSteve, CallbackInfo ci) {
         ItemInHandRenderer heldItemRenderer = Minecraft.getInstance().getEntityRenderDispatcher().getItemInHandRenderer();
         this.addLayer(new BackSlotFeatureRenderer(this, heldItemRenderer));
         this.addLayer(new BeltSlotFeatureRenderer(this, heldItemRenderer));
