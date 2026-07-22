@@ -16,7 +16,7 @@ public record IntegerComponentProperty() implements RangeSelectItemModelProperty
 
     @Override
     public float get(ItemStack stack, @Nullable ClientLevel world, @Nullable ItemOwner context, int seed) {
-        return stack.get(CAComponents.INTEGER_PROPERTY) != null ? Objects.requireNonNull(stack.get(CAComponents.INTEGER_PROPERTY)) : 0;
+        return stack.getOrDefault(CAComponents.INTEGER_PROPERTY, 0);
     }
 
     @Override

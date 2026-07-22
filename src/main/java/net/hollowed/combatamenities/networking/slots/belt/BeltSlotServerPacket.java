@@ -30,16 +30,16 @@ public class BeltSlotServerPacket {
             }
 
             if (!handStack.isEmpty()) {
-                handStack.set(CAComponents.STRING_PROPERTY, "bob5");
+                handStack.setPopTime(5);
                 player.setItemInHand(InteractionHand.MAIN_HAND, backStack.copy());
                 player.getInventory().setItem(42, handStack.copy());
             } else {
                 if (backStack.isEmpty()) {
-                    offhandStack.set(CAComponents.STRING_PROPERTY, "bob5");
+                    offhandStack.setPopTime(5);
                     player.setItemInHand(InteractionHand.OFF_HAND, backStack.copy());
                     player.getInventory().setItem(42, offhandStack.copy());
                 } else {
-                    handStack.set(CAComponents.STRING_PROPERTY, "bob5");
+                    handStack.setPopTime(5);
                     player.setItemInHand(InteractionHand.MAIN_HAND, backStack.copy());
                     player.getInventory().setItem(42, handStack.copy());
                 }

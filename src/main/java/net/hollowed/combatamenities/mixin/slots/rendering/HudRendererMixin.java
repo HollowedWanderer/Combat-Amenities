@@ -28,25 +28,6 @@ public abstract class HudRendererMixin {
     @Unique
     private static final Identifier WIDGETS_TEXTURE = Identifier.parse("textures/gui/sprites/hud/hotbar_offhand_left.png");
 
-    @Unique
-    private static ItemStack lastBackSlotStack = ItemStack.EMPTY;
-    @Unique
-    private static ItemStack lastBeltSlotStack = ItemStack.EMPTY;
-    @Unique
-    private int backAnimationTicks = 0;
-    @Unique
-    private int beltAnimationTicks = 0;
-
-    @Inject(method = "tick()V", at = @At("HEAD"))
-    private void tick(CallbackInfo ci) {
-        if (backAnimationTicks > 0) {
-            backAnimationTicks--;
-        }
-        if (beltAnimationTicks > 0) {
-            beltAnimationTicks--;
-        }
-    }
-
     @Inject(method = "extractItemHotbar", at = @At("TAIL"))
     public void renderHotbar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         renderBackSlot(graphics, deltaTracker);
@@ -58,17 +39,6 @@ public abstract class HudRendererMixin {
         Player playerEntity = Minecraft.getInstance().player;
         if (playerEntity != null) {
             ItemStack beltSlotStack = playerEntity.getInventory().getItem(42);
-
-            if (!ItemStack.matches(beltSlotStack, lastBeltSlotStack) && beltAnimationTicks == 0) {
-                lastBeltSlotStack = beltSlotStack.copy();
-                if (beltSlotStack.getOrDefault(CAComponents.STRING_PROPERTY, "").equals("bob5")) {
-                    beltAnimationTicks = 5;
-                }
-            }
-
-            if (beltSlotStack.getOrDefault(CAComponents.STRING_PROPERTY, "").equals("bob5")) {
-                beltSlotStack.remove(CAComponents.STRING_PROPERTY);
-            }
 
             if (!beltSlotStack.isEmpty()) {
                 final int x = getBeltX(drawContext);
@@ -84,7 +54,7 @@ public abstract class HudRendererMixin {
                         0, 0, 22, 23, 29, 24
                 );
 
-                renderItem(drawContext, x + 4, y - 15, tickCounter, playerEntity, beltSlotStack, beltAnimationTicks);
+                renderItem(drawContext, x + 4, y - 15, tickCounter, playerEntity, beltSlotStack);
             }
         }
     }
@@ -94,17 +64,6 @@ public abstract class HudRendererMixin {
         Player playerEntity = Minecraft.getInstance().player;
         if (playerEntity != null) {
             ItemStack backSlotStack = playerEntity.getInventory().getItem(41);
-
-            if (!ItemStack.matches(backSlotStack, lastBackSlotStack) && backAnimationTicks == 0) {
-                lastBackSlotStack = backSlotStack.copy();
-                if (backSlotStack.getOrDefault(CAComponents.STRING_PROPERTY, "").equals("bob5")) {
-                    backAnimationTicks = 5;
-                }
-            }
-
-            if (backSlotStack.getOrDefault(CAComponents.STRING_PROPERTY, "").equals("bob5")) {
-                backSlotStack.remove(CAComponents.STRING_PROPERTY);
-            }
 
             if (!backSlotStack.isEmpty()) {
                 final int x = getX(drawContext);
@@ -120,15 +79,15 @@ public abstract class HudRendererMixin {
                         0, 0, 22, 23, 29, 24
                 );
 
-                renderItem(drawContext, x + 4, y - 15, tickCounter, playerEntity, backSlotStack, backAnimationTicks);
+                renderItem(drawContext, x + 4, y - 15, tickCounter, playerEntity, backSlotStack);
             }
         }
     }
 
     @Unique
-    private void renderItem(GuiGraphicsExtractor context, int x, int y, DeltaTracker tickCounter, Player player, ItemStack stack, int animationTicks) {
+    private void renderItem(GuiGraphicsExtractor context, int x, int y, DeltaTracker tickCounter, Player player, ItemStack stack) {
         if (!stack.isEmpty()) {
-            float f = animationTicks - tickCounter.getGameTimeDeltaPartialTick(false);
+            float f = stack.getPopTime() - tickCounter.getGameTimeDeltaPartialTick(false);
             if (f > 0.0F) {
                 float g = 1.0F + f / 5.0F;
                 context.pose().pushMatrix();
