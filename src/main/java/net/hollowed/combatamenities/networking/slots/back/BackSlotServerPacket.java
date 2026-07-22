@@ -30,25 +30,16 @@ public class BackSlotServerPacket {
             }
 
             if (!handStack.isEmpty()) {
-                handStack.set(CAComponents.STRING_PROPERTY, "bob5");
-                if (backStack.getOrDefault(CAComponents.STRING_PROPERTY, "").equals("bob5")) {
-                    backStack.remove(CAComponents.STRING_PROPERTY);
-                }
+                handStack.setPopTime(5);
                 player.setItemInHand(InteractionHand.MAIN_HAND, backStack.copy());
                 player.getInventory().setItem(41, handStack.copy());
             } else {
                 if (backStack.isEmpty()) {
-                    offhandStack.set(CAComponents.STRING_PROPERTY, "bob5");
-                    if (backStack.getOrDefault(CAComponents.STRING_PROPERTY, "").equals("bob5")) {
-                        backStack.remove(CAComponents.STRING_PROPERTY);
-                    }
+                    offhandStack.setPopTime(5);
                     player.setItemInHand(InteractionHand.OFF_HAND, backStack.copy());
                     player.getInventory().setItem(41, offhandStack.copy());
                 } else {
-                    handStack.set(CAComponents.STRING_PROPERTY, "bob5");
-                    if (backStack.getOrDefault(CAComponents.STRING_PROPERTY, "").equals("bob5")) {
-                        backStack.remove(CAComponents.STRING_PROPERTY);
-                    }
+                    handStack.setPopTime(5);
                     player.setItemInHand(InteractionHand.MAIN_HAND, backStack.copy());
                     player.getInventory().setItem(41, handStack.copy());
                 }
