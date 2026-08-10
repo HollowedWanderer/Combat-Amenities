@@ -1,9 +1,7 @@
 package net.hollowed.combatamenities.mixin.slots.rendering;
 
-import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.hollowed.combatamenities.config.CAConfig;
-import net.hollowed.combatamenities.util.items.CAComponents;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -45,7 +43,6 @@ public abstract class HudRendererMixin {
                 int y = drawContext.guiHeight() - CAConfig.beltslotY - 4;
 
                 RenderSystem.assertOnRenderThread();
-                GlStateManager._enableBlend(0);
 
                 drawContext.blit(
                         RenderPipelines.GUI_TEXTURED,
@@ -70,7 +67,6 @@ public abstract class HudRendererMixin {
                 int y = drawContext.guiHeight() - CAConfig.backslotY - 4;
 
                 RenderSystem.assertOnRenderThread();
-                GlStateManager._disableBlend(0);
 
                 drawContext.blit(
                         RenderPipelines.GUI_TEXTURED,
