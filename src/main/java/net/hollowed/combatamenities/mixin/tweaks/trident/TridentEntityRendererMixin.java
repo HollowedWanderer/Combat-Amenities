@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.util.interfaces.TridentEntityRenderStateAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -21,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Quaternionf;
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -53,16 +55,23 @@ public abstract class TridentEntityRendererMixin extends EntityRenderer<@NotNull
         if (state instanceof TridentEntityRenderStateAccess access) {
             poseStack.pushPose();
 
-            float multiplier = 0.5F;
+            float multiplier = 0.8F + CAConfig.tridentRenderTranslations.get(1);
             poseStack.translate(access.combat_Amenities$getEntity().getViewVector(0).multiply(multiplier, multiplier, -multiplier));
 
-            poseStack.translate(-0.3, 0, 0);
+            poseStack.translate(-0.3 + CAConfig.tridentRenderTranslations.get(0), 0, CAConfig.tridentRenderTranslations.get(2));
 
             Vec3 pivot = new Vec3(0.3, 0, 0);
             poseStack.translate(pivot);
 
             poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot - 180.0F));
             poseStack.mulPose(Axis.XP.rotationDegrees(state.xRot - 65F));
+            poseStack.mulPose(Axis.XN.rotationDegrees(10.0F));
+
+            poseStack.mulPose((new Quaternionf())
+                    .rotateY((float) Math.toRadians(CAConfig.tridentRenderRotations.getFirst()))
+                    .rotateX((float) Math.toRadians(CAConfig.tridentRenderRotations.get(1)))
+                    .rotateZ((float) Math.toRadians(CAConfig.tridentRenderRotations.get(2)))
+            );
 
             poseStack.translate(pivot.multiply(-1, -1, -1));
 

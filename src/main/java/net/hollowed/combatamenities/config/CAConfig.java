@@ -2,6 +2,8 @@ package net.hollowed.combatamenities.config;
 
 import eu.midnightdust.lib.config.MidnightConfig;
 
+import java.util.List;
+
 public class CAConfig extends MidnightConfig {
     private static final String BACK = "back";
     private static final String BELT = "belt";
@@ -47,6 +49,10 @@ public class CAConfig extends MidnightConfig {
     public static Comment tweaksConfig;
     @Entry(category = TWEAKS, name = "Render Arrows As Items") @Client
     public static boolean itemArrows = false;
+    @Entry(category = TWEAKS, name = "Trident Render Translations", precision = 10000) @Client
+    public static List<Float> tridentRenderTranslations = List.of(0.0F, 0.0F, 0.0F);
+    @Entry(category = TWEAKS, name = "Trident Render Rotations", precision = 10000) @Client
+    public static List<Float> tridentRenderRotations = List.of(0.0F, 0.0F, 0.0F);
     @Entry(category = TWEAKS, name = "Fix Trident Loyalty Return") @Server
     public static boolean correctTridentReturn = true;
     @Entry(category = TWEAKS, name = "Fix Riptide First Person Rendering") @Client
