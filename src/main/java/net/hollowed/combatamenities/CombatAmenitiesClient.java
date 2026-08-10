@@ -5,7 +5,6 @@ package net.hollowed.combatamenities;
 //import com.zigythebird.playeranimcore.enums.PlayState;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.hollowed.combatamenities.networking.slots.SlotClientPacket;
 import net.hollowed.combatamenities.networking.slots.SoundPacket;
 import net.hollowed.combatamenities.index.CAParticles;
 import net.hollowed.combatamenities.index.CAKeyBindings;
@@ -19,7 +18,6 @@ public class CombatAmenitiesClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         CAKeyBindings.initialize();
-        SlotClientPacket.registerClientPacket();
         SoundPacket.registerClientPacket();
         CAParticles.initializeClient();
 

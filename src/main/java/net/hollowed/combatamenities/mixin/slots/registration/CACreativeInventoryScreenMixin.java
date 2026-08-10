@@ -3,7 +3,6 @@ package net.hollowed.combatamenities.mixin.slots.registration;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.hollowed.combatamenities.networking.slots.SlotCreativeClientPacketPayload;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -11,6 +10,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
@@ -80,6 +80,7 @@ public abstract class CACreativeInventoryScreenMixin extends AbstractContainerSc
         }
     }
 
+    /*
     @Inject(method = "slotClicked", at = @At("TAIL"))
     private void onSlotClickMixin(Slot slot, int slotId, int buttonNum, ContainerInput containerInput, CallbackInfo ci) {
         CreativeModeTab inventoryGroup = BuiltInRegistries.CREATIVE_MODE_TAB.getValue(CreativeModeTabs.INVENTORY);
@@ -87,12 +88,13 @@ public abstract class CACreativeInventoryScreenMixin extends AbstractContainerSc
         if (selectedTab.equals(inventoryGroup)) {
             for (int i = 0; i < this.menu.slots.size(); ++i) {
                 if (i == 46) {
-                    ClientPlayNetworking.send(new SlotCreativeClientPacketPayload(41, this.menu.slots.get(i).getItem()));
+                    ClientPlayNetworking.send(new SlotCreativeClientPacketPayload(EquipmentSlot.COMBATAMENITIES_BACKSLOT, this.menu.slots.get(i).getItem()));
                 }
                 if (i == 47) {
-                    ClientPlayNetworking.send(new SlotCreativeClientPacketPayload(42, this.menu.slots.get(i).getItem()));
+                    ClientPlayNetworking.send(new SlotCreativeClientPacketPayload(EquipmentSlot.COMBATAMENITIES_BELTSLOT, this.menu.slots.get(i).getItem()));
                 }
             }
         }
     }
+     */
 }

@@ -9,6 +9,7 @@ import net.minecraft.client.model.player.PlayerCapeModel;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.Final;
@@ -31,7 +32,7 @@ public abstract class PlayerCapeModelMixin extends PlayerModel {
     private void injectSetAngles(AvatarRenderState playerEntityRenderState, CallbackInfo ci) {
         Minecraft client = Minecraft.getInstance();
         if (client.player != null) {
-            ItemStack stack = client.player.getInventory().getItem(41);
+            ItemStack stack = client.player.getItemBySlot(EquipmentSlot.COMBATAMENITIES_BACKSLOT);
             BackTransformData transformData = BackTransformResourceReloadListener.getTransform(BuiltInRegistries.ITEM.getKey(stack.getItem()), stack.getOrDefault(CAComponents.INTEGER_PROPERTY, -1).toString());
             float sway = 1.0F;
             if (!stack.isEmpty()) {

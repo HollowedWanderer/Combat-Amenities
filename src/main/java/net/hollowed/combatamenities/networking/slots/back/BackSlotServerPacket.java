@@ -5,6 +5,7 @@ import net.hollowed.combatamenities.networking.slots.SoundPacketPayload;
 import net.hollowed.combatamenities.util.items.CAComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -16,7 +17,7 @@ public class BackSlotServerPacket {
 
             ItemStack offhandStack = player.getOffhandItem();
             ItemStack handStack = player.getMainHandItem();
-            ItemStack backStack = player.getInventory().getItem(41);
+            ItemStack backStack = player.getItemBySlot(EquipmentSlot.COMBATAMENITIES_BACKSLOT);
 
             if (player instanceof ServerPlayer serverPlayer) {
                 for (ServerPlayer serverPlayerTemp : serverPlayer.level().players()) {
@@ -31,17 +32,15 @@ public class BackSlotServerPacket {
 
             if (!handStack.isEmpty()) {
                 handStack.setPopTime(5);
-                player.setItemInHand(InteractionHand.MAIN_HAND, backStack.copy());
-                player.getInventory().setItem(41, handStack.copy());
+                player.setItemInHand(InteractionHand.MAIN_HAND, backStack);
+                player.setItemSlot(EquipmentSlot.COMBATAMENITIES_BACKSLOT, handStack);
             } else {
                 if (backStack.isEmpty()) {
-                    offhandStack.setPopTime(5);
-                    player.setItemInHand(InteractionHand.OFF_HAND, backStack.copy());
-                    player.getInventory().setItem(41, offhandStack.copy());
+                    player.setItemInHand(InteractionHand.OFF_HAND, backStack);
+                    player.setItemSlot(EquipmentSlot.COMBATAMENITIES_BACKSLOT, offhandStack);
                 } else {
-                    handStack.setPopTime(5);
-                    player.setItemInHand(InteractionHand.MAIN_HAND, backStack.copy());
-                    player.getInventory().setItem(41, handStack.copy());
+                    player.setItemInHand(InteractionHand.MAIN_HAND, backStack);
+                    player.setItemSlot(EquipmentSlot.COMBATAMENITIES_BACKSLOT, handStack);
                 }
             }
 

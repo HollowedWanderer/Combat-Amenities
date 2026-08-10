@@ -61,7 +61,7 @@ public class BeltSlotFeatureRenderer extends ItemInHandLayer<@NotNull AvatarRend
 
 			if (playerEntity != null) {
 				this.setVelocityFromPos(playerEntity);
-				ItemStack backSlotStack = playerEntity.getInventory().getItem(42);
+				ItemStack backSlotStack = playerEntity.getItemBySlot(EquipmentSlot.COMBATAMENITIES_BELTSLOT);
 
 				HumanoidArm arm = armedEntityRenderState.mainArm;
 				boolean right = arm == HumanoidArm.RIGHT && !CAConfig.flipBeltslotDisplay || arm == HumanoidArm.LEFT && CAConfig.flipBeltslotDisplay;
