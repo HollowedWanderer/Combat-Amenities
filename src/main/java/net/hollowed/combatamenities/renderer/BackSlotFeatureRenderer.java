@@ -56,7 +56,7 @@ public class BackSlotFeatureRenderer extends ItemInHandLayer<@NotNull AvatarRend
 			Player playerEntity = access.combat_Amenities$getPlayerEntity();
 			if (playerEntity != null) {
 				this.setVelocityFromPos(playerEntity);
-				ItemStack backSlotStack = playerEntity.getInventory().getItem(41);
+				ItemStack backSlotStack = playerEntity.getItemBySlot(EquipmentSlot.COMBATAMENITIES_BACKSLOT);
 				if (!backSlotStack.isEmpty()) {
 					Item item = backSlotStack.getItem();
 					Identifier itemId = BuiltInRegistries.ITEM.getKey(item);

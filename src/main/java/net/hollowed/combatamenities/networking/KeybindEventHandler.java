@@ -2,7 +2,9 @@ package net.hollowed.combatamenities.networking;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.hollowed.combatamenities.networking.slots.back.BackSlotServerPacket;
 import net.hollowed.combatamenities.networking.slots.back.BackslotPacketPayload;
+import net.hollowed.combatamenities.networking.slots.belt.BeltSlotServerPacket;
 import net.hollowed.combatamenities.networking.slots.belt.BeltslotPacketPayload;
 import net.hollowed.combatamenities.index.CAKeyBindings;
 
@@ -23,6 +25,7 @@ public class KeybindEventHandler {
                 long currentTime = System.currentTimeMillis();
 
                 if (currentTime - lastKeyPressTime >= COOLDOWN_TIME_MS) {
+                    //BackSlotServerPacket.apply(client.player);
                     ClientPlayNetworking.send(new BackslotPacketPayload(client.player.blockPosition()));
 
 //                    PlayerAnimationController controller = (PlayerAnimationController) PlayerAnimationAccess.getPlayerAnimationLayer(client.player, CombatAmenitiesClient.ANIMATION_LAYER_ID);
@@ -40,7 +43,8 @@ public class KeybindEventHandler {
                 long currentTime = System.currentTimeMillis();
 
                 if (currentTime - lastKeyPressTime1 >= COOLDOWN_TIME_MS) {
-                    ClientPlayNetworking.send(new BeltslotPacketPayload(client.player.blockPosition()));
+                    //BeltSlotServerPacket.apply(client.player);
+                    ClientPlayNetworking.send(BeltslotPacketPayload.INSTANCE);
                     lastKeyPressTime1 = currentTime;
                 }
             }

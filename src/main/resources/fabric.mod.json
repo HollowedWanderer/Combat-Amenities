@@ -33,5 +33,6 @@
 		"java": ">=25",
 		"fabric-api": "*",
 		"midnightlib": "*"
-	}
+	},
+	"accessWidener": "combatamenities.classTweaker"
 }
