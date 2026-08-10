@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -26,11 +27,6 @@ public abstract class ServerPlayerEntityMixin extends Player {
     @Shadow public abstract ItemEntity drop(@NotNull ItemStack stack, boolean dropAtSelf, boolean retainOwnership);
 
     @Unique
-    private static final int RESERVED_SLOT_INDEX = 41;
-    @Unique
-    private static final int OTHER_RESERVED_SLOT_INDEX = 42;
-
-    @Unique
     private SimpleContainer reservedSlotInventory = new SimpleContainer(2);
 
     public ServerPlayerEntityMixin(Level world, GameProfile profile) {
@@ -49,36 +45,39 @@ public abstract class ServerPlayerEntityMixin extends Player {
 
     @Inject(method = "die", at = @At("HEAD"))
     private void storeReservedSlot(DamageSource source, CallbackInfo ci) {
-        ItemStack slot41Item = this.getInventory().getItem(RESERVED_SLOT_INDEX);
-        if (!slot41Item.isEmpty() && this.level().getGameRules().get(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
-            this.getInventory().setItem(RESERVED_SLOT_INDEX, ItemStack.EMPTY);
-            reservedSlotInventory.setItem(0, slot41Item.copy());
+        ItemStack backItem = getItemBySlot(EquipmentSlot.COMBATAMENITIES_BACKSLOT);
+        if (!backItem.isEmpty() && this.level().getGameRules().get(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
+            setItemSlot(EquipmentSlot.COMBATAMENITIES_BACKSLOT, ItemStack.EMPTY);
+            reservedSlotInventory.setItem(0, backItem.copy());
         }
-        ItemStack slot42Item = this.getInventory().getItem(OTHER_RESERVED_SLOT_INDEX);
-        if (!slot42Item.isEmpty() && this.level().getGameRules().get(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
-            this.getInventory().setItem(OTHER_RESERVED_SLOT_INDEX, ItemStack.EMPTY);
-            reservedSlotInventory.setItem(1, slot42Item.copy());
+        ItemStack beltItem = getItemBySlot(EquipmentSlot.COMBATAMENITIES_BELTSLOT);
+        if (!beltItem.isEmpty() && this.level().getGameRules().get(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
+            setItemSlot(EquipmentSlot.COMBATAMENITIES_BELTSLOT, ItemStack.EMPTY);
+            reservedSlotInventory.setItem(1, beltItem.copy());
         }
     }
 
     @Inject(method = "initInventoryMenu", at = @At("TAIL"))
     private void restoreReservedSlot(CallbackInfo ci) {
         if (!reservedSlotInventory.getItem(0).isEmpty() && this.level().getGameRules().get(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
-            this.getInventory().setItem(RESERVED_SLOT_INDEX, reservedSlotInventory.getItem(0).copy());
+            setItemSlot(EquipmentSlot.COMBATAMENITIES_BACKSLOT, reservedSlotInventory.getItem(0).copy());
         }
         if (!reservedSlotInventory.getItem(1).isEmpty() && this.level().getGameRules().get(CombatAmenities.KEEP_BACK_SLOT_ITEM)) {
-            this.getInventory().setItem(OTHER_RESERVED_SLOT_INDEX, reservedSlotInventory.getItem(1).copy());
+            setItemSlot(EquipmentSlot.COMBATAMENITIES_BELTSLOT, reservedSlotInventory.getItem(1).copy());
         }
         reservedSlotInventory.clearContent();
     }
 
+    // TODO
+    /*
     @Inject(method = "tick", at = @At("HEAD"))
     private void tickItems(CallbackInfo ci) {
-        if (!this.getInventory().getItem(41).isEmpty()) {
-            this.getInventory().getItem(41).inventoryTick(this.level(), this, null);
+        if (!this.getItemBySlot(EquipmentSlot.COMBATAMENITIES_BACKSLOT).isEmpty()) {
+            this.getItemBySlot(EquipmentSlot.COMBATAMENITIES_BACKSLOT).inventoryTick(this.level(), this, null);
         }
-        if (!this.getInventory().getItem(42).isEmpty()) {
-            this.getInventory().getItem(42).inventoryTick(this.level(), this, null);
+        if (!this.getItemBySlot(EquipmentSlot.COMBATAMENITIES_BELTSLOT).isEmpty()) {
+            this.getItemBySlot(EquipmentSlot.COMBATAMENITIES_BELTSLOT).inventoryTick(this.level(), this, null);
         }
     }
+     */
 }

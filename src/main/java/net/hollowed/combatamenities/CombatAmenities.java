@@ -8,9 +8,6 @@ import net.fabricmc.fabric.api.gamerule.v1.GameRuleBuilder;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.hollowed.combatamenities.config.CAConfig;
-import net.hollowed.combatamenities.networking.slots.SlotClientPacketPayload;
-import net.hollowed.combatamenities.networking.slots.SlotCreativeClientPacket;
-import net.hollowed.combatamenities.networking.slots.SlotCreativeClientPacketPayload;
 import net.hollowed.combatamenities.networking.slots.SoundPacketPayload;
 import net.hollowed.combatamenities.networking.slots.back.BackSlotServerPacket;
 import net.hollowed.combatamenities.networking.slots.back.BackslotPacketPayload;
@@ -46,7 +43,7 @@ public class CombatAmenities implements ModInitializer {
 
 	public static Vec3 matrixToVec(PoseStack matrixStack) {
 		Matrix4f matrix = matrixStack.last().pose();
-		Camera camera = Minecraft.getInstance().gameRenderer.mainCamera();
+		Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
 		Vector4f localPos = new Vector4f(0, 0, 0, 1);
 		matrix.transform(localPos);
 		Vec3 cameraPos = camera.position();
@@ -69,13 +66,10 @@ public class CombatAmenities implements ModInitializer {
 
 		PayloadTypeRegistry.serverboundPlay().register(BackslotPacketPayload.ID, BackslotPacketPayload.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(BeltslotPacketPayload.ID, BeltslotPacketPayload.CODEC);
-		PayloadTypeRegistry.serverboundPlay().register(SlotCreativeClientPacketPayload.ID, SlotCreativeClientPacketPayload.CODEC);
-        PayloadTypeRegistry.clientboundPlay().register(SlotClientPacketPayload.ID, SlotClientPacketPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(SoundPacketPayload.ID, SoundPacketPayload.CODEC);
 
         BackSlotServerPacket.registerServerPacket();
 		BeltSlotServerPacket.registerServerPacket();
-		SlotCreativeClientPacket.registerClientPacket();
 
 		// Config
 		MidnightConfig.init(MOD_ID, CAConfig.class);

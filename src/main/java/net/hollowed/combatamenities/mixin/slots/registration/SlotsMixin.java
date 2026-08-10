@@ -1,5 +1,6 @@
 package net.hollowed.combatamenities.mixin.slots.registration;
 
+import net.hollowed.combatamenities.CombatAmenities;
 import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.data.read.ItemTransformData;
 import net.hollowed.combatamenities.data.read.ItemTransformResourceReloadListener;
@@ -7,6 +8,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -37,47 +39,51 @@ public abstract class SlotsMixin extends RecipeBookMenu {
         int xPos1 = 77;
         int yPos1 = 26;
 
-        this.addSlot(new Slot(inventory, 41, xPos, yPos) {
+        this.addSlot(new Slot(inventory, 46, xPos, yPos) {
             @Override
-            public Identifier getNoItemIcon() {
-                return Identifier.withDefaultNamespace("backslot_overlay");
+            public void setByPlayer(ItemStack itemStack, ItemStack previous) {
+                owner.onEquipItem(EquipmentSlot.COMBATAMENITIES_BACKSLOT, previous, itemStack);
+                playSound(owner, itemStack);
+                super.setByPlayer(itemStack, previous);
             }
 
-            @Override
             public @NotNull ItemStack remove(int amount) {
                 ItemStack stack = super.remove(amount);
+
                 if (stack.isEmpty()) {
                     this.setByPlayer(ItemStack.EMPTY);
                 }
+
                 return stack;
             }
 
             @Override
-            public void setByPlayer(@NotNull ItemStack stack) {
-                playSound(owner, stack);
-                super.setByPlayer(stack);
+            public Identifier getNoItemIcon() {
+                return CombatAmenities.id("backslot_overlay");
             }
         });
 
-        this.addSlot(new Slot(inventory, 42, xPos1, yPos1) {
+        this.addSlot(new Slot(inventory, 47, xPos1, yPos1) {
             @Override
-            public Identifier getNoItemIcon() {
-                return Identifier.withDefaultNamespace("beltslot_overlay");
+            public void setByPlayer(ItemStack itemStack, ItemStack previous) {
+                owner.onEquipItem(EquipmentSlot.COMBATAMENITIES_BELTSLOT, previous, itemStack);
+                playSound(owner, itemStack);
+                super.setByPlayer(itemStack, previous);
             }
 
-            @Override
             public @NotNull ItemStack remove(int amount) {
                 ItemStack stack = super.remove(amount);
+
                 if (stack.isEmpty()) {
                     this.setByPlayer(ItemStack.EMPTY);
                 }
+
                 return stack;
             }
 
             @Override
-            public void setByPlayer(@NotNull ItemStack stack) {
-                playSound(owner, stack);
-                super.setByPlayer(stack);
+            public Identifier getNoItemIcon() {
+                return CombatAmenities.id("beltslot_overlay");
             }
         });
     }

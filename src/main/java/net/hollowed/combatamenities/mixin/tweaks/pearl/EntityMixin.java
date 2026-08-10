@@ -5,6 +5,7 @@ import net.hollowed.combatamenities.networking.slots.SoundPacketPayload;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -19,8 +20,8 @@ public class EntityMixin {
     @Inject(method = "playStepSound", at = @At("HEAD"))
     private void onPlayStepSound(BlockPos pos, BlockState state, CallbackInfo ci) {
         if ((Object) this instanceof Player player) {
-            ItemStack backSlotItem = player.getInventory().getItem(41);
-            ItemStack beltSlotItem = player.getInventory().getItem(42);
+            ItemStack backSlotItem = player.getItemBySlot(EquipmentSlot.COMBATAMENITIES_BACKSLOT);
+            ItemStack beltSlotItem = player.getItemBySlot(EquipmentSlot.COMBATAMENITIES_BELTSLOT);
 
             if ((!backSlotItem.isEmpty() && !(backSlotItem.getItem() instanceof BlockItem)) || (!beltSlotItem.isEmpty() && !(beltSlotItem.getItem() instanceof BlockItem))) {
                 if (player instanceof ServerPlayer serverPlayer) {

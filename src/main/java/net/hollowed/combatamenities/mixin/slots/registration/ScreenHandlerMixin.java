@@ -1,5 +1,9 @@
 package net.hollowed.combatamenities.mixin.slots.registration;
 
+import com.llamalad7.mixinextras.expression.Definition;
+import com.llamalad7.mixinextras.expression.Expression;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.hollowed.combatamenities.config.CAConfig;
 import net.hollowed.combatamenities.data.read.ItemTransformData;
 import net.hollowed.combatamenities.data.read.ItemTransformResourceReloadListener;
@@ -20,62 +24,22 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AbstractContainerMenu.class)
 public abstract class ScreenHandlerMixin {
 
     @Shadow @Final public NonNullList<Slot> slots;
 
-    @Inject(method = "doClick", at = @At("HEAD"))
-    private void internalOnSlotClick(int slotIndex, int buttonNum, ContainerInput containerInput, Player player, CallbackInfo ci) {
-        Inventory playerInventory = player.getInventory();
-        if (containerInput == ContainerInput.SWAP && (buttonNum == 41 || buttonNum == 42)) {
-            if (buttonNum == 41 && slotIndex == 46 || buttonNum == 42 && slotIndex == 47) return;
-            ItemStack itemStack5 = playerInventory.getItem(buttonNum);
-            Slot slot = this.slots.get(slotIndex);
-            ItemStack itemStack = slot.getItem();
-            if (!itemStack5.isEmpty() || !itemStack.isEmpty()) {
-                if (itemStack5.isEmpty()) {
-                    if (slot.mayPickup(player)) {
-                        playerInventory.setItem(buttonNum, itemStack);
-                        slot.setByPlayer(ItemStack.EMPTY);
-                        slot.onTake(player, itemStack);
-
-                        playSound(player, itemStack, 1);
-                    }
-                } else if (itemStack.isEmpty()) {
-                    if (slot.mayPlace(itemStack5)) {
-                        int p = slot.getMaxStackSize(itemStack5);
-                        if (itemStack5.getCount() > p) {
-                            slot.setByPlayer(itemStack5.split(p));
-                        } else {
-                            playerInventory.setItem(buttonNum, ItemStack.EMPTY);
-                            slot.setByPlayer(itemStack5);
-
-                            playSound(player, itemStack5, 2);
-                        }
-                    }
-                } else if (slot.mayPickup(player) && slot.mayPlace(itemStack5)) {
-                    int p = slot.getMaxStackSize(itemStack5);
-                    if (itemStack5.getCount() > p) {
-                        slot.setByPlayer(itemStack5.split(p));
-                        slot.onTake(player, itemStack);
-                        if (!playerInventory.add(itemStack)) {
-                            player.drop(itemStack, true);
-                        }
-                    } else {
-                        playerInventory.setItem(buttonNum, itemStack);
-                        slot.setByPlayer(itemStack5);
-                        slot.onTake(player, itemStack);
-
-                        playSound(player, itemStack, 1);
-                        playSound(player, itemStack5, 2);
-                    }
-                }
-            }
-        }
+    @Definition(id = "buttonNum", local = @Local(argsOnly = true, ordinal = 1, type = int.class))
+    @Expression("buttonNum == 40")
+    @ModifyExpressionValue(
+            method = "doClick",
+            at = @At(
+                    "MIXINEXTRAS:EXPRESSION"
+            )
+    )
+    private boolean internalOnSlotClick(boolean original, @Local(argsOnly = true, ordinal = 1) int buttonNum) {
+        return original || buttonNum == 46 || buttonNum == 47;
     }
 
     @Unique

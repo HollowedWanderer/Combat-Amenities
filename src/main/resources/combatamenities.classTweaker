@@ -1,0 +1,8 @@
+classTweaker v2 official
+
+extend-enum net/minecraft/world/entity/EquipmentSlot COMBATAMENITIES_BACKSLOT
+extend-enum net/minecraft/world/entity/EquipmentSlot COMBATAMENITIES_BELTSLOT
+
+extend-enum net/minecraft/world/entity/EquipmentSlot$Type COMBATAMENITIES_SLOT
+
+extend-enum net/minecraft/world/entity/EquipmentSlotGroup COMBATAMENITIES_SLOT

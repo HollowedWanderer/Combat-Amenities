@@ -2,14 +2,21 @@
   "required": true,
   "package": "net.hollowed.combatamenities.mixin",
   "compatibilityLevel": "JAVA_25",
+  "mixinextras": {
+    "minVersion": "0.5.4"
+  },
   "mixins": [
     "slots.networking.EntityTrackerEntryMixin",
-    "slots.networking.ServerPlayerEntityMixin",
+    "slots.registration.EquipmentSlotGroupMixin",
+    "slots.registration.EquipmentSlotMixin",
+    "slots.registration.EquipmentSlotTypeMixin",
+    "slots.registration.InventoryMenuMixin",
+    "slots.registration.InventoryMixin",
+    "slots.registration.LivingEntityMixin",
     "slots.registration.PlayerInventoryMixin",
     "slots.registration.ScreenHandlerMixin",
     "slots.registration.ServerPlayerEntityMixin",
     "slots.registration.SlotAccessor",
-    "slots.registration.SlotNBTMixin",
     "slots.registration.SlotsMixin",
     "tweaks.arrow.ProjectileEntityMixin",
     "tweaks.bow.BowItemMixin",

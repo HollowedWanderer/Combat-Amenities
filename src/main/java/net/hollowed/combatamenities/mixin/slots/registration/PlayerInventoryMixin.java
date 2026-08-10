@@ -1,23 +1,12 @@
 package net.hollowed.combatamenities.mixin.slots.registration;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import net.hollowed.combatamenities.util.entities.EntityEquipment;
-import net.hollowed.combatamenities.util.interfaces.EquipmentInterface;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.hollowed.combatamenities.util.entities.ExtraSlots;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.Map;
 
 @Mixin(Inventory.class)
 public abstract class PlayerInventoryMixin implements Container {
@@ -27,16 +16,7 @@ public abstract class PlayerInventoryMixin implements Container {
 
     @Shadow public abstract void setItem(int slot, @NotNull ItemStack stack);
 
-    @Unique
-    private static final Int2ObjectMap<ExtraSlots> EXTRA_SLOTS = new Int2ObjectArrayMap<>(
-            Map.of(
-                    ExtraSlots.BACKSLOT.getOffsetEntitySlotId(41),
-                    ExtraSlots.BACKSLOT,
-                    ExtraSlots.BELTSLOT.getOffsetEntitySlotId(41),
-                    ExtraSlots.BELTSLOT
-            )
-    );
-
+    /*
     @Inject(method = "removeItem(II)Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
     public void removeStack(int slot, int amount, CallbackInfoReturnable<ItemStack> cir) {
         if (this.player instanceof EquipmentInterface access) {
@@ -128,4 +108,5 @@ public abstract class PlayerInventoryMixin implements Container {
             equipment.clear();
         }
     }
+     */
 }

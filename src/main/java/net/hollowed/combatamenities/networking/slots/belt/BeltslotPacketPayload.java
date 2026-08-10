@@ -9,11 +9,12 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
-public record BeltslotPacketPayload(BlockPos blockPos) implements CustomPacketPayload {
+public record BeltslotPacketPayload() implements CustomPacketPayload {
     public static final Identifier BELTSLOT_PACKET_ID = Identifier.fromNamespaceAndPath(MOD_ID, "beltslot_packet");
+    public static final BeltslotPacketPayload INSTANCE = new BeltslotPacketPayload();
 
     public static final Type<@NotNull BeltslotPacketPayload> ID = new Type<>(BELTSLOT_PACKET_ID);
-    public static final StreamCodec<RegistryFriendlyByteBuf, BeltslotPacketPayload> CODEC = StreamCodec.composite(BlockPos.STREAM_CODEC, BeltslotPacketPayload::blockPos, BeltslotPacketPayload::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, BeltslotPacketPayload> CODEC = StreamCodec.unit(INSTANCE);
 
     @Override
     public @NotNull Type<? extends @NotNull CustomPacketPayload> type() {
