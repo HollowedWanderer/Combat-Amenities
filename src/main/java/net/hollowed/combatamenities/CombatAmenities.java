@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import eu.midnightdust.lib.config.MidnightConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.gamerule.v1.GameRuleBuilder;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.hollowed.combatamenities.config.CAConfig;
@@ -24,8 +23,6 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.world.level.gamerules.GameRule;
-import net.minecraft.world.level.gamerules.GameRuleCategory;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
@@ -76,9 +73,4 @@ public class CombatAmenities implements ModInitializer {
 
 		LOGGER.info("It is time for backing and slotting");
 	}
-
-	public static final GameRule<Boolean> KEEP_BACK_SLOT_ITEM = GameRuleBuilder
-			.forBoolean(false)
-			.category(GameRuleCategory.PLAYER)
-			.buildAndRegister(id("keep_back_item"));
 }
