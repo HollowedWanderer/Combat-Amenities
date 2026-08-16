@@ -1,5 +1,7 @@
 package net.hollowed.combatamenities.mixin.slots.registration;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -22,7 +24,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Environment(EnvType.CLIENT)
 @Mixin(CreativeModeInventoryScreen.class)
@@ -39,26 +43,23 @@ public abstract class CACreativeInventoryScreenMixin extends AbstractContainerSc
         super(handler, inventory, title);
     }
 
-    @SuppressWarnings("all")
-    @Inject(method = "selectTab", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;destroyItemSlot:Lnet/minecraft/world/inventory/Slot;", shift = At.Shift.BEFORE))
-    private void setSelectedTabMixin(CreativeModeTab group, CallbackInfo info) {
-        for (int i = 0; i < this.menu.slots.size(); ++i) {
-            if (i == 46) {
-                Slot slot = this.menu.slots.get(i);
-
-                if (slot instanceof SlotAccessor accessor) {
-                    accessor.setX(127);
-                    accessor.setY(20);
-                }
-            }
-            if (i == 47) {
-                Slot slot = this.menu.slots.get(i);
-
-                if (slot instanceof SlotAccessor accessor) {
-                    accessor.setX(145);
-                    accessor.setY(20);
-                }
-            }
+    @ModifyArgs(
+            method = "selectTab",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen$SlotWrapper;<init>(Lnet/minecraft/world/inventory/Slot;III)V"
+            )
+    )
+    private void setSelectedTabMixin(
+            Args args,
+            @Local(ordinal = 0) int i
+    ) {
+        if (i == 46) {
+            args.set(2, 127);
+            args.set(3, 20);
+        } else if (i == 47) {
+            args.set(2, 145);
+            args.set(3, 20);
         }
     }
 
