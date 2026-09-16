@@ -12,59 +12,59 @@ public class CAConfig extends MidnightConfig {
 
     @SuppressWarnings("unused") @Comment(category = BACK, centered = true, name = "Back Slot Options")
     public static Comment backConfig;
-    @SuppressWarnings("unused") @Entry(category = BACK, name = "Enable Back Slot - Doesn't Work") @Server
+    @SuppressWarnings("unused") @Entry(category = BACK, name = "Enable Back Slot - Doesn't Work")
     public static boolean enableBackslot = true;
-    @Entry(category = BACK, name = "Back Slot HUD X", isSlider = true, min = -312, max = 95) @Client
+    @Entry(category = BACK, name = "Back Slot HUD X", isSlider = true, min = -312, max = 95)
     public static int backslotX = 0;
-    @Entry(category = BACK, name = "Back Slot HUD Y", isSlider = true, min = 0, max = 227) @Client
+    @Entry(category = BACK, name = "Back Slot HUD Y", isSlider = true, min = 0, max = 227)
     public static int backslotY = 0;
-    @Entry(category = BACK, name = "Back Slot Enchantment Particles Enabled") @Client
+    @Entry(category = BACK, name = "Back Slot Enchantment Particles Enabled")
     public static boolean backslotParticles = true;
-    @Entry(category = BACK, name = "Flip Back Slot Display") @Client
+    @Entry(category = BACK, name = "Flip Back Slot Display")
     public static boolean flipBackslotDisplay = false;
 
     @SuppressWarnings("unused") @Comment(category = BELT, centered = true, name = "Belt Slot Options")
     public static Comment beltConfig;
-    @SuppressWarnings("unused") @Entry(category = BELT, name = "Enable Belt Slot - Doesn't Work") @Server
+    @SuppressWarnings("unused") @Entry(category = BELT, name = "Enable Belt Slot - Doesn't Work")
     public static boolean enableBeltslot = true;
-    @Entry(category = BELT, name = "Belt Slot HUD X", isSlider = true, min = -335, max = 72) @Client
+    @Entry(category = BELT, name = "Belt Slot HUD X", isSlider = true, min = -335, max = 72)
     public static int beltslotX = 0;
-    @Entry(category = BELT, name = "Belt Slot HUD Y", isSlider = true, min = 0, max = 227) @Client
+    @Entry(category = BELT, name = "Belt Slot HUD Y", isSlider = true, min = 0, max = 227)
     public static int beltslotY = 0;
-    @Entry(category = BELT, name = "Belt Slot Enchantment Particles Enabled") @Client
+    @Entry(category = BELT, name = "Belt Slot Enchantment Particles Enabled")
     public static boolean beltslotParticles = true;
-    @Entry(category = BELT, name = "Flip Belt Slot Display") @Client
+    @Entry(category = BELT, name = "Flip Belt Slot Display")
     public static boolean flipBeltslotDisplay = false;
 
     @SuppressWarnings("unused") @Comment(category = SLOTS, centered = true, name = "General Slots Options")
     public static Comment slotsConfig;
-    @Entry(category = SLOTS, name = "Enchantment Particle Spawn Chance") @Client
+    @Entry(category = SLOTS, name = "Enchantment Particle Spawn Chance")
     public static float enchantmentParticleChance = 0.5F;
-    @Entry(category = SLOTS, name = "Slot Ambient Sound Volume") @Client
+    @Entry(category = SLOTS, name = "Slot Ambient Sound Volume")
     public static int backslotAmbientSoundVolume = 100;
-    @Entry(category = SLOTS, name = "Slot Swap Sound Volume") @Client
+    @Entry(category = SLOTS, name = "Slot Swap Sound Volume")
     public static int backslotSwapSoundVolume = 100;
 
     @SuppressWarnings("unused") @Comment(category = TWEAKS, centered = true, name = "General Tweaks Options")
     public static Comment tweaksConfig;
-    @Entry(category = TWEAKS, name = "Render Arrows As Items") @Client
+    @Entry(category = TWEAKS, name = "Render Arrows As Items")
     public static boolean itemArrows = false;
-    @Entry(category = TWEAKS, name = "Trident Render Translations", precision = 10000) @Client
+    @Entry(category = TWEAKS, name = "Trident Render Translations", precision = 10000)
     public static List<Float> tridentRenderTranslations = List.of(0.0F, 0.0F, 0.0F);
-    @Entry(category = TWEAKS, name = "Trident Render Rotations", precision = 10000) @Client
+    @Entry(category = TWEAKS, name = "Trident Render Rotations", precision = 10000)
     public static List<Float> tridentRenderRotations = List.of(0.0F, 0.0F, 0.0F);
-    @Entry(category = TWEAKS, name = "Fix Trident Loyalty Return") @Server
+    @Entry(category = TWEAKS, name = "Fix Trident Loyalty Return")
     public static boolean correctTridentReturn = true;
-    @Entry(category = TWEAKS, name = "Fix Riptide First Person Rendering") @Client
+    @Entry(category = TWEAKS, name = "Fix Riptide First Person Rendering")
     public static boolean riptideFix = true;
-    @Entry(category = TWEAKS, name = "Throwable Fire Charges") @Server
+    @Entry(category = TWEAKS, name = "Throwable Fire Charges")
     public static boolean throwableFirecharge = true;
-    @Entry(category = TWEAKS, name = "Shield Tweaks") @Server
+    @Entry(category = TWEAKS, name = "Shield Tweaks")
     public static boolean shieldTweaks = true;
-    @Entry(category = TWEAKS, name = "Shield Parry Window (Ticks)") @Server
+    @Entry(category = TWEAKS, name = "Shield Parry Window (Ticks)")
     public static int shieldParryTime = 5;
-    @Entry(category = TWEAKS, name = "Ender Pearl Tweaks") @Server
+    @Entry(category = TWEAKS, name = "Ender Pearl Tweaks")
     public static boolean enderPearlTweaks = true;
-    @Entry(category = TWEAKS, name = "Bow Tweaks") @Server
+    @Entry(category = TWEAKS, name = "Bow Tweaks")
     public static boolean bowTweaks = true;
 }
