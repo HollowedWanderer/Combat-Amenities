@@ -14,6 +14,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -48,7 +49,7 @@ public abstract class LivingEntityMixin {
             Vec3 sourcePosition = source.getSourcePosition();
             double angle;
             if (sourcePosition != null) {
-                Vec3 viewVector = self.calculateViewVector(0.0F, self.getYHeadRot());
+                Vec3 viewVector = Entity.calculateViewVector(0.0F, self.getYHeadRot());
                 Vec3 vectorTo = sourcePosition.subtract(self.position());
                 vectorTo = (new Vec3(vectorTo.x, 0.0F, vectorTo.z)).normalize();
                 angle = Math.acos(vectorTo.dot(viewVector));
@@ -73,7 +74,7 @@ public abstract class LivingEntityMixin {
                         ItemCooldowns cooldownManager = player.getCooldowns();
                         if (source.getDirectEntity() instanceof LivingEntity attacker) {
                             attacker.push(player.getLookAngle().normalize().multiply(knockbackStrength, 0.25, knockbackStrength).add(0, 0.5, 0));
-                            attacker.hurtMarked = true;
+                            attacker.syncVelocity = true;
                             attacker.needsSync = true;
                             if (attacker.getSecondsToDisableBlocking() > 0) {
                                 cooldownManager.addCooldown(self.getUseItem(), 40);
@@ -83,7 +84,7 @@ public abstract class LivingEntityMixin {
                             }
                         } else if (source.getDirectEntity() instanceof Projectile entity) {
                             entity.setDeltaMovement(entity.getDeltaMovement().scale(10F));
-                            entity.hurtMarked = true;
+                            entity.syncVelocity = true;
                             entity.needsSync = true;
                         }
                     }

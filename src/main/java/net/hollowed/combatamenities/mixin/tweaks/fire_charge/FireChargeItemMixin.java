@@ -8,6 +8,7 @@ import net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball;
 import net.minecraft.world.item.FireChargeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +31,7 @@ public abstract class FireChargeItemMixin extends Item {
             if (CAConfig.throwableFirecharge) {
                 world.levelEvent(null, 1018, player.blockPosition(), 0);
                 ItemStack stack = player.getItemInHand(hand);
-                player.swing(hand, true);
+                player.swing(hand, SwingAnimation.DEFAULT, true);
                 SmallFireball fireball = new SmallFireball(player.level(), player, player.getViewVector(1.0F).normalize().scale(2));
                 fireball.setPos(fireball.getX(), player.getEyeY(), fireball.getZ());
                 world.addFreshEntity(fireball);

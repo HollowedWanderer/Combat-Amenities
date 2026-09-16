@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.Items;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -37,8 +38,8 @@ public abstract class StuckObjectsFeatureRendererMixin {
             float g = Mth.sqrt(f * f + directionY * directionY);
             float h = (float)(Math.atan2(f, directionY) * 57.2957763671875);
             float i = (float)(Math.atan2(directionX, g) * 57.2957763671875);
-            matrixStack.mulPose(Axis.YP.rotationDegrees(h - 90.0F));
-            matrixStack.mulPose(Axis.ZP.rotationDegrees(i));
+            matrixStack.mulPose(Axis.YP.rotationDegrees(h - 90.0F).get(new Matrix4f()));
+            matrixStack.mulPose(Axis.ZP.rotationDegrees(i).get(new Matrix4f()));
 
             ItemStackRenderState stackRenderState = new ItemStackRenderState();
             Minecraft.getInstance().getItemModelResolver().appendItemLayers(stackRenderState, Items.ARROW.getDefaultInstance(), ItemDisplayContext.NONE, Minecraft.getInstance().level, null, 1);

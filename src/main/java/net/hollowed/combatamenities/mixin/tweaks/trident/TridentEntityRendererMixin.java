@@ -22,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -63,14 +64,14 @@ public abstract class TridentEntityRendererMixin extends EntityRenderer<@NotNull
             Vec3 pivot = new Vec3(0.3, 0, 0);
             poseStack.translate(pivot);
 
-            poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot - 180.0F));
-            poseStack.mulPose(Axis.XP.rotationDegrees(state.xRot - 65F));
-            poseStack.mulPose(Axis.XN.rotationDegrees(10.0F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot - 180.0F).get(new Matrix4f()));
+            poseStack.mulPose(Axis.XP.rotationDegrees(state.xRot - 65F).get(new Matrix4f()));
+            poseStack.mulPose(Axis.XN.rotationDegrees(10.0F).get(new Matrix4f()));
 
             poseStack.mulPose((new Quaternionf())
                     .rotateY((float) Math.toRadians(CAConfig.tridentRenderRotations.getFirst()))
                     .rotateX((float) Math.toRadians(CAConfig.tridentRenderRotations.get(1)))
-                    .rotateZ((float) Math.toRadians(CAConfig.tridentRenderRotations.get(2)))
+                    .rotateZ((float) Math.toRadians(CAConfig.tridentRenderRotations.get(2))).get(new Matrix4f())
             );
 
             poseStack.translate(pivot.multiply(-1, -1, -1));
@@ -92,7 +93,7 @@ public abstract class TridentEntityRendererMixin extends EntityRenderer<@NotNull
     }
 
     @Override
-    public boolean shouldRender(@NonNull ThrownTrident entity, @NotNull Frustum frustum, double x, double y, double z) {
+    public boolean shouldRender(@NotNull ThrownTrident entity, @NonNull Frustum culler, double camX, double camY, double camZ, float partialTicks) {
         return true;
     }
 }

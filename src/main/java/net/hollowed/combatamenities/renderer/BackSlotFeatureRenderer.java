@@ -13,11 +13,13 @@ import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.player.RemotePlayer;
-import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -30,6 +32,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.BannerBlock;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -42,12 +45,14 @@ import java.util.Queue;
 @Environment(EnvType.CLIENT)
 public class BackSlotFeatureRenderer extends ItemInHandLayer<@NotNull AvatarRenderState, @NotNull PlayerModel> {
 
-	private final ItemInHandRenderer heldItemRenderer;
 	private ItemDisplayContext transformationMode = ItemDisplayContext.FIXED;
+	private final ItemModelResolver modelResolver = Minecraft.getInstance().getItemModelResolver();
+	private final ItemStackRenderState secondaryState = new ItemStackRenderState();
+	private final ItemStackRenderState tertiaryState = new ItemStackRenderState();
+	private final ItemStackRenderState mainState = new ItemStackRenderState();
 
-    public BackSlotFeatureRenderer(RenderLayerParent<@NotNull AvatarRenderState, @NotNull PlayerModel> context, ItemInHandRenderer heldItemRenderer) {
+    public BackSlotFeatureRenderer(RenderLayerParent<@NotNull AvatarRenderState, @NotNull PlayerModel> context) {
 		super(context);
-		this.heldItemRenderer = heldItemRenderer;
 	}
 
 	@Override
@@ -96,8 +101,8 @@ public class BackSlotFeatureRenderer extends ItemInHandLayer<@NotNull AvatarRend
 								.rotateY(-3.1415927F)
 								.rotateX(transformData.sway() * -(6.0F + armedEntityRenderState.capeLean / 2.0F + armedEntityRenderState.capeFlap) * 0.017453292F)
 								.rotateZ(-(armedEntityRenderState.capeLean2 / 2.0F * 0.017453292F))
-								.rotateY((180.0F - armedEntityRenderState.capeLean2 / 2.0F) * 0.017453292F)
-						);
+								.rotateY((180.0F - armedEntityRenderState.capeLean2 / 2.0F) * 0.017453292F).get(new Matrix4f())
+                        );
 
 						matrixStack.translate(0, 0.35, 0);
 
@@ -109,7 +114,7 @@ public class BackSlotFeatureRenderer extends ItemInHandLayer<@NotNull AvatarRend
 						}
 
 						if (flip) {
-							matrixStack.mulPose(Axis.YP.rotationDegrees(180));
+							matrixStack.mulPose(Axis.YP.rotationDegrees(180).get(new Matrix4f()));
 						}
 
 						transformationMode = secondaryTransformData.mode();
@@ -128,20 +133,21 @@ public class BackSlotFeatureRenderer extends ItemInHandLayer<@NotNull AvatarRend
 						}
 
 						List<Float> rotation = secondaryTransformData.rotation();
-						matrixStack.mulPose(Axis.XP.rotationDegrees(rotation.get(0)));
+						matrixStack.mulPose(Axis.XP.rotationDegrees(rotation.get(0)).get(new Matrix4f()));
 						if (flip) {
-							matrixStack.mulPose(Axis.XP.rotationDegrees(rotation.getFirst() * -2));
+							matrixStack.mulPose(Axis.XP.rotationDegrees(rotation.getFirst() * -2).get(new Matrix4f()));
 						}
-						matrixStack.mulPose(Axis.YP.rotationDegrees(rotation.get(1)));
-						matrixStack.mulPose(Axis.ZP.rotationDegrees(rotation.get(2)));
+						matrixStack.mulPose(Axis.YP.rotationDegrees(rotation.get(1)).get(new Matrix4f()));
+						matrixStack.mulPose(Axis.ZP.rotationDegrees(rotation.get(2)).get(new Matrix4f()));
 						if (right && (item instanceof BlockItem || transformData.noFlip())) {
-							matrixStack.mulPose(Axis.ZP.rotationDegrees(rotation.get(2) * -2));
+							matrixStack.mulPose(Axis.ZP.rotationDegrees(rotation.get(2) * -2).get(new Matrix4f()));
 						}
 
 						List<Float> scale = secondaryTransformData.scale();
 						matrixStack.scale(scale.get(0), scale.get(1), scale.get(2));
 
-						heldItemRenderer.renderItem(playerEntity, secondaryAppleStack, transformationMode, matrixStack, orderedRenderCommandQueue, i);
+						modelResolver.updateForLiving(secondaryState, secondaryAppleStack, transformationMode, playerEntity);
+						secondaryState.submit(matrixStack, orderedRenderCommandQueue, i, OverlayTexture.NO_OVERLAY, 0);
 						matrixStack.popPose();
 					}
 
@@ -150,23 +156,24 @@ public class BackSlotFeatureRenderer extends ItemInHandLayer<@NotNull AvatarRend
 						this.getParentModel().body.translateAndRotate(matrixStack);
 
 						if (flip) {
-							matrixStack.mulPose(Axis.YP.rotationDegrees(180));
+							matrixStack.mulPose(Axis.YP.rotationDegrees(180).get(new Matrix4f()));
 						}
 
-						matrixStack.mulPose(Axis.ZP.rotationDegrees(180));
+						matrixStack.mulPose(Axis.ZP.rotationDegrees(180).get(new Matrix4f()));
 
 						List<Float> translation = tertiaryTransformData.translation();
 						matrixStack.translate(translation.get(0), translation.get(1), translation.get(2));
 
 						List<Float> rotation = tertiaryTransformData.rotation();
-						matrixStack.mulPose(Axis.XP.rotationDegrees(rotation.get(0)));
-						matrixStack.mulPose(Axis.YP.rotationDegrees(rotation.get(1)));
-						matrixStack.mulPose(Axis.ZP.rotationDegrees(rotation.get(2)));
+						matrixStack.mulPose(Axis.XP.rotationDegrees(rotation.get(0)).get(new Matrix4f()));
+						matrixStack.mulPose(Axis.YP.rotationDegrees(rotation.get(1)).get(new Matrix4f()));
+						matrixStack.mulPose(Axis.ZP.rotationDegrees(rotation.get(2)).get(new Matrix4f()));
 
 						List<Float> scale = tertiaryTransformData.scale();
 						matrixStack.scale(scale.get(0), scale.get(1), scale.get(2));
 
-						heldItemRenderer.renderItem(playerEntity, tertiaryAppleStack, transformationMode, matrixStack, orderedRenderCommandQueue, i);
+						modelResolver.updateForLiving(tertiaryState, tertiaryAppleStack, transformationMode, playerEntity);
+						tertiaryState.submit(matrixStack, orderedRenderCommandQueue, i, OverlayTexture.NO_OVERLAY, 0);
 						matrixStack.popPose();
 					}
 
@@ -181,7 +188,7 @@ public class BackSlotFeatureRenderer extends ItemInHandLayer<@NotNull AvatarRend
 							.rotateY(-3.1415927F)
 							.rotateX(transformData.sway() * -(6.0F + armedEntityRenderState.capeLean / 2.0F + armedEntityRenderState.capeFlap) * 0.017453292F)
 							.rotateZ(-(armedEntityRenderState.capeLean2 / 2.0F * 0.017453292F))
-							.rotateY((180.0F - armedEntityRenderState.capeLean2 / 2.0F) * 0.017453292F)
+							.rotateY((180.0F - armedEntityRenderState.capeLean2 / 2.0F) * 0.017453292F).get(new Matrix4f())
 					);
 
 					matrixStack.translate(0, 0.35, 0);
@@ -194,7 +201,7 @@ public class BackSlotFeatureRenderer extends ItemInHandLayer<@NotNull AvatarRend
 					}
 
 					if (flip) {
-						matrixStack.mulPose(Axis.YP.rotationDegrees(180));
+						matrixStack.mulPose(Axis.YP.rotationDegrees(180).get(new Matrix4f()));
 					}
 
 					transformationMode = transformData.mode();
@@ -213,21 +220,22 @@ public class BackSlotFeatureRenderer extends ItemInHandLayer<@NotNull AvatarRend
 					}
 
 					List<Float> rotation = transformData.rotation();
-					matrixStack.mulPose(Axis.XP.rotationDegrees(rotation.get(0)));
+					matrixStack.mulPose(Axis.XP.rotationDegrees(rotation.get(0)).get(new Matrix4f()));
 					if (flip) {
-						matrixStack.mulPose(Axis.XP.rotationDegrees(rotation.getFirst() * -2));
+						matrixStack.mulPose(Axis.XP.rotationDegrees(rotation.getFirst() * -2).get(new Matrix4f()));
 					}
-					matrixStack.mulPose(Axis.YP.rotationDegrees(rotation.get(1)));
-					matrixStack.mulPose(Axis.ZP.rotationDegrees(rotation.get(2)));
+					matrixStack.mulPose(Axis.YP.rotationDegrees(rotation.get(1)).get(new Matrix4f()));
+					matrixStack.mulPose(Axis.ZP.rotationDegrees(rotation.get(2)).get(new Matrix4f()));
 					if (right && (item instanceof BlockItem || transformData.noFlip())) {
-						matrixStack.mulPose(Axis.ZP.rotationDegrees(rotation.get(2) * -2));
+						matrixStack.mulPose(Axis.ZP.rotationDegrees(rotation.get(2) * -2).get(new Matrix4f()));
 					}
 
 					List<Float> scale = transformData.scale();
 					matrixStack.scale(scale.get(0), scale.get(1), scale.get(2));
 
 					// Render the item
-					heldItemRenderer.renderItem(playerEntity, backSlotStack, transformationMode, matrixStack, orderedRenderCommandQueue, i);
+					modelResolver.updateForLiving(mainState, backSlotStack, transformationMode, playerEntity);
+					mainState.submit(matrixStack, orderedRenderCommandQueue, i, OverlayTexture.NO_OVERLAY, 0);
 
 					if (backSlotStack.isEnchanted() && Math.random() > ((100 - CAConfig.enchantmentParticleChance) / 100.0F) && CAConfig.backslotParticles && !Minecraft.getInstance().isPaused()) {
 						for (int j = 0; j < 5; j++) {
@@ -284,7 +292,7 @@ public class BackSlotFeatureRenderer extends ItemInHandLayer<@NotNull AvatarRend
 				jiggleTimer += Math.max(0.4F - 0.25F * (Minecraft.getInstance().getFps() / 140.0F - 1), 0.1F);
 				float oscillation = (float) Math.sin(jiggleTimer) * jiggleIntensity;
 				if (!(item instanceof BlockItem blockItem && blockItem.getBlock() instanceof BannerBlock)) {
-					matrixStack.mulPose(Axis.ZP.rotationDegrees(oscillation));
+					matrixStack.mulPose(Axis.ZP.rotationDegrees(oscillation).get(new Matrix4f()));
 				}
 
 				jiggleIntensity *= jiggleDecay;

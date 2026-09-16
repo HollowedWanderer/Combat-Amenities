@@ -2,10 +2,8 @@ package net.hollowed.combatamenities.mixin.slots.rendering;
 
 import net.hollowed.combatamenities.renderer.BackSlotFeatureRenderer;
 import net.hollowed.combatamenities.renderer.BeltSlotFeatureRenderer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
@@ -25,8 +23,7 @@ public abstract class PlayerFeaturesMixin extends LivingEntityRenderer<@NotNull 
 
     @Inject(method = "<init>", at = @At("CTOR_HEAD"))
     private void addCustomFeature(EntityRendererProvider.Context context, boolean slimSteve, CallbackInfo ci) {
-        ItemInHandRenderer heldItemRenderer = Minecraft.getInstance().getEntityRenderDispatcher().getItemInHandRenderer();
-        this.addLayer(new BackSlotFeatureRenderer(this, heldItemRenderer));
-        this.addLayer(new BeltSlotFeatureRenderer(this, heldItemRenderer));
+        this.addLayer(new BackSlotFeatureRenderer(this));
+        this.addLayer(new BeltSlotFeatureRenderer(this));
     }
 }

@@ -6,7 +6,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -23,8 +22,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ServerPlayerEntityMixin extends Player {
 
     @Shadow public abstract @NotNull ServerLevel level();
-
-    @Shadow public abstract ItemEntity drop(@NotNull ItemStack stack, boolean dropAtSelf, boolean retainOwnership);
 
     @Unique
     private SimpleContainer reservedSlotInventory = new SimpleContainer(2);

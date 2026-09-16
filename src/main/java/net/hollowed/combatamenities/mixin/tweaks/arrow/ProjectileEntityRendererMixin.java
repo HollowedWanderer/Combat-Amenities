@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -71,8 +72,8 @@ public abstract class ProjectileEntityRendererMixin<T extends AbstractArrow> {
 
                 poseStack.translate(access.combat_Amenities$getLook().multiply(multiplier, multiplier, -multiplier));
 
-                poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot - 90.0F));
-                poseStack.mulPose(Axis.ZP.rotationDegrees(state.xRot - 45.0F));
+                poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot - 90.0F).get(new Matrix4f()));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(state.xRot - 45.0F).get(new Matrix4f()));
 
                 ItemStack itemStack = access.combat_Amenities$getItemStack();
                 ItemStackRenderState stackRenderState = new ItemStackRenderState();
