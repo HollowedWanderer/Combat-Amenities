@@ -44,7 +44,7 @@ public class FirstPersonItemMixin {
             }
         }
 
-        if (entity.getUseItem().getItem() instanceof BowItem && CAConfig.bowTweaks) {
+        if (entity.getUseItem().getItem() instanceof BowItem && CAConfig.bowTweaks && displayContext.firstPerson()) {
             int useTime = entity.getTicksUsingItem();
 
             float tickDelta = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
